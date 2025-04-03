@@ -19,7 +19,9 @@
   },
   "homepage": "https://github.com/TulioTriste/TallerMecanico#readme",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "mysql2": "^3.14.0",
     "zod": "^3.24.2"
