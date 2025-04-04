@@ -1,0 +1,1 @@
+export const TOKEN_KEY_SECRET = "está por definir xd";

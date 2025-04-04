@@ -31,4 +31,8 @@ https://www.youtube.com/watch?v=NmkY4JgS21A
 - Inicio de la información del Frontend (https://youtu.be/NmkY4JgS21A?t=7074)
 
 # Extensiones
+- https://faztweb.com/contenido/visual-studio-code-setup-2022
 - ThunderClient: Lo usarémos solo para hacer peticiónes y comprobarlas
+
+# Tareas por fijarnos antes de terminar
+- Hacer la opción de si acepta cookies, y en el caso de que no acepte desactivar la funcionalidad del token
