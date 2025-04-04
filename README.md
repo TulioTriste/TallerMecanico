@@ -1,5 +1,8 @@
 # TallerMecanico
 
+# Iniciar
+- en 1 terminal ponemos "npm run dev", y luego creamos otra terminal en VSC y ponemos "cd client" y luego "npm run dev"
+
 # Aplicativos
 - MySQL Server y Workbench [https://dev.mysql.com/downloads/mysql/]
 
