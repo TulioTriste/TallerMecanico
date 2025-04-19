@@ -9,8 +9,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from '../schemas/authSchema';
 
 export default function LoginForm() {
-  /*const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');*/
+  const { signin, errors: loginErrors, isAuthenticated } = useAuth();
+  
   const {
     register,
     handleSubmit,
@@ -18,8 +18,6 @@ export default function LoginForm() {
   } = useForm({
     resolver: zodResolver(loginSchema),
   });
-
-  const { signin, errors: loginErrors, isAuthenticated } = useAuth();
 
   const navigate = useNavigate();
 
@@ -79,22 +77,6 @@ export default function LoginForm() {
       document.body.className = 'bg-gradient-to-br from-gray-50 to-gray-100';
     }
   }, [darkMode]);
-
-  /*const handleSubmit = (user) => {
-    user.preventDefault();
-    setError('');
-    setLoading(true);
-
-    setTimeout(() => {
-      if (email && password) {
-        console.log('Iniciando sesión con:', email);
-        console.log(user);
-      } else {
-        setError('Por favor complete todos los campos');
-      }
-      setLoading(false);
-    }, 1000);
-  };*/
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);

@@ -1,6 +1,7 @@
 import UserModel from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { createAccessToken } from "../libs/jwt.js";
+import { TOKEN_KEY_SECRET } from "../config.js";
 
 export const register = async (req, res) => {
     const {nombre, email, password, direccion, numero} = req.body;
@@ -51,8 +52,6 @@ export const login = async (req, res) => {
             message: "Este usuario no existe.",
         });
     }
-    
-    responseMessage = "El Usuario ha sido encontrado exitosamente";
 
     const isMatch = await bcrypt.compare(password, userFound.CONTRASENA);
 
@@ -70,7 +69,7 @@ export const login = async (req, res) => {
 
         res.cookie("token", token);
         res.json({
-            message: responseMessage,
+            message: "El Usuario ha sido encontrado exitosamente",
             user: {
                 id: userFound.USER_ID,
                 email,
@@ -96,7 +95,7 @@ export const verifyToken = async (req, res) => {
     const { token } = req.cookies;
     if (!token) return res.send(false);
   
-    jwt.verify(token, TOKEN_SECRET, async (error, user) => {
+    jwt.verify(token, TOKEN_KEY_SECRET, async (error, user) => {
       if (error) return res.sendStatus(401);
   
       const userFound = await UserModel.getUserById(user.id);
