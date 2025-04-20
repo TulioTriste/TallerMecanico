@@ -22,10 +22,10 @@ class UserModel {
         try {
             const conn = await this.connect();
             const [result] = await conn.execute('INSERT INTO usuarios (nombre, email, contrasena, direccion, numerotel) VALUES (?, ?, ?, ?, ?)', [nombre, email, password, direccion, numero]);
-            //console.log('Usuario agregado con éxito:', result);
+            //console.log('usuarios agregado con éxito:', result);
             return result;
         } catch (error) {
-            console.error('Error al agregar el usuario:', error);
+            console.error('Error al agregar el usuarios:', error);
         }
     }
   

@@ -43,11 +43,14 @@ export const AuthProvider = ({ children }) => {
   const signin = async (user) => {
     try {
       const res = await loginRequest(user);
-      setUser(res.data);
-      setIsAuthenticated(true);
+      if (res.status === 200) {
+        console.log("Aprobado por chayanne");
+        setUser(res.data);
+        setIsAuthenticated(true);
+      }
     } catch (error) {
-      console.log(error);
-      // setErrors(error.response.data.message);
+      console.log(error.response.data.message);
+      setErrors([error.response.data.message]);
     }
   };
 
@@ -73,7 +76,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
         setUser(res.data);
         setLoading(false);
-      // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line no-unused-vars
       } catch (error) {
         setIsAuthenticated(false);
         setLoading(false);

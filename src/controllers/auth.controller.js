@@ -1,10 +1,11 @@
 import UserModel from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { createAccessToken } from "../libs/jwt.js";
+import jwt from "jsonwebtoken";
 import { TOKEN_KEY_SECRET } from "../config.js";
 
 export const register = async (req, res) => {
-    const {nombre, email, password, direccion, numero} = req.body;
+    const { nombre, email, password, direccion, numero } = req.body;
 
     const passwordHash = await bcrypt.hash(password, 10);
 
@@ -41,19 +42,18 @@ export const register = async (req, res) => {
 }
 
 export const login = async (req, res) => {
-    const {email, password} = req.body;
+    const { email, password } = req.body;
 
-    var responseMessage;
     let userFound = await UserModel.getUserByEmail(email);
 
     if (!userFound) {
         //console.error("Usuario no encontrado.", error);
-        res.status(400).json({
+        return res.status(400).json({
             message: "Este usuario no existe.",
         });
     }
 
-    const isMatch = await bcrypt.compare(password, userFound.CONTRASENA);
+    const isMatch = await bcrypt.compare(password, userFound.contrasena);
 
     if (!isMatch) {
         return res.status(400).json({
@@ -62,22 +62,30 @@ export const login = async (req, res) => {
     }
 
     try {
-        const token = await createAccessToken({ 
+        const token = await createAccessToken({
             id: userFound.USER_ID,
             nombre: userFound.NOMBRE,
         });
 
         res.cookie("token", token);
-        res.json({
+        /*res.json({
             message: "El Usuario ha sido encontrado exitosamente",
             user: {
                 id: userFound.USER_ID,
                 email,
             },
-        })
+        })*/
+        return res.status(200).json({
+            message: "El Usuario ha sido encontrado exitosamente",
+            user: {
+                id: userFound.USER_ID,
+                nombre: userFound.NOMBRE,
+                email,
+            },
+        });
     } catch (error) {
         console.error("Error en el registro", error);
-        res.status(500).json({
+        return res.status(500).json({
             message: "Error en el registro",
             error: error.message,
         });
@@ -94,20 +102,20 @@ export const logout = (req, res) => {
 export const verifyToken = async (req, res) => {
     const { token } = req.cookies;
     if (!token) return res.send(false);
-  
+
     jwt.verify(token, TOKEN_KEY_SECRET, async (error, user) => {
-      if (error) return res.sendStatus(401);
-  
-      const userFound = await UserModel.getUserById(user.id);
-      if (!userFound) return res.sendStatus(401);
-  
-      return res.json({
-        id: userFound.USER_ID,
-        username: userFound.NOMBRE,
-        email: userFound.EMAIL,
-      });
+        if (error) return res.sendStatus(401);
+
+        const userFound = await UserModel.getUserById(user.id);
+        if (!userFound) return res.sendStatus(401);
+
+        return res.json({
+            id: userFound.USER_ID,
+            username: userFound.NOMBRE,
+            email: userFound.EMAIL,
+        });
     });
-  };
+};
 
 export const profile = async (req, res) => {
     const userFound = await UserModel.getUserById(req.user.id);
