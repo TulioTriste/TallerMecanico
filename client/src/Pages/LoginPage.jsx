@@ -23,7 +23,7 @@ export default function LoginForm() {
 
   const navigate = useNavigate();
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     setLoading(true);
     setTimeout(() => {
       signin(data);

@@ -5,12 +5,14 @@ import jwt from "jsonwebtoken";
 import { TOKEN_KEY_SECRET } from "../config.js";
 
 export const register = async (req, res) => {
-    const { nombre, email, password, direccion, numero } = req.body;
+    const { nombre, email, password, direccion, numerotel } = req.body;
+
+    console.log("Body:", req.body);
 
     const passwordHash = await bcrypt.hash(password, 10);
 
     var responseMessage;
-    let newUser = await UserModel.addUser(nombre, email, passwordHash, direccion, numero);
+    let newUser = await UserModel.addUser(nombre, email, passwordHash, direccion, numerotel);
 
     if (!newUser) {
         return res.status(400).json({
