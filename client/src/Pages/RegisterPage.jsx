@@ -13,6 +13,7 @@ export default function RegisterForm() {
   const {
     register,
     handleSubmit,
+    formState: { errors: formErrors },
   } = useForm({
     resolver: zodResolver(registerSchema),
   });
@@ -22,10 +23,11 @@ export default function RegisterForm() {
   const onSubmit = async (data) => {
     console.log("value", data);
     setLoading(true);
-    setTimeout(() => {
-      signup(data);
+    try {
+      await signup(data);
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
   };
 
   useEffect(() => {
@@ -166,9 +168,13 @@ export default function RegisterForm() {
               : 'bg-white border-gray-200'
             }`}>
 
-            {registerErrors?.length > 0 && registerErrors.map((error, index) => (
+            {/*{registerErrors?.length > 0 && registerErrors.map((error, index) => (
               <Message key={index} type="error" message={error} className="mb-4" />
             ))}
+
+            {Object.values(registerErrors).map((error, i) => (
+              <p key={i} className="text-red-500 text-sm">{error.message}</p>
+            ))}*/}
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {/* RUT */}
@@ -249,7 +255,7 @@ export default function RegisterForm() {
                     id="apellidoPaterno"
                     name="apellidoPaterno"
                     type="text"
-                    {...register("apellidoPaterno", { required: true })}
+                    {...register("apellido", { required: true })}
                     required
                     className={`block w-full pl-10 pr-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${darkMode
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
@@ -304,7 +310,7 @@ export default function RegisterForm() {
                     id="email"
                     name="email"
                     type="email"
-                    {...register("email", { required: true })}
+                    {...register("correo", { required: true })}
                     required
                     className={`block w-full pl-10 pr-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${darkMode
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
@@ -360,7 +366,7 @@ export default function RegisterForm() {
                     id="numerotel"
                     name="numerotel"
                     type="number"
-                    {...register("numerotel", { required: true })}
+                    {...register("telefono", { required: true })}
                     required
                     className={`block w-full pl-10 pr-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${darkMode
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
@@ -432,6 +438,9 @@ export default function RegisterForm() {
                 {registerErrors?.length > 0 && registerErrors.confirmPassword?.message (
                   <p className="text-red-500">{registerErrors.confirmPassword?.message}</p>
                 )}
+                {/*Object.values(formErrors).map((error, i) => (
+                  <p key={i} className="text-red-500 text-sm">{error.message}</p>
+                ))*/}
               </div>
 
               <div className="flex items-center mt-2">

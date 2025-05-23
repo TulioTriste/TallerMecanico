@@ -6,27 +6,29 @@ class UserModel {
   async getAllUsers() {
     try {
       const pool = await connectToDatabase();
-      const result = await pool.request().query("SELECT * FROM usuarios");
+      const result = await pool.request().query("SELECT * FROM usuario");
       return result.recordset; // Devuelve los registros
     } catch (error) {
-      console.error("Error al obtener usuarios:", error);
+      console.error("Error al obtener usuario:", error);
       throw error;
     }
   }
 
   // Agregar un nuevo usuario
-  async addUser(nombre, email, password, direccion, numero) {
+  async addUser(rut, nombre, apellido, correo, password, telefono, direccion) {
     try {
       const pool = await connectToDatabase();
       const result = await pool
         .request()
+        .input("usuario_rut", sql.VarChar, rut)
         .input("nombre", sql.VarChar, nombre)
-        .input("email", sql.VarChar, email)
+        .input("apellido", sql.VarChar, apellido)
+        .input("correo", sql.VarChar, correo)
         .input("password", sql.VarChar, password)
+        .input("telefono", sql.VarChar, telefono)
         .input("direccion", sql.VarChar, direccion)
-        .input("numero", sql.VarChar, numero)
         .query(
-          "INSERT INTO usuarios (nombre, email, contrasena, direccion, numerotel) VALUES (@nombre, @email, @password, @direccion, @numero)"
+          "INSERT INTO usuario (usuario_rut, nombre, apellido, correo, password, telefono, direccion) VALUES (@usuario_rut, @nombre, @apellido, @correo, @password, @telefono, @direccion)"
         );
       return result; // Devuelve el resultado de la consulta
     } catch (error) {
@@ -42,7 +44,7 @@ class UserModel {
       const result = await pool
         .request()
         .input("id", sql.Int, id)
-        .query("SELECT * FROM usuarios WHERE user_id = @id");
+        .query("SELECT * FROM usuario WHERE user_id = @id");
       return result.recordset[0]; // Devuelve el primer registro
     } catch (error) {
       console.error("Error al obtener el usuario por ID:", error);
@@ -50,17 +52,18 @@ class UserModel {
     }
   }
 
-  // Obtener un usuario por email
-  async getUserByEmail(email) {
+  // Obtener un usuario por correo
+  async getUserByCorreo(correo) {
     try {
+      console.log("Buscando usuario por correo:", correo);
       const pool = await connectToDatabase();
       const result = await pool
         .request()
-        .input("email", sql.VarChar, email)
-        .query("SELECT * FROM usuarios WHERE email = @email");
+        .input("correo", sql.VarChar, correo)
+        .query("SELECT * FROM usuario WHERE correo = @correo");
       return result.recordset[0]; // Devuelve el primer registro
     } catch (error) {
-      console.error("Error al obtener el usuario por email:", error);
+      console.error("Error al obtener el usuario por correo:", error);
       throw error;
     }
   }
@@ -76,7 +79,7 @@ class UserModel {
         .input("email", sql.VarChar, email)
         .input("password", sql.VarChar, password)
         .query(
-          "UPDATE usuarios SET nombre = @nombre, email = @email, contrasena = @password WHERE user_id = @id"
+          "UPDATE usuario SET nombre = @nombre, email = @email, contrasena = @password WHERE user_id = @id"
         );
       return result; // Devuelve el resultado de la consulta
     } catch (error) {
@@ -92,7 +95,7 @@ class UserModel {
       const result = await pool
         .request()
         .input("id", sql.Int, id)
-        .query("DELETE FROM usuarios WHERE user_id = @id");
+        .query("DELETE FROM usuario WHERE user_id = @id");
       return result; // Devuelve el resultado de la consulta
     } catch (error) {
       console.error("Error al eliminar el usuario:", error);

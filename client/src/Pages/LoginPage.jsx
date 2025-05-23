@@ -150,7 +150,7 @@ export default function LoginForm() {
                       : 'border-gray-300 text-gray-900 placeholder-gray-500'
                       }`}
                     placeholder="ejemplo@taller.com"
-                    {...register("email", { required: true })}
+                    {...register("correo", { required: true })}
                   />
                   <p>{errors.email?.message}</p>
                 </div>
