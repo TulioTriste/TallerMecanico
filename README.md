@@ -39,3 +39,5 @@ https://www.youtube.com/watch?v=NmkY4JgS21A
 
 # Tareas por fijarnos antes de terminar
 - Hacer la opción de si acepta cookies, y en el caso de que no acepte desactivar la funcionalidad del token
+
+# Parte de la idea del Proyecto

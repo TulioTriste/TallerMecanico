@@ -21,13 +21,18 @@ export const register = async (req, res) => {
     responseMessage = "El Usuario ha sido creado exitosamente";
 
     try {
-        const token = await createAccessToken({ id: newUser.insertId });
+        const token = await createAccessToken({ 
+            rut: newUser.usuario_rut,
+            correo: newUser.correo,
+            nombre: newUser.nombre, 
+        });
 
         res.cookie("token", token);
         res.json({
             message: responseMessage,
             user: {
-                id: newUser.insertId,
+                rut: newUser.usuario_rut,
+                correo,
                 nombre,
             },
         });
@@ -67,13 +72,6 @@ export const login = async (req, res) => {
         });
 
         res.cookie("token", token);
-        /*res.json({
-            message: "El Usuario ha sido encontrado exitosamente",
-            user: {
-                id: userFound.USER_ID,
-                email,
-            },
-        })*/
         return res.status(200).json({
             message: "El Usuario ha sido encontrado exitosamente",
             user: {
@@ -95,6 +93,7 @@ export const logout = (req, res) => {
     res.cookie("token", "", {
         expires: new Date(0),
     });
+    console.log("Cookie de token eliminada");
     return res.sendStatus(200);
 }
 
@@ -103,21 +102,29 @@ export const verifyToken = async (req, res) => {
     if (!token) return res.send(false);
 
     jwt.verify(token, TOKEN_KEY_SECRET, async (error, user) => {
-        if (error) return res.sendStatus(401);
+        if (error) {
+            return res.sendStatus(401).json({
+                message: "Token no valido",
+            });
+        }
 
-        const userFound = await UserModel.getUserById(user.id);
-        if (!userFound) return res.sendStatus(401);
-
+        const userFound = await UserModel.getUserByRut(user.rut);
+        if (!userFound) {
+            return res.sendStatus(401).json({
+                message: "Usuario no encontrado",
+            });
+        }
+        
         return res.json({
-            id: userFound.USER_ID,
-            username: userFound.NOMBRE,
-            email: userFound.EMAIL,
+            rut: userFound.USUARIO_RUT,
+            nombre: userFound.NOMBRE,
+            correo: userFound.CORREO,
         });
     });
 };
 
 export const profile = async (req, res) => {
-    const userFound = await UserModel.getUserById(req.user.id);
+    const userFound = await UserModel.getUserByRut(req.user.rut);
     if (!userFound) {
         return res.status(400).json({
             message: "Este usuario no existe.",

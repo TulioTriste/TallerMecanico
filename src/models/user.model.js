@@ -30,7 +30,18 @@ class UserModel {
         .query(
           "INSERT INTO usuario (usuario_rut, nombre, apellido, correo, password, telefono, direccion) VALUES (@usuario_rut, @nombre, @apellido, @correo, @password, @telefono, @direccion)"
         );
-      return result; // Devuelve el resultado de la consulta
+      // Devuelve los valores ingresados
+      const user = {
+        usuario_rut: rut,
+        nombre: nombre,
+        apellido: apellido,
+        correo: correo,
+        password: password,
+        telefono: telefono,
+        direccion: direccion,
+      };
+      return user;
+      //return result; // Devuelve el resultado de la consulta
     } catch (error) {
       console.error("Error al agregar el usuario:", error);
       throw error;
@@ -38,16 +49,16 @@ class UserModel {
   }
 
   // Obtener un usuario por ID
-  async getUserById(id) {
+  async getUserByRut(rut) {
     try {
       const pool = await connectToDatabase();
       const result = await pool
         .request()
-        .input("id", sql.Int, id)
-        .query("SELECT * FROM usuario WHERE user_id = @id");
+        .input("usuario_rut", sql.VarChar, rut)
+        .query("SELECT * FROM usuario WHERE usuario_rut = @usuario_rut");
       return result.recordset[0]; // Devuelve el primer registro
     } catch (error) {
-      console.error("Error al obtener el usuario por ID:", error);
+      console.error("Error al obtener el usuario por RUT:", error);
       throw error;
     }
   }
