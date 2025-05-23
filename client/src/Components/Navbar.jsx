@@ -125,22 +125,8 @@ export default function Navbar() {
             
             {/* Login - Desktop */}
             <div className="hidden md:ml-4 md:flex md:items-center">
-              {isLoginPage ? 
-              <a href="/register"
-                className={`ml-3 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  darkMode
-                    ? 'bg-gradient-to-r from-blue-700 to-indigo-800 hover:from-blue-800 hover:to-indigo-900 text-white'
-                    : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white'
-                }`}
-              >
-                <span className="flex items-center">
-                  <LogIn className="w-4 h-4 mr-2" />
-                  Registrarse
-                </span>
-              </a> 
-              : 
               <a
-                href="/login"
+                href={isLoginPage ? "/register" : "/login"}
                 className={`ml-3 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   darkMode
                     ? 'bg-gradient-to-r from-blue-700 to-indigo-800 hover:from-blue-800 hover:to-indigo-900 text-white'
@@ -149,11 +135,9 @@ export default function Navbar() {
               >
                 <span className="flex items-center">
                   <LogIn className="w-4 h-4 mr-2" />
-                  Iniciar sesión
+                  {isLoginPage ? "Registrarse" : "Iniciar sesión"}
                 </span>
               </a>
-              }
-              
             </div>
             
             {/* Menu button - Mobile */}
