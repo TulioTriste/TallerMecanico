@@ -3,14 +3,17 @@ import { TOKEN_KEY_SECRET } from '../config.js';
 
 export const authRequired = (req, res, next) => {
     const { token } = req.cookies;
+    console.log(token);
 
     if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });
+        console.log('No token provided');
+        return res.status(401).json({ message: 'Unauthorizedb' });
     }
 
     jwt.verify(token, TOKEN_KEY_SECRET, (err, decoded) => {
+        console.log(decoded);
         if (err) {
-            return res.status(401).json({ message: 'Unauthorized' });
+            return res.status(401).json({ message: 'Unauthorizeda' });
         }
 
         req.user = decoded;
