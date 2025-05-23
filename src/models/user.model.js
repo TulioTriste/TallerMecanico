@@ -1,57 +1,107 @@
-import { createConnection } from "../bd.js";
+import { connectToDatabase } from "../bd.js";
+import sql from "mssql";
 
 class UserModel {
-    constructor() {
-      this.connection = null;
-    }
-
-    async connect() {
-        if (!this.connection) {
-          this.connection = await createConnection();
-        }
-        return this.connection;
-      }
-  
-    async getAllUsers() {
-      const conn = await this.connect();
-      const [rows] = await conn.execute('SELECT * FROM usuarios');
-      return rows;
-    }
-  
-    async addUser(nombre, email, password, direccion, numero) {
-        try {
-            const conn = await this.connect();
-            const [result] = await conn.execute('INSERT INTO usuarios (nombre, email, contrasena, direccion, numerotel) VALUES (?, ?, ?, ?, ?)', [nombre, email, password, direccion, numero]);
-            //console.log('usuarios agregado con éxito:', result);
-            return result;
-        } catch (error) {
-            console.error('Error al agregar el usuarios:', error);
-        }
-    }
-  
-    async getUserById(id) {
-      const conn = await this.connect();
-      const [rows] = await conn.execute('SELECT * FROM usuarios WHERE user_id = ?', [id]);
-      return rows[0];
-    }
-  
-    async getUserByEmail(email) {
-      const conn = await this.connect();
-      const [rows] = await conn.execute('SELECT * FROM usuarios WHERE email = ?', [email]);
-      return rows[0];
-    }
-  
-    async updateUser(id, nombre, email, password) {
-      const conn = await this.connect();
-      const result = await conn.execute('UPDATE usuarios SET nombre = ?, email = ?, contrasena = ? WHERE id = ?', [nombre, email, password, id]);
-      return result;
-    }
-  
-    async deleteUser(id) {
-      const conn = await this.connect();
-      const result = await conn.execute('DELETE FROM usuarios WHERE id = ?', [id]);
-      return result;
+  // Obtener todos los usuarios
+  async getAllUsers() {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool.request().query("SELECT * FROM usuario");
+      return result.recordset; // Devuelve los registros
+    } catch (error) {
+      console.error("Error al obtener usuario:", error);
+      throw error;
     }
   }
-  
-  export default new UserModel();
+
+  // Agregar un nuevo usuario
+  async addUser(rut, nombre, apellido, correo, password, telefono, direccion) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+        .request()
+        .input("usuario_rut", sql.VarChar, rut)
+        .input("nombre", sql.VarChar, nombre)
+        .input("apellido", sql.VarChar, apellido)
+        .input("correo", sql.VarChar, correo)
+        .input("password", sql.VarChar, password)
+        .input("telefono", sql.VarChar, telefono)
+        .input("direccion", sql.VarChar, direccion)
+        .query(
+          "INSERT INTO usuario (usuario_rut, nombre, apellido, correo, password, telefono, direccion) VALUES (@usuario_rut, @nombre, @apellido, @correo, @password, @telefono, @direccion)"
+        );
+      return result; // Devuelve el resultado de la consulta
+    } catch (error) {
+      console.error("Error al agregar el usuario:", error);
+      throw error;
+    }
+  }
+
+  // Obtener un usuario por ID
+  async getUserById(id) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+        .request()
+        .input("id", sql.Int, id)
+        .query("SELECT * FROM usuario WHERE user_id = @id");
+      return result.recordset[0]; // Devuelve el primer registro
+    } catch (error) {
+      console.error("Error al obtener el usuario por ID:", error);
+      throw error;
+    }
+  }
+
+  // Obtener un usuario por correo
+  async getUserByCorreo(correo) {
+    try {
+      console.log("Buscando usuario por correo:", correo);
+      const pool = await connectToDatabase();
+      const result = await pool
+        .request()
+        .input("correo", sql.VarChar, correo)
+        .query("SELECT * FROM usuario WHERE correo = @correo");
+      return result.recordset[0]; // Devuelve el primer registro
+    } catch (error) {
+      console.error("Error al obtener el usuario por correo:", error);
+      throw error;
+    }
+  }
+
+  // Actualizar un usuario
+  async updateUser(id, nombre, email, password) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+        .request()
+        .input("id", sql.Int, id)
+        .input("nombre", sql.VarChar, nombre)
+        .input("email", sql.VarChar, email)
+        .input("password", sql.VarChar, password)
+        .query(
+          "UPDATE usuario SET nombre = @nombre, email = @email, contrasena = @password WHERE user_id = @id"
+        );
+      return result; // Devuelve el resultado de la consulta
+    } catch (error) {
+      console.error("Error al actualizar el usuario:", error);
+      throw error;
+    }
+  }
+
+  // Eliminar un usuario
+  async deleteUser(id) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+        .request()
+        .input("id", sql.Int, id)
+        .query("DELETE FROM usuario WHERE user_id = @id");
+      return result; // Devuelve el resultado de la consulta
+    } catch (error) {
+      console.error("Error al eliminar el usuario:", error);
+      throw error;
+    }
+  }
+}
+
+export default new UserModel();

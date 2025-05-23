@@ -5,14 +5,12 @@ import jwt from "jsonwebtoken";
 import { TOKEN_KEY_SECRET } from "../config.js";
 
 export const register = async (req, res) => {
-    const { nombre, email, password, direccion, numerotel } = req.body;
-
-    console.log("Body:", req.body);
+    const { rut, nombre, apellido, correo, password, telefono, direccion } = req.body;
 
     const passwordHash = await bcrypt.hash(password, 10);
 
     var responseMessage;
-    let newUser = await UserModel.addUser(nombre, email, passwordHash, direccion, numerotel);
+    let newUser = await UserModel.addUser(rut, nombre, apellido, correo, passwordHash, telefono, direccion);
 
     if (!newUser) {
         return res.status(400).json({
@@ -31,7 +29,6 @@ export const register = async (req, res) => {
             user: {
                 id: newUser.insertId,
                 nombre,
-                email,
             },
         });
     } catch (error) {
@@ -44,18 +41,17 @@ export const register = async (req, res) => {
 }
 
 export const login = async (req, res) => {
-    const { email, password } = req.body;
+    const { correo, password } = req.body;
 
-    let userFound = await UserModel.getUserByEmail(email);
+    let userFound = await UserModel.getUserByCorreo(correo);
 
     if (!userFound) {
-        //console.error("Usuario no encontrado.", error);
         return res.status(400).json({
             message: "Este usuario no existe.",
         });
     }
 
-    const isMatch = await bcrypt.compare(password, userFound.contrasena);
+    const isMatch = await bcrypt.compare(password, userFound.password);
 
     if (!isMatch) {
         return res.status(400).json({
@@ -65,7 +61,8 @@ export const login = async (req, res) => {
 
     try {
         const token = await createAccessToken({
-            id: userFound.USER_ID,
+            rut: userFound.USUARIO_RUT,
+            correo: userFound.CORREO,
             nombre: userFound.NOMBRE,
         });
 
@@ -80,9 +77,9 @@ export const login = async (req, res) => {
         return res.status(200).json({
             message: "El Usuario ha sido encontrado exitosamente",
             user: {
-                id: userFound.USER_ID,
+                rut: userFound.USUARIO_RUT,
                 nombre: userFound.NOMBRE,
-                email,
+                correo: userFound.CORREO,
             },
         });
     } catch (error) {

@@ -35,8 +35,11 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
       }
     } catch (error) {
-      console.log(error.response.data);
-      setErrors(error.response.data.message);
+      if (error.response && error.response.data) {
+        setErrors([error.response.data.message]);
+      } else {
+        setErrors(["No se pudo conectar con el servidor"]);
+      }
     }
   };
 
@@ -49,8 +52,11 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
       }
     } catch (error) {
-      console.log(error.response.data.message);
-      setErrors([error.response.data.message]);
+      if (error.response && error.response.data) {
+        setErrors([error.response.data.message]);
+      } else {
+        setErrors(["No se pudo conectar con el servidor"]);
+      }
     }
   };
 
@@ -76,7 +82,6 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
         setUser(res.data);
         setLoading(false);
-        // eslint-disable-next-line no-unused-vars
       } catch (error) {
         setIsAuthenticated(false);
         setLoading(false);
