@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Home, FileText, Info, LogIn, Menu, X, Wrench, Moon, Sun } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 export default function Navbar() {
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
+
   // Estado para el menú móvil
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
@@ -121,6 +125,20 @@ export default function Navbar() {
             
             {/* Login - Desktop */}
             <div className="hidden md:ml-4 md:flex md:items-center">
+              {isLoginPage ? 
+              <a href="/register"
+                className={`ml-3 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  darkMode
+                    ? 'bg-gradient-to-r from-blue-700 to-indigo-800 hover:from-blue-800 hover:to-indigo-900 text-white'
+                    : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white'
+                }`}
+              >
+                <span className="flex items-center">
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Registrarse
+                </span>
+              </a> 
+              : 
               <a
                 href="/login"
                 className={`ml-3 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
@@ -134,6 +152,8 @@ export default function Navbar() {
                   Iniciar sesión
                 </span>
               </a>
+              }
+              
             </div>
             
             {/* Menu button - Mobile */}
