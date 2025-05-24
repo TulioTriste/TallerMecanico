@@ -139,3 +139,32 @@ export const profile = async (req, res) => {
         numero: userFound.NUMEROTEL,
     })
 }
+// Añade esto al final de tu auth.controller.js
+// export const getOwnerWorkshops = async (req, res) => {
+//     try {
+//         // Obtenemos el RUT del dueño desde el token verificado
+//         const ownerRut = req.user.rut;
+        
+//         // Aquí asumo que tienes un modelo para talleres, similar a UserModel
+//         const workshops = await WorkshopModel.getWorkshopsByOwnerRut(ownerRut);
+        
+//         if (!workshops || workshops.length === 0) {
+//             return res.status(404).json({
+//                 message: "No se encontraron talleres para este dueño",
+//                 workshops: []
+//             });
+//         }
+        
+//         res.json({
+//             message: "Talleres obtenidos exitosamente",
+//             workshops
+//         });
+        
+//     } catch (error) {
+//         console.error("Error al obtener talleres:", error);
+//         res.status(500).json({
+//             message: "Error al obtener talleres",
+//             error: error.message
+//         });
+//     }
+// };
