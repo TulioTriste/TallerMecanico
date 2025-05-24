@@ -5,6 +5,8 @@ import RecoverPasswordPage from "./Pages/RecoverPasswordPage";
 import Dashboard from "./Pages/Dashboard";
 import PlansPage from "./Pages/PlansPage";
 import { AuthProvider } from "./context/authContext";
+import Workshops from "./Pages/Workshops";
+import WorkshopDash from "./Pages/WorkshopDash";
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
           <Route path="/RecoverPassword" element={<RecoverPasswordPage />} />
           <Route path="/plans" element={<PlansPage />} />
           <Route path="/profile" element={<h1>Perfil</h1>} />
+          <Route path="/workshops"element={<Workshops />} />
+          <Route path="/workshop/dashboard" element={< WorkshopDash />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
