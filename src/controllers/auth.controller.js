@@ -94,7 +94,7 @@ export const logout = (req, res) => {
         expires: new Date(0),
     });
     console.log("Cookie de token eliminada");
-    return res.sendStatus(200);
+    return res.status(200);
 }
 
 export const verifyToken = async (req, res) => {
@@ -103,14 +103,16 @@ export const verifyToken = async (req, res) => {
 
     jwt.verify(token, TOKEN_KEY_SECRET, async (error, user) => {
         if (error) {
-            return res.sendStatus(401).json({
+            console.log("Error al verificar el token", error);
+            return res.status(401).json({
                 message: "Token no valido",
             });
         }
 
         const userFound = await UserModel.getUserByRut(user.rut);
         if (!userFound) {
-            return res.sendStatus(401).json({
+            console.log("Usuario no encontrado");
+            return res.status(401).json({
                 message: "Usuario no encontrado",
             });
         }

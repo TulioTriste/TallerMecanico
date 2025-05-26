@@ -7,6 +7,7 @@ import PlansPage from "./Pages/PlansPage";
 import { AuthProvider } from "./context/authContext";
 import Workshops from "./Pages/Workshops";
 import WorkshopDash from "./Pages/WorkshopDash";
+import { ProtectedRoute } from "./routes";
 
 function App() {
   return (
@@ -18,9 +19,11 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/RecoverPassword" element={<RecoverPasswordPage />} />
           <Route path="/plans" element={<PlansPage />} />
-          <Route path="/profile" element={<h1>Perfil</h1>} />
-          <Route path="/workshops"element={<Workshops />} />
-          <Route path="/workshop/dashboard" element={< WorkshopDash />} />
+          {/*<Route element={<ProtectedRoute />}>*/}
+            <Route path="/profile" element={<h1>Perfil</h1>} />
+            <Route path="/workshops"element={<Workshops />} />
+            <Route path="/workshop/dashboard" element={< WorkshopDash />} />
+          {/*</Route>*/}
         </Routes>
       </BrowserRouter>
     </AuthProvider>
