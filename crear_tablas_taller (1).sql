@@ -6,7 +6,6 @@ INSERT INTO taller (usuario_rut, nombre, telefono, correo, direccion, inicio_jor
 	('21.549.868-9', 'Taller Providencia', '56933333333', 'tallerprovidencia@prueba.com', 'Providencia 1234, Providencia', 1000, 2000);
 
 
-
 SELECT * FROM taller WHERE taller.usuario_rut = '21.389.785-3';
 
 

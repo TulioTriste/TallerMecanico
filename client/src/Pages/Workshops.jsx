@@ -15,38 +15,6 @@ const Workshops = () => {
   const [selectedTaller, setSelectedTaller] = useState(null);
 
   const { workshops, cargarTalleres } = useWorkshop(); // Datos de ejemplo de los talleres
-  const talleres = [
-    {
-      id: 1,
-      nombre: "Taller Centro",
-      direccion: "Antonio Varas 666, Santiago",
-      horario: "Abierto",
-      estado: "activo",
-      vehiculosEnServicio: 8,
-      ordenesActivas: 12,
-      proximaCita: "10:30 AM"
-    },
-    {
-      id: 2,
-      nombre: "Taller Las Condes",
-      direccion: "Las Condes 0684, Las Condes",
-      horario: "Abierto",
-      estado: "activo",
-      vehiculosEnServicio: 5,
-      ordenesActivas: 7,
-      proximaCita: "2:15 PM"
-    },
-    {
-      id: 3,
-      nombre: "Taller Providencia",
-      direccion: "Providencia 1234, Providencia",
-      horario: "Cerrado",
-      estado: "activo",
-      vehiculosEnServicio: 0,
-      ordenesActivas: 3,
-      proximaCita: "8:00 AM (Mañana)"
-    }
-  ];
 
   const navigate = useNavigate();
 

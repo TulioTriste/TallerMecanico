@@ -31,9 +31,14 @@ export const register = async (req, res) => {
         res.json({
             message: responseMessage,
             user: {
-                rut: newUser.usuario_rut,
-                correo,
-                nombre,
+                rut: userFound.usuario_rut,
+                nombre: userFound.nombre,
+                apellido: userFound.apellido,
+                correo: userFound.correo,
+                telefono: userFound.telefono,
+                direccion: userFound.direccion,
+                empresa: userFound.empresa,
+                plan_id: userFound.plan_id,
             },
         });
     } catch (error) {
@@ -77,7 +82,12 @@ export const login = async (req, res) => {
             user: {
                 rut: userFound.usuario_rut,
                 nombre: userFound.nombre,
+                apellido: userFound.apellido,
                 correo: userFound.correo,
+                telefono: userFound.telefono,
+                direccion: userFound.direccion,
+                empresa: userFound.empresa,
+                plan_id: userFound.plan_id,
             },
         });
     } catch (error) {

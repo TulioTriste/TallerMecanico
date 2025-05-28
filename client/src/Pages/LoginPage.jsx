@@ -10,7 +10,7 @@ import { Message } from '../Components/ui/Message';
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false);
-  const { signin, errors: loginErrors, isAuthenticated } = useAuth();
+  const { signin, errors: loginErrors, isAuthenticated, user } = useAuth();
 
   const {
     register,
@@ -33,7 +33,11 @@ export default function LoginForm() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/plans");
+      if (user.user.plan_id !== undefined && user.user.plan_id !== null) {
+        navigate("/workshops");
+      } else {
+        navigate("/plans");
+      }
     }
   }, [isAuthenticated, navigate]);
 
