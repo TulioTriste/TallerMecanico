@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await registerRequest(user);
       if (res.status === 200) {
-        setUser(res.data);
+        setUser(res.data.user);
         setIsAuthenticated(true);
       }
     } catch (error) {
@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }) => {
       const res = await loginRequest(user);
       if (res.status === 200) {
         console.log("Aprobado por chayanne");
-        setUser(res.data);
+        setUser(res.data.user);
         setIsAuthenticated(true);
       }
     } catch (error) {
@@ -76,12 +76,10 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        console.log(cookies);
         const res = await verifyTokenRequest(cookies.token);
-        console.log(res);
-        if (!res.data) return setIsAuthenticated(false);
+        if (!res.data.user) return setIsAuthenticated(false);
         setIsAuthenticated(true);
-        setUser(res.data);
+        setUser(res.data.user);
         setLoading(false);
       } catch (error) {
         setIsAuthenticated(false);

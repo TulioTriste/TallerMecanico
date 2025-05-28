@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
 import { Mail, Lock, LogIn, Wrench, Moon, Sun } from 'lucide-react';
 import Navbar from '../Components/Navbar';
@@ -11,7 +10,7 @@ import { Message } from '../Components/ui/Message';
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false);
-  const { signin, errors: loginErrors, isAuthenticated } = useAuth();
+  const { signin, errors: loginErrors, isAuthenticated, user } = useAuth();
 
   const {
     register,
@@ -25,17 +24,22 @@ export default function LoginForm() {
 
   const onSubmit = async (data) => {
     setLoading(true);
-    setTimeout(() => {
-      signin(data);
+    try {
+      await signin(data);
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
   };
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/plans");
+      if (user.plan_id !== undefined && user.plan_id !== null) {
+        navigate("/workshops");
+      } else {
+        navigate("/plans");
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, user]);
 
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {

@@ -1,57 +1,53 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Wrench, 
   MapPin, 
   Clock, 
   ChevronRight, 
-  Settings,
   Plus,
   Home
 } from 'lucide-react';
+import { useWorkshop } from '../context/workshopContext';
 
 const Workshops = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [selectedTaller, setSelectedTaller] = useState(null);
 
-  // Datos de ejemplo de los talleres
-  const talleres = [
-    {
-      id: 1,
-      nombre: "Taller Centro",
-      direccion: "Antonio Varas 666, Santiago",
-      horario: "Abierto",
-      estado: "activo",
-      vehiculosEnServicio: 8,
-      ordenesActivas: 12,
-      proximaCita: "10:30 AM"
-    },
-    {
-      id: 2,
-      nombre: "Taller Las Condes",
-      direccion: "Las Condes 0684, Las Condes",
-      horario: "Abierto",
-      estado: "activo",
-      vehiculosEnServicio: 5,
-      ordenesActivas: 7,
-      proximaCita: "2:15 PM"
-    },
-    {
-      id: 3,
-      nombre: "Taller Providencia",
-      direccion: "Providencia 1234, Providencia",
-      horario: "Cerrado",
-      estado: "activo",
-      vehiculosEnServicio: 0,
-      ordenesActivas: 3,
-      proximaCita: "8:00 AM (Mañana)"
+  const { workshops, cargarTalleres } = useWorkshop(); // Datos de ejemplo de los talleres
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchTalleres = async () => {
+      await cargarTalleres();
     }
-  ];
+    fetchTalleres();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleTallerSelect = (taller) => {
     setSelectedTaller(taller.id);
     // Aquí se podría navegar al dashboard del taller
     console.log(`Seleccionado: ${taller.nombre}`);
+  };
+
+  const getDisponibilidad = (taller) => {
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    // Convierte inicio_jornada y termino_jornada a minutos
+    const inicio = taller.inicio_jornada;
+    const termino = taller.termino_jornada;
+
+    const inicioHoras = Math.floor(inicio / 100);
+    const inicioMinutos = inicio % 100;
+    const inicioTotal = inicioHoras * 60 + inicioMinutos;
+
+    const terminoHoras = Math.floor(termino / 100);
+    const terminoMinutos = termino % 100;
+    const terminoTotal = terminoHoras * 60 + terminoMinutos;
+
+    return currentMinutes >= inicioTotal && currentMinutes <= terminoTotal;
   };
 
   return (
@@ -114,12 +110,12 @@ const Workshops = () => {
 
         {/* Grid de talleres */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {talleres.map((taller) => (
+          {workshops.map((taller) => (
             <div
-              key={taller.id}
+              key={taller.taller_id}
               onClick={() => handleTallerSelect(taller)}
               className={`relative group cursor-pointer transition-all duration-300 hover:scale-105 ${
-                selectedTaller === taller.id ? 'ring-2 ring-blue-500' : ''
+                selectedTaller === taller.taller_id ? 'ring-2 ring-blue-500' : ''
               }`}
             >
               <div className={`rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all ${
@@ -138,14 +134,14 @@ const Workshops = () => {
                         </h3>
                         <div className="flex items-center space-x-2">
                           <div className={`w-2 h-2 rounded-full ${
-                            taller.estado === 'activo' ? 'bg-green-500' : 'bg-red-500'
+                            getDisponibilidad(taller) ? 'bg-green-500' : 'bg-red-500'
                           }`}></div>
                           <span className={`text-sm font-medium ${
-                            taller.estado === 'activo' 
+                            getDisponibilidad(taller) 
                               ? 'text-green-500' 
                               : 'text-red-500'
                           }`}>
-                            {taller.horario}
+                            {getDisponibilidad(taller) ? 'Abierto' : 'Cerrado'}
                           </span>
                         </div>
                       </div>
@@ -166,7 +162,7 @@ const Workshops = () => {
                   <div className="flex items-center space-x-2">
                     <Clock className={`w-4 h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                     <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Próxima cita: {taller.proximaCita}
+                      Próxima cita: {taller.proximaCita}00:00
                     </span>
                   </div>
                 </div>
@@ -178,6 +174,7 @@ const Workshops = () => {
                       <div className="text-center">
                         <div className={`text-2xl font-bold ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
                           {taller.vehiculosEnServicio}
+                          0
                         </div>
                         <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                           Vehículos en servicio
@@ -189,6 +186,7 @@ const Workshops = () => {
                       <div className="text-center">
                         <div className={`text-2xl font-bold ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
                           {taller.ordenesActivas}
+                          0
                         </div>
                         <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                           Órdenes activas
@@ -202,31 +200,32 @@ const Workshops = () => {
                 <div className="px-6 pb-6">
                 <button
                     className={`w-full py-3 px-4 rounded-lg font-medium transition-all ${
-                        taller.estado === 'activo'
+                        getDisponibilidad(taller)
                         ? 'bg-blue-600 hover:bg-blue-700 text-white'
                         : darkMode 
                             ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
                             : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
                     }`}
                     onClick={() => {
-                        if (taller.estado === 'activo') {
-                        navigate('/workshop/dashboard'); // Redirige al dashboard
+                        if (getDisponibilidad(taller)) {
+                          navigate('/workshop/dashboard'); // Redirige al dashboard
                         } else {
-                        // Opcional: acción alternativa si el taller no está activo
-                        console.log('El taller no está activo');
+                          // Opcional: acción alternativa si el taller no está activo
+                          console.log('El taller no está activo');
                         }
                     }}
                     >
-                    {taller.estado === 'activo' ? 'Acceder al Dashboard' : 'Ver Información'}
+                    {getDisponibilidad(taller) ? 'Acceder al Dashboard' : 'Ver Información'}
                     </button>
                 </div>
               </div>
             </div>
           ))}
+
         </div>
 
         {/* Mensaje si no hay talleres */}
-        {talleres.length === 0 && (
+        {workshops.length === 0 && (
           <div className="text-center py-16">
             <div className={`mx-auto w-24 h-24 rounded-full flex items-center justify-center mb-6 ${
               darkMode ? 'bg-gray-800' : 'bg-gray-100'
