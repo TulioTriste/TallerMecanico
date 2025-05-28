@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
 import { Mail, Lock, LogIn, Wrench, Moon, Sun } from 'lucide-react';
 import Navbar from '../Components/Navbar';
@@ -25,10 +24,11 @@ export default function LoginForm() {
 
   const onSubmit = async (data) => {
     setLoading(true);
-    setTimeout(() => {
-      signin(data);
+    try {
+      await signin(data);
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
   };
 
   useEffect(() => {

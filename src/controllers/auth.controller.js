@@ -66,18 +66,18 @@ export const login = async (req, res) => {
 
     try {
         const token = await createAccessToken({
-            rut: userFound.USUARIO_RUT,
-            correo: userFound.CORREO,
-            nombre: userFound.NOMBRE,
+            rut: userFound.usuario_rut,
+            correo: userFound.correo,
+            nombre: userFound.nombre,
         });
 
         res.cookie("token", token);
         return res.status(200).json({
             message: "El Usuario ha sido encontrado exitosamente",
             user: {
-                rut: userFound.USUARIO_RUT,
-                nombre: userFound.NOMBRE,
-                correo: userFound.CORREO,
+                rut: userFound.usuario_rut,
+                nombre: userFound.nombre,
+                correo: userFound.correo,
             },
         });
     } catch (error) {

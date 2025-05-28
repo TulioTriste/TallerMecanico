@@ -1,3 +1,33 @@
+SELECT * FROM taller;
+/* Data de Taller para pruebas */
+INSERT INTO taller (usuario_rut, nombre, telefono, correo, direccion, inicio_jornada, termino_jornada) VALUES
+	('21.389.785-3', 'Taller Centro', '56911111111', 'tallercentro@prueba.com', 'Antonio Varas 666, Santiago', 0900, 1700),
+	('21.389.785-3', 'Taller Las Condes', '56922222222', 'tallerlascondes@prueba.com', 'Las Condes 0684, Las Condes', 0900, 1800),
+	('21.549.868-9', 'Taller Providencia', '56933333333', 'tallerprovidencia@prueba.com', 'Providencia 1234, Providencia', 1000, 2000);
+
+
+
+SELECT * FROM taller WHERE taller.usuario_rut = '21.389.785-3';
+
+
+SELECT * FROM [plan] p ;
+/* Insert de los planes OFICIAL */
+INSERT INTO [plan] (nombre, precio, perfiles)
+VALUES ('Basico', 30000, 0);
+INSERT INTO [plan] (nombre, precio, perfiles)
+VALUES ('Enterprise', 100000, 0);
+INSERT INTO [plan] (nombre, precio, perfiles)
+VALUES ('Company', 250000, 0);
+
+
+/* Data de usuarios Administradores para Pruebas */
+SELECT * FROM usuario u;
+INSERT INTO usuario (usuario_rut,nombre,apellido,correo,password,telefono,direccion,empresa,plan_id) VALUES
+	 (N'21.389.785-3',N'Sebastián',N'Morales',N'lunaloboez@gmail.com',N'$2b$10$pCDYfQR.1Fh7dCTz1jEAIetWSwwGForI4bQYng.pamkLThsXZWBGC',N'56990855934',N'Cerro el plomo 5260, piso 8',NULL,NULL),
+	 (N'21.549.868-9',N'Bastian',N'Ampuero',N'ampuerobastian05@gmail.com',N'$2b$10$KkjOwmpImC5PqStqRirkeuOSfj1KdVpt5IchlgaoQ9G5qi2C5FYSG',N'56972196202',N'los trapenses 0668',NULL,NULL);
+
+
+
 /* Query Completa de creación de tablas */
 DROP TABLE IF EXISTS [cotizacion];
 DROP TABLE IF EXISTS [ot];
@@ -78,7 +108,7 @@ CREATE TABLE [plan] (
     [nombre] VARCHAR(250) NOT NULL,
     [precio] INT NOT NULL,
     [perfiles] INT NOT NULL,
-    CONSTRAINT [PK_plan] PRIMARY KEY CLUSTERED ([plan_id] ASC)
+    CONSTRAINT [PK_plan] PRIMARY KEY NONCLUSTERED ([plan_id] ASC)
 );
 
 CREATE TABLE [usuario] (
@@ -102,7 +132,9 @@ CREATE TABLE [taller] (
     [nombre] VARCHAR(250) NOT NULL,
     [telefono] VARCHAR(12) NOT NULL,
     [correo] VARCHAR(120),
-    [direccion] VARCHAR(250),
+    [direccion] VARCHAR(250) NOT NULL,
+    [inicio_jornada] INT NOT NULL, /* El formato para esto debe de ser por ejemplo 1700, lo cual significaría que serían las 5 PM */
+    [termino_jornada] INT NOT NULL,
     CONSTRAINT [PK_taller] PRIMARY KEY CLUSTERED ([taller_id] ASC),
     CONSTRAINT [FK_taller_usuario] FOREIGN KEY ([usuario_rut]) REFERENCES [usuario]([usuario_rut])
         ON UPDATE CASCADE ON DELETE CASCADE

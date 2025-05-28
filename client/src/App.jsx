@@ -8,24 +8,26 @@ import { AuthProvider } from "./context/authContext";
 import Workshops from "./Pages/Workshops";
 import WorkshopDash from "./Pages/WorkshopDash";
 import { ProtectedRoute } from "./routes";
+import { WorkshopProvider } from "./context/workshopContext";
 
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/RecoverPassword" element={<RecoverPasswordPage />} />
-          <Route path="/plans" element={<PlansPage />} />
-          {/*<Route element={<ProtectedRoute />}>*/}
-            <Route path="/profile" element={<h1>Perfil</h1>} />
-            <Route path="/workshops"element={<Workshops />} />
-            <Route path="/workshop/dashboard" element={< WorkshopDash />} />
-          {/*</Route>*/}
-        </Routes>
-      </BrowserRouter>
+      <WorkshopProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/RecoverPassword" element={<RecoverPasswordPage />} />
+            <Route path="/plans" element={<PlansPage />} />
+            {/*<Route element={<ProtectedRoute />}>*/}
+              <Route path="/workshops"element={<Workshops />} />
+              <Route path="/workshop/dashboard" element={< WorkshopDash />} />
+            {/*</Route>*/}
+          </Routes>
+        </BrowserRouter>
+      </WorkshopProvider>
     </AuthProvider>
   )
 }

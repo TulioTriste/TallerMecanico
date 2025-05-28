@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
 import authRoutes from './routes/auth.routes.js';
+import workshopRoutes from './routes/workshop.routes.js';
 import { FRONTEND_URL } from "./config.js";
 
 const app = express();
@@ -19,6 +20,7 @@ app.use(morgan('dev'));
 app.use(express.json()); // Para poder recibir datos en formato JSON
 app.use(cookieParser());
 
-app.use("/api", authRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api", workshopRoutes);
 
 export default app;
