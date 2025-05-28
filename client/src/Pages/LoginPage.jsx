@@ -33,13 +33,13 @@ export default function LoginForm() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      if (user.user.plan_id !== undefined && user.user.plan_id !== null) {
+      if (user.plan_id !== undefined && user.plan_id !== null) {
         navigate("/workshops");
       } else {
         navigate("/plans");
       }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, user]);
 
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
