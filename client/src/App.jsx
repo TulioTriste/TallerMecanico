@@ -9,6 +9,7 @@ import Workshops from "./Pages/Workshops";
 import WorkshopDash from "./Pages/WorkshopDash";
 import { ProtectedRoute } from "./routes";
 import { WorkshopProvider } from "./context/workshopContext";
+import WorkOrderForm from "./Pages/FormNewOt";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             {/*<Route element={<ProtectedRoute />}>*/}
               <Route path="/workshops"element={<Workshops />} />
               <Route path="/workshop/dashboard" element={< WorkshopDash />} />
+              <Route path="/workshop/nuevaorden" element={<WorkOrderForm />} />
             {/*</Route>*/}
           </Routes>
         </BrowserRouter>
