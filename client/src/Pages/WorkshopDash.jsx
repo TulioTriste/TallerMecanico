@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Wrench, 
   Car, 
@@ -13,28 +13,31 @@ import {
   Clock,
   MapPin,
   Phone,
-  Mail,
-  TrendingUp,
   AlertCircle,
   CheckCircle2,
   Timer,
   Zap
 } from 'lucide-react';
+import { useWorkshop } from '../context/workshopContext';
+import { useParams } from 'react-router-dom';
 
 const WorkshopDash = () => {
   const [darkMode, setDarkMode] = useState(false);
-  const [selectedTab, setSelectedTab] = useState('resumen');
+
+  const { id } = useParams();
+  const [taller, setTaller] = useState(null);
+  const { getTaller } = useWorkshop();
+
+  useEffect(() => {
+    const fetchTaller = async () => {  
+      const taller = await getTaller(id); // Suponiendo que el ID del taller es 1
+      setTaller(taller);
+      console.log("Taller obtenido:", taller);
+    };
+    fetchTaller();
+  }, [getTaller, id]);
 
   // Datos del taller actual (normalmente vendrían de props o estado global)
-  const tallerActual = {
-    id: 1,
-    nombre: "Taller Centro",
-    direccion: "Antonio Varas 666, Santiago",
-    telefono: "+56 9 1234 5678",
-    email: "centro@mechanitec.cl",
-    horario: "Lunes a Viernes 8:00 - 18:00",
-    estado: "abierto"
-  };
 
   // Estadísticas del dashboard
   const estadisticas = {
@@ -147,13 +150,13 @@ const WorkshopDash = () => {
                 </div>
                 <div>
                   <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    {tallerActual.nombre}
+                    {taller.nombre}
                   </h1>
                   <div className="flex items-center space-x-4 text-sm">
                     <div className="flex items-center space-x-1">
                       <MapPin className={`w-3 h-3 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                       <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                        {tallerActual.direccion}
+                        {taller.direccion}
                       </span>
                     </div>
                     <div className="flex items-center space-x-1">

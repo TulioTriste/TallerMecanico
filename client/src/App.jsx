@@ -22,11 +22,11 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/RecoverPassword" element={<RecoverPasswordPage />} />
             <Route path="/plans" element={<PlansPage />} />
-            {/*<Route element={<ProtectedRoute />}>*/}
+            <Route element={<ProtectedRoute />}>
               <Route path="/workshops"element={<Workshops />} />
-              <Route path="/workshop/dashboard" element={< WorkshopDash />} />
+              <Route path="/workshop/dashboard/:id" element={< WorkshopDash />} />
               <Route path="/workshop/nuevaorden" element={<WorkOrderForm />} />
-            {/*</Route>*/}
+            </Route>
           </Routes>
         </BrowserRouter>
       </WorkshopProvider>

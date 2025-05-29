@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { getWorkshopRequest } from "../api/workshops";
+import { getTallerRequest, getWorkshopsRequest } from "../api/workshops";
 
 const WorkshopContext = createContext();
 
@@ -14,16 +14,27 @@ export function WorkshopProvider({ children }) {
     const [workshops, setWorkshops] = useState([]);
 
     const cargarTalleres = async () => {
-      const res = await getWorkshopRequest();
+      const res = await getWorkshopsRequest();
       console.log("Talleres obtenidos:", res.data);
       setWorkshops(res.data);
     };
+
+    const getTaller = async (id) => {
+      try {
+        const res = await getTallerRequest(id);
+        console.log("Taller obtenido:", res.data);
+        return res.data;
+      } catch (error) {
+        console.error(error);
+      }
+    }
 
     return (
     <WorkshopContext.Provider
       value={{
         workshops,
         cargarTalleres,
+        getTaller,
       }}
     >
       {children}
