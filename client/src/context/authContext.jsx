@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { createContext, useContext, useState } from "react";
 import { loginRequest, registerRequest, verifyTokenRequest } from "../api/auth";
 import Cookies from "js-cookie";
+import { set } from "react-hook-form";
 
 const AuthContext = createContext();
 
@@ -42,6 +43,7 @@ export const AuthProvider = ({ children }) => {
         setErrors(["No se pudo conectar con el servidor"]);
       }
     }
+    setLoading(false);
   };
 
   const signin = async (user) => {
@@ -59,6 +61,7 @@ export const AuthProvider = ({ children }) => {
         setErrors(["No se pudo conectar con el servidor"]);
       }
     }
+    setLoading(false);
   };
 
   const logout = () => {
@@ -91,6 +94,8 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(false);
         setUser(null);
       }
+
+      setLoading(false);
     };
     checkLogin();
   }, []);

@@ -13,8 +13,6 @@ import {
   Clock,
   MapPin,
   Phone,
-  Mail,
-  TrendingUp,
   AlertCircle,
   CheckCircle2,
   Timer,
@@ -26,9 +24,6 @@ import { useDarkMode } from '../context/darkModeContext';
 
 const WorkshopDash = () => {
   const { darkMode, toggleDarkMode } = useDarkMode();
-  //const [darkMode, setDarkMode] = useState(false);
-
-  const [selectedTab, setSelectedTab] = useState('resumen');
 
   const { id } = useParams();
   const [taller, setTaller] = useState(null);

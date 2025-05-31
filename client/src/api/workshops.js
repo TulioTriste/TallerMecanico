@@ -1,3 +1,5 @@
 import axios from "./axios";
 
-export const getWorkshopRequest = async () => axios.get("/workshops")
+export const getWorkshopsRequest = async () => axios.get("/workshops")
+
+export const getTallerRequest = async (id) => axios.get(`/workshop/dashboard/${id}`)

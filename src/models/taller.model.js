@@ -60,18 +60,16 @@ class TallerModel {
     }
   }
 
-  // Obtener un usuario por correo
-  async getUserByCorreo(correo) {
+  async getTallerById(id) {
     try {
-      console.log("Buscando usuario por correo:", correo);
       const pool = await connectToDatabase();
       const result = await pool
         .request()
-        .input("correo", sql.VarChar, correo)
-        .query("SELECT * FROM usuario WHERE correo = @correo");
+        .input("taller_id", sql.Int, id)
+        .query("SELECT * FROM taller WHERE taller.taller_id = @taller_id");
       return result.recordset[0]; // Devuelve el primer registro
     } catch (error) {
-      console.error("Error al obtener el usuario por correo:", error);
+      console.error("Error al obtener el taller por Id:", error);
       throw error;
     }
   }

@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { authRequired } from "../middlewares/validateToken.js";
-import { getWorkshop } from "../controllers/workshop.controller.js";
+import { authRequired, ownTallerRequired } from "../middlewares/validateToken.js";
+import { getTaller, getWorkshops } from "../controllers/workshop.controller.js";
 
 const router = Router();
 
-router.get("/workshops", authRequired, getWorkshop);
+router.get("/workshops", authRequired, getWorkshops);
+router.get("/workshop/dashboard/:id", authRequired, ownTallerRequired, getTaller);
 
 export default router;

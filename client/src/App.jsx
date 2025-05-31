@@ -10,6 +10,9 @@ import WorkshopDash from "./Pages/WorkshopDash";
 import { ProtectedRoute } from "./routes";
 import { WorkshopProvider } from "./context/workshopContext";
 import WorkOrderForm from "./Pages/FormNewOt";
+import ListaEmpleados from "./Pages/Employees";
+import FormularioEmpleado from "./Pages/FormEmployee";
+import SeleccionSucursal from "./Pages/SelectSucursal";
 import { DarkModeProvider } from "./context/darkModeContext";
 
 function App() {
@@ -28,6 +31,10 @@ function App() {
                   <Route path="/workshops"element={<Workshops />} />
                   <Route path="/workshop/dashboard/:id" element={< WorkshopDash />} />
                   <Route path="/workshop/nuevaorden" element={<WorkOrderForm />} />
+                  <Route path="/empleados" element={<SeleccionSucursal />} />
+                  <Route path="/empleados/sucursal/:sucursalId" element={<ListaEmpleados />} />
+                  <Route path="/empleados/nuevo" element={<FormularioEmpleado />} />
+                  <Route path="/empleados/editar/:id" element={<FormularioEmpleado />} />
                 </Route>
               </Routes>
             </BrowserRouter>

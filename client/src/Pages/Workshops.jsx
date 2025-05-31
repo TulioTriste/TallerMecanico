@@ -200,23 +200,13 @@ const Workshops = () => {
                 {/* Botón de acción */}
                 <div className="px-6 pb-6">
                 <button
-                    className={`w-full py-3 px-4 rounded-lg font-medium transition-all ${
-                        getDisponibilidad(taller)
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                        : darkMode 
-                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
-                            : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                    }`}
+                    className={`w-full py-3 px-4 rounded-lg font-medium transition-all 
+                      ${'bg-blue-600 hover:bg-blue-700 text-white'}`}
                     onClick={() => {
-                        if (getDisponibilidad(taller)) {
-                          navigate('/workshop/dashboard'); // Redirige al dashboard
-                        } else {
-                          // Opcional: acción alternativa si el taller no está activo
-                          console.log('El taller no está activo');
-                        }
+                      navigate(`/workshop/dashboard/${taller.taller_id}`);
                     }}
                     >
-                    {getDisponibilidad(taller) ? 'Acceder al Dashboard' : 'Ver Información'}
+                    Acceder al Dashboard
                     </button>
                 </div>
               </div>
