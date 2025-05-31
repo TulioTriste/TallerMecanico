@@ -9,26 +9,31 @@ import Workshops from "./Pages/Workshops";
 import WorkshopDash from "./Pages/WorkshopDash";
 import { ProtectedRoute } from "./routes";
 import { WorkshopProvider } from "./context/workshopContext";
+import WorkOrderForm from "./Pages/FormNewOt";
+import { DarkModeProvider } from "./context/darkModeContext";
 
 function App() {
   return (
-    <AuthProvider>
-      <WorkshopProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/RecoverPassword" element={<RecoverPasswordPage />} />
-            <Route path="/plans" element={<PlansPage />} />
-            {/*<Route element={<ProtectedRoute />}>*/}
-              <Route path="/workshops"element={<Workshops />} />
-              <Route path="/workshop/dashboard" element={< WorkshopDash />} />
-            {/*</Route>*/}
-          </Routes>
-        </BrowserRouter>
-      </WorkshopProvider>
-    </AuthProvider>
+    <DarkModeProvider>
+      <AuthProvider>
+        <WorkshopProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/RecoverPassword" element={<RecoverPasswordPage />} />
+                <Route path="/plans" element={<PlansPage />} />
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/workshops"element={<Workshops />} />
+                  <Route path="/workshop/dashboard/:id" element={< WorkshopDash />} />
+                  <Route path="/workshop/nuevaorden" element={<WorkOrderForm />} />
+                </Route>
+              </Routes>
+            </BrowserRouter>
+        </WorkshopProvider>
+      </AuthProvider>
+    </DarkModeProvider>
   )
 }
 export default App;

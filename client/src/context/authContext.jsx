@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 
 const AuthContext = createContext();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error("useAuth must be used within a AuthProvider");
@@ -64,6 +65,7 @@ export const AuthProvider = ({ children }) => {
     Cookies.remove("token");
     setUser(null);
     setIsAuthenticated(false);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -77,13 +79,17 @@ export const AuthProvider = ({ children }) => {
 
       try {
         const res = await verifyTokenRequest(cookies.token);
-        if (!res.data.user) return setIsAuthenticated(false);
+        if (!res.data) {
+          setIsAuthenticated(false);
+          setLoading(false);
+          return;
+        }
         setIsAuthenticated(true);
-        setUser(res.data.user);
-        setLoading(false);
+        setUser(res.data);
+      // eslint-disable-next-line no-unused-vars
       } catch (error) {
         setIsAuthenticated(false);
-        setLoading(false);
+        setUser(null);
       }
     };
     checkLogin();

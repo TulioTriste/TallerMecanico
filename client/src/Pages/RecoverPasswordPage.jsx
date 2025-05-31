@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Mail, ArrowLeft, Wrench, Moon, Sun, Send } from 'lucide-react';
+import { useDarkMode } from '../context/darkModeContext';
 
 export default function RecoverPasswordForm() {
   const [email, setEmail] = useState('');
@@ -7,40 +8,7 @@ export default function RecoverPasswordForm() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   
-  // Inicializar el estado de modo oscuro desde localStorage o la preferencia del sistema
-  const [darkMode, setDarkMode] = useState(() => {
-    // Primero intentamos obtener la preferencia guardada
-    if (typeof window !== 'undefined') {
-      const savedMode = localStorage.getItem('darkMode');
-      
-      // Si hay una preferencia guardada, usamos esa
-      if (savedMode !== null) {
-        return savedMode === 'true';
-      }
-      
-      // Si no hay preferencia guardada, detectamos la del sistema
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-    return false;
-  });
-
-  // Escuchar cambios en la preferencia del sistema
-  useEffect(() => {
-    // Solo si no hay una preferencia guardada manualmente
-    if (typeof window !== 'undefined' && localStorage.getItem('darkMode') === null) {
-      const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      
-      const handleDarkModeChange = (event) => {
-        setDarkMode(event.matches);
-      };
-      
-      darkModeMediaQuery.addEventListener('change', handleDarkModeChange);
-      
-      return () => {
-        darkModeMediaQuery.removeEventListener('change', handleDarkModeChange);
-      };
-    }
-  }, []);
+  const { darkMode, toggleDarkMode } = useDarkMode();
 
   // Aplicar modo oscuro al body/html completo cuando cambia
   useEffect(() => {
@@ -90,10 +58,6 @@ export default function RecoverPasswordForm() {
       }
       setLoading(false);
     }, 1500);
-  };
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
   };
 
   return (

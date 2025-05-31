@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Wrench, 
   Car, 
@@ -20,10 +20,27 @@ import {
   Timer,
   Zap
 } from 'lucide-react';
+import { useWorkshop } from '../context/workshopContext';
+import { useParams } from 'react-router-dom';
+import { useDarkMode } from '../context/darkModeContext';
 
 const WorkshopDash = () => {
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode, toggleDarkMode } = useDarkMode();
+  //const [darkMode, setDarkMode] = useState(false);
+
   const [selectedTab, setSelectedTab] = useState('resumen');
+
+  const { id } = useParams();
+  const [taller, setTaller] = useState(null);
+  const { getTaller } = useWorkshop();
+
+  useEffect(() => {
+    const fetchTaller = async () => {  
+      const taller = await getTaller(id); // Suponiendo que el ID del taller es 1
+      setTaller(taller);
+    };
+    fetchTaller();
+  }, [getTaller, id]);
 
   // Datos del taller actual (normalmente vendrían de props o estado global)
   const tallerActual = {
@@ -130,6 +147,14 @@ const WorkshopDash = () => {
     }
   };
 
+  if (!taller) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span>Cargando taller...</span>
+      </div>
+    );
+  }
+
   return (
     <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
       {/* Header */}
@@ -167,7 +192,7 @@ const WorkshopDash = () => {
             
             <div className="flex items-center space-x-4">
               <button 
-                onClick={() => setDarkMode(!darkMode)}
+                onClick={() => toggleDarkMode()}
                 className={`p-2 rounded-lg transition-colors ${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'}`}
               >
                 {darkMode ? '☀️' : '🌙'}

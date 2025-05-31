@@ -20,25 +20,10 @@ import {
   ChevronRight
 } from 'lucide-react';
 import Navbar from '../Components/Navbar';
-
-// Script que se ejecuta antes del renderizado para establecer el tema inicial
-const getInitialDarkMode = () => {
-  // Si estamos en el servidor o no hay window, devolver false por defecto
-  if (typeof window === 'undefined') return false;
-
-  // Comprobar localStorage primero
-  const savedDarkMode = localStorage.getItem('darkMode');
-  if (savedDarkMode !== null) {
-    return savedDarkMode === 'true';
-  }
-  
-  // Si no hay preferencia guardada, usar la preferencia del sistema
-  return window.matchMedia('(prefers-color-scheme: dark)').matches;
-};
+import { useDarkMode } from '../context/darkModeContext';
 
 export default function Dashboard() {
-  // Inicializar darkMode usando la función que se ejecuta antes del renderizado
-  const [darkMode, setDarkMode] = useState(getInitialDarkMode);
+  const { darkMode, toggleDarkMode } = useDarkMode();
   const [billingCycle, setBillingCycle] = useState('monthly');
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [tooltipVisible, setTooltipVisible] = useState(false);
@@ -48,25 +33,7 @@ export default function Dashboard() {
   // Marcar que estamos en el cliente cuando el componente se monta
   useEffect(() => {
     setIsClient(true);
-    
-    // Configurar un detector para cambios en la preferencia del sistema
-    const handleChange = (e) => {
-      if (localStorage.getItem('darkMode') === null) {
-        setDarkMode(e.matches);
-      }
-    };
-    
-    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    darkModeMediaQuery.addEventListener('change', handleChange);
-    return () => darkModeMediaQuery.removeEventListener('change', handleChange);
   }, []);
-  
-  // Función para alternar el modo oscuro y guardar la preferencia
-  const toggleDarkMode = () => {
-    const newDarkMode = !darkMode;
-    setDarkMode(newDarkMode);
-    localStorage.setItem('darkMode', newDarkMode.toString());
-  };
   
   const selectPlan = (index) => {
     setSelectedPlan(index);
