@@ -4,7 +4,6 @@ import tallerModel from "../models/taller.model.js";
 
 export const authRequired = (req, res, next) => {
     const { token } = req.cookies;
-    console.log(token);
 
     if (!token) {
         console.log('No token provided');
@@ -12,7 +11,6 @@ export const authRequired = (req, res, next) => {
     }
 
     jwt.verify(token, TOKEN_KEY_SECRET, (err, decoded) => {
-        console.log(decoded);
         if (err) {
             return res.status(401).json({ message: 'Unauthorizeda' });
         }

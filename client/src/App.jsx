@@ -31,10 +31,10 @@ function App() {
                   <Route path="/workshops"element={<Workshops />} />
                   <Route path="/workshop/dashboard/:id" element={< WorkshopDash />} />
                   <Route path="/workshop/nuevaorden" element={<WorkOrderForm />} />
-                  <Route path="/empleados" element={<SeleccionSucursal />} />
-                  <Route path="/empleados/sucursal/:sucursalId" element={<ListaEmpleados />} />
-                  <Route path="/empleados/nuevo" element={<FormularioEmpleado />} />
-                  <Route path="/empleados/editar/:id" element={<FormularioEmpleado />} />
+                  <Route path="/sucursal" element={<SeleccionSucursal />} />
+                  <Route path="/sucursal/:id/empleados" element={<ListaEmpleados />} />
+                  <Route path="/sucursal/:id/nuevo" element={<FormularioEmpleado />} />
+                  <Route path="/sucursal/:sucursalId/empleados/editar/:empleadoId" element={<FormularioEmpleado />} />
                 </Route>
               </Routes>
             </BrowserRouter>
