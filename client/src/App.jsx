@@ -15,6 +15,8 @@ import FormularioEmpleado from "./Pages/FormEmployee";
 import SeleccionSucursal from "./Pages/SelectSucursal";
 import { DarkModeProvider } from "./context/darkModeContext";
 import { ControlPanelProvider } from "./context/controlPanelContext";
+import NavbarManager from "./Components/NavbarManager";
+import ProfilePage from "./Pages/Profile";
 
 function App() {
   return (
@@ -23,20 +25,26 @@ function App() {
         <WorkshopProvider>
           <ControlPanelProvider>
             <BrowserRouter>
+              <NavbarManager />
               <Routes>
+                {/* Rutas públicas */}
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/recoverpassword" element={<RecoverPasswordPage />} />
                 <Route path="/plans" element={<PlansPage />} />
+                
+                {/* Rutas protegidas */}
                 <Route element={<ProtectedRoute />}>
-                  <Route path="/workshops"element={<Workshops />} />
-                  <Route path="/workshop/dashboard/:id" element={< WorkshopDash />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/workshops" element={<Workshops />} />
+                  <Route path="/workshop/dashboard/:id" element={<WorkshopDash />} />
                   <Route path="/workshop/nuevaorden" element={<WorkOrderForm />} />
                   <Route path="/sucursal" element={<SeleccionSucursal />} />
                   <Route path="/sucursal/:id/empleados" element={<ListaEmpleados />} />
                   <Route path="/sucursal/:id/nuevo" element={<FormularioEmpleado />} />
-                  <Route path="/sucursal/:sucursalId/empleados/editar/:empleadoId" element={<FormularioEmpleado />} />
+                  <Route path="/sucursal/:sucursalId/empleados/editar/:empleadoId"element={<FormularioEmpleado />} />
+                  <Route path="/profile" element={<ProfilePage />} />
                 </Route>
               </Routes>
             </BrowserRouter>
@@ -44,6 +52,7 @@ function App() {
         </WorkshopProvider>
       </AuthProvider>
     </DarkModeProvider>
-  )
+  );
 }
+
 export default App;

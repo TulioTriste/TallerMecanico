@@ -14,7 +14,7 @@ import {
   X,
   ChevronRight
 } from 'lucide-react';
-import Navbar from '../Components/Navbar';
+import Navbar from '../Components/NavbarPrincipal/PublicNavbar';
 import { useDarkMode } from '../context/darkModeContext';
 import { useControlPanel } from '../context/controlPanelContext';
 

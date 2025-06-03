@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Mail, Lock, LogIn, Wrench, Moon, Sun } from 'lucide-react';
-import Navbar from '../Components/Navbar';
+import Navbar from '../Components/NavbarPrincipal/PublicNavbar';
 import { useAuth } from '../context/authContext';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
@@ -36,7 +36,7 @@ export default function LoginForm() {
       if (user.plan_id !== undefined && user.plan_id !== null) {
         navigate("/workshops");
       } else {
-        navigate("/plans");
+        navigate("/workshops");
       }
     }
   }, [isAuthenticated, navigate, user]);
