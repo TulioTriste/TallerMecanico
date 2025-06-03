@@ -15,14 +15,12 @@ export function WorkshopProvider({ children }) {
 
     const cargarTalleres = async () => {
       const res = await getWorkshopsRequest();
-      console.log("Talleres obtenidos:", res.data);
       setWorkshops(res.data);
     };
 
     const getTaller = async (id) => {
       try {
         const res = await getTallerRequest(id);
-        console.log("Taller obtenido:", res.data);
         return res.data;
       } catch (error) {
         console.error(error);

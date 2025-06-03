@@ -128,9 +128,14 @@ export const verifyToken = async (req, res) => {
         }
         
         return res.json({
-            rut: userFound.USUARIO_RUT,
-            nombre: userFound.NOMBRE,
-            correo: userFound.CORREO,
+            rut: userFound.usuario_rut,
+            nombre: userFound.nombre,
+            apellido: userFound.apellido,
+            correo: userFound.correo,
+            telefono: userFound.telefono,
+            direccion: userFound.direccion,
+            empresa: userFound.empresa,
+            plan_id: userFound.plan_id,
         });
     });
 };
@@ -144,11 +149,16 @@ export const profile = async (req, res) => {
     }
 
     res.json({
-        id: userFound.USER_ID,
-        nombre: userFound.NOMBRE,
-        email: userFound.EMAIL,
-        direccion: userFound.DIRECCION,
-        numero: userFound.NUMEROTEL,
+        user: {
+                rut: userFound.usuario_rut,
+                nombre: userFound.nombre,
+                apellido: userFound.apellido,
+                correo: userFound.correo,
+                telefono: userFound.telefono,
+                direccion: userFound.direccion,
+                empresa: userFound.empresa,
+                plan_id: userFound.plan_id,
+            },
     })
 }
 // Añade esto al final de tu auth.controller.js

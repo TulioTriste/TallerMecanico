@@ -5,11 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from '../schemas/authSchema';
-import { Message } from '../Components/ui/Message';
+import { useDarkMode } from '../context/darkModeContext';
 
 export default function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const { signup, errors: registerErrors, isAuthenticated } = useAuth();
+  const { darkMode, toggleDarkMode } = useDarkMode();
   const {
     register,
     handleSubmit,
@@ -33,41 +34,6 @@ export default function RegisterForm() {
   useEffect(() => {
     if (isAuthenticated) navigate("/profile");
   }, [isAuthenticated, navigate]);
-
-  // Inicializar el estado de modo oscuro desde localStorage o la preferencia del sistema
-  const [darkMode, setDarkMode] = useState(() => {
-    // Primero intentamos obtener la preferencia guardada
-    if (typeof window !== 'undefined') {
-      const savedMode = localStorage.getItem('darkMode');
-
-      // Si hay una preferencia guardada, usamos esa
-      if (savedMode !== null) {
-        return savedMode === 'true';
-      }
-
-      // Si no hay preferencia guardada, detectamos la del sistema
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-    return false;
-  });
-
-  // Escuchar cambios en la preferencia del sistema
-  useEffect(() => {
-    // Solo si no hay una preferencia guardada manualmente
-    if (typeof window !== 'undefined' && localStorage.getItem('darkMode') === null) {
-      const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-      const handleDarkModeChange = (event) => {
-        setDarkMode(event.matches);
-      };
-
-      darkModeMediaQuery.addEventListener('change', handleDarkModeChange);
-
-      return () => {
-        darkModeMediaQuery.removeEventListener('change', handleDarkModeChange);
-      };
-    }
-  }, []);
 
   // Aplicar modo oscuro al body/html completo cuando cambia
   useEffect(() => {
@@ -99,10 +65,6 @@ export default function RegisterForm() {
       document.body.className = 'bg-gradient-to-br from-gray-50 to-gray-100';
     }
   }, [darkMode]);
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
 
   // Formatear RUT chileno (XX.XXX.XXX-X)
   const formatRut = (value) => {

@@ -9,9 +9,10 @@ import {
   Home
 } from 'lucide-react';
 import { useWorkshop } from '../context/workshopContext';
+import { useDarkMode } from '../context/darkModeContext';
 
 const Workshops = () => {
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode, toggleDarkMode } = useDarkMode();
   const [selectedTaller, setSelectedTaller] = useState(null);
 
   const { workshops, cargarTalleres } = useWorkshop(); // Datos de ejemplo de los talleres
@@ -23,7 +24,7 @@ const Workshops = () => {
       await cargarTalleres();
     }
     fetchTalleres();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [cargarTalleres]);
 
   const handleTallerSelect = (taller) => {
     setSelectedTaller(taller.id);
@@ -72,7 +73,7 @@ const Workshops = () => {
             
             <div className="flex items-center space-x-4">
               <button 
-                onClick={() => setDarkMode(!darkMode)}
+                onClick={() => toggleDarkMode()}
                 className={`p-2 rounded-lg transition-colors ${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'}`}
               >
                 {darkMode ? '☀️' : '🌙'}

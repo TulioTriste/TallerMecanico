@@ -19,6 +19,8 @@ INSERT INTO [plan] (nombre, precio, perfiles)
 VALUES ('Company', 250000, 0);
 
 
+SELECT * FROM ;
+
 /* Data de usuarios Administradores para Pruebas */
 SELECT * FROM usuario u;
 INSERT INTO usuario (usuario_rut,nombre,apellido,correo,password,telefono,direccion,empresa,plan_id) VALUES
@@ -147,6 +149,7 @@ CREATE TABLE [empleado] (
     [apellido] VARCHAR(120),
     [cel] VARCHAR(12),
     [correo] VARCHAR(250) NOT NULL,
+    [password] VARCHAR(60) NOT NULL,
     CONSTRAINT [PK_empleado] PRIMARY KEY CLUSTERED ([empleado_rut] ASC),
     CONSTRAINT [FK_empleado_taller] FOREIGN KEY ([taller_id]) REFERENCES [taller]([taller_id])
         ON UPDATE CASCADE ON DELETE CASCADE,

@@ -6,11 +6,6 @@ import {
   Users,
   FileText,
   Calendar,
-  BarChart,
-  Settings,
-  Sun,
-  Moon,
-  HelpCircle,
   Zap,
   Shield,
   Wrench,
@@ -20,53 +15,23 @@ import {
   ChevronRight
 } from 'lucide-react';
 import Navbar from '../Components/Navbar';
-
-// Script que se ejecuta antes del renderizado para establecer el tema inicial
-const getInitialDarkMode = () => {
-  // Si estamos en el servidor o no hay window, devolver false por defecto
-  if (typeof window === 'undefined') return false;
-
-  // Comprobar localStorage primero
-  const savedDarkMode = localStorage.getItem('darkMode');
-  if (savedDarkMode !== null) {
-    return savedDarkMode === 'true';
-  }
-  
-  // Si no hay preferencia guardada, usar la preferencia del sistema
-  return window.matchMedia('(prefers-color-scheme: dark)').matches;
-};
+import { useDarkMode } from '../context/darkModeContext';
+import { useControlPanel } from '../context/controlPanelContext';
 
 export default function Dashboard() {
-  // Inicializar darkMode usando la función que se ejecuta antes del renderizado
-  const [darkMode, setDarkMode] = useState(getInitialDarkMode);
+  const { darkMode, toggleDarkMode } = useDarkMode();
   const [billingCycle, setBillingCycle] = useState('monthly');
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [tooltipVisible, setTooltipVisible] = useState(false);
   // Agregar estado para controlar la visibilidad antes de que se complete la hidratación
   const [isClient, setIsClient] = useState(false);
+
+  const { registeredVehicles } = useControlPanel();
   
   // Marcar que estamos en el cliente cuando el componente se monta
   useEffect(() => {
     setIsClient(true);
-    
-    // Configurar un detector para cambios en la preferencia del sistema
-    const handleChange = (e) => {
-      if (localStorage.getItem('darkMode') === null) {
-        setDarkMode(e.matches);
-      }
-    };
-    
-    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    darkModeMediaQuery.addEventListener('change', handleChange);
-    return () => darkModeMediaQuery.removeEventListener('change', handleChange);
   }, []);
-  
-  // Función para alternar el modo oscuro y guardar la preferencia
-  const toggleDarkMode = () => {
-    const newDarkMode = !darkMode;
-    setDarkMode(newDarkMode);
-    localStorage.setItem('darkMode', newDarkMode.toString());
-  };
   
   const selectPlan = (index) => {
     setSelectedPlan(index);
@@ -228,7 +193,7 @@ export default function Dashboard() {
                 <Car className={`w-12 h-12 p-2 rounded-lg ${darkMode ? 'bg-blue-900/40 text-blue-400' : 'bg-blue-100 text-blue-600'}`} />
                 <div>
                   <h4 className="font-medium">Vehículos registrados</h4>
-                  <p className="text-2xl font-bold">247</p>
+                  <p className="text-2xl font-bold">{registeredVehicles}</p>
                 </div>
               </div>
               
