@@ -14,18 +14,20 @@ import ListaEmpleados from "./Pages/Employees";
 import FormularioEmpleado from "./Pages/FormEmployee";
 import SeleccionSucursal from "./Pages/SelectSucursal";
 import { DarkModeProvider } from "./context/darkModeContext";
+import { ControlPanelProvider } from "./context/controlPanelContext";
 
 function App() {
   return (
     <DarkModeProvider>
       <AuthProvider>
         <WorkshopProvider>
+          <ControlPanelProvider>
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
-                <Route path="/RecoverPassword" element={<RecoverPasswordPage />} />
+                <Route path="/recoverpassword" element={<RecoverPasswordPage />} />
                 <Route path="/plans" element={<PlansPage />} />
                 <Route element={<ProtectedRoute />}>
                   <Route path="/workshops"element={<Workshops />} />
@@ -38,6 +40,7 @@ function App() {
                 </Route>
               </Routes>
             </BrowserRouter>
+          </ControlPanelProvider>
         </WorkshopProvider>
       </AuthProvider>
     </DarkModeProvider>

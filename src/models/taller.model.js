@@ -73,41 +73,6 @@ class TallerModel {
       throw error;
     }
   }
-
-  // Actualizar un usuario
-  async updateUser(id, nombre, email, password) {
-    try {
-      const pool = await connectToDatabase();
-      const result = await pool
-        .request()
-        .input("id", sql.Int, id)
-        .input("nombre", sql.VarChar, nombre)
-        .input("email", sql.VarChar, email)
-        .input("password", sql.VarChar, password)
-        .query(
-          "UPDATE usuario SET nombre = @nombre, email = @email, contrasena = @password WHERE user_id = @id"
-        );
-      return result; // Devuelve el resultado de la consulta
-    } catch (error) {
-      console.error("Error al actualizar el usuario:", error);
-      throw error;
-    }
-  }
-
-  // Eliminar un usuario
-  async deleteUser(id) {
-    try {
-      const pool = await connectToDatabase();
-      const result = await pool
-        .request()
-        .input("id", sql.Int, id)
-        .query("DELETE FROM usuario WHERE user_id = @id");
-      return result; // Devuelve el resultado de la consulta
-    } catch (error) {
-      console.error("Error al eliminar el usuario:", error);
-      throw error;
-    }
-  }
 }
 
 export default new TallerModel();

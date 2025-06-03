@@ -6,11 +6,6 @@ import {
   Users,
   FileText,
   Calendar,
-  BarChart,
-  Settings,
-  Sun,
-  Moon,
-  HelpCircle,
   Zap,
   Shield,
   Wrench,
@@ -21,6 +16,7 @@ import {
 } from 'lucide-react';
 import Navbar from '../Components/Navbar';
 import { useDarkMode } from '../context/darkModeContext';
+import { useControlPanel } from '../context/controlPanelContext';
 
 export default function Dashboard() {
   const { darkMode, toggleDarkMode } = useDarkMode();
@@ -29,6 +25,8 @@ export default function Dashboard() {
   const [tooltipVisible, setTooltipVisible] = useState(false);
   // Agregar estado para controlar la visibilidad antes de que se complete la hidratación
   const [isClient, setIsClient] = useState(false);
+
+  const { registeredVehicles } = useControlPanel();
   
   // Marcar que estamos en el cliente cuando el componente se monta
   useEffect(() => {
@@ -195,7 +193,7 @@ export default function Dashboard() {
                 <Car className={`w-12 h-12 p-2 rounded-lg ${darkMode ? 'bg-blue-900/40 text-blue-400' : 'bg-blue-100 text-blue-600'}`} />
                 <div>
                   <h4 className="font-medium">Vehículos registrados</h4>
-                  <p className="text-2xl font-bold">247</p>
+                  <p className="text-2xl font-bold">{registeredVehicles}</p>
                 </div>
               </div>
               
