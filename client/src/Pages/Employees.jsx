@@ -63,7 +63,7 @@ export default function ListaEmpleados() {
   };
 
   return (
-    <div className={`min-h-screen py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${
+    <div className={`min-h-screen pt-24 px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${
       darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-gray-100'
     }`}>
       <div className="max-w-7xl mx-auto">

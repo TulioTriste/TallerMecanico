@@ -21,7 +21,7 @@ import {
 import { useWorkshop } from '../context/workshopContext';
 import { useParams } from 'react-router-dom';
 import { useDarkMode } from '../context/darkModeContext';
-
+import { Link } from 'react-router-dom';
 const WorkshopDash = () => {
   const { darkMode, toggleDarkMode } = useDarkMode();
 
@@ -39,12 +39,9 @@ const WorkshopDash = () => {
 
   // Estadísticas del dashboard
   const estadisticas = {
-    vehiculosEnServicio: 8,
     ordenesActivas: 12,
-    clientesHoy: 15,
-    ingresosDia: 450000,
-    ordenesCompletadas: 23,
-    tiempoPromedioServicio: "2.5 horas"
+    solicitudesMes: 156,  // Cambiado de clientesHoy
+    ingresosMes: 4500000,  // Cambiado de ingresosDia
   };
 
   // Órdenes recientes
@@ -140,143 +137,88 @@ const WorkshopDash = () => {
   }
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
-      {/* Header */}
-      <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <button className={`p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}>
-                <ArrowLeft className={`h-5 w-5 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`} />
-              </button>
-              
-              <div className="flex items-center space-x-3">
-                <div className={`p-2 rounded-lg ${darkMode ? 'bg-blue-900/40' : 'bg-blue-100'}`}>
-                  <Wrench className={`h-6 w-6 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
-                </div>
-                <div>
-                  <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    {taller.nombre}
-                  </h1>
-                  <div className="flex items-center space-x-4 text-sm">
-                    <div className="flex items-center space-x-1">
-                      <MapPin className={`w-3 h-3 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                      <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                        {taller.direccion}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-green-500 font-medium">Abierto</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <button 
-                onClick={() => toggleDarkMode()}
-                className={`p-2 rounded-lg transition-colors ${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'}`}
-              >
-                {darkMode ? '☀️' : '🌙'}
-              </button>
-              
-              <button className={`px-4 py-2 rounded-lg flex items-center gap-2 ${darkMode ? 'bg-blue-800 hover:bg-blue-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'} transition-colors`}>
-                <Plus className="w-4 h-4" />
-                Nueva Orden
-              </button>
-              
-              <button className={`p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}>
-                <Settings className={`h-5 w-5 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`} />
-              </button>
-            </div>
-          </div>
+    <div className={`min-h-screen pt-16 transition-colors duration-300 ${
+      darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'
+    }`}>
+      {/* Header Simplificado */}
+      <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="flex justify-end space-x-4">
+          <Link 
+            to={`/sucursal/${taller.taller_id}/empleados`}
+            className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
+              darkMode 
+                ? 'bg-gray-700 hover:bg-gray-600 text-white' 
+                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+            } transition-colors`}
+          >
+            <Users className="w-4 h-4" />
+            Gestionar Empleados
+          </Link>
+          
+          <button 
+            onClick={() => {/* Función para nueva orden */}}
+            className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
+              darkMode 
+                ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                : 'bg-blue-600 hover:bg-blue-700 text-white'
+            } transition-colors`}
+          >
+            <Plus className="w-4 h-4" />
+            Nueva Orden
+          </button>
         </div>
       </div>
 
-      {/* Elementos decorativos de fondo */}
+      {/* Fondo decorativo */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className={`absolute -top-24 -right-24 w-96 h-96 rounded-full ${darkMode ? 'bg-blue-900/5' : 'bg-blue-100/20'} blur-3xl`}></div>
-        <div className={`absolute top-1/2 -left-48 w-96 h-96 rounded-full ${darkMode ? 'bg-indigo-900/5' : 'bg-indigo-100/20'} blur-3xl`}></div>
+        <div className={`absolute -top-24 -right-24 w-96 h-96 rounded-full ${
+          darkMode ? 'bg-blue-900/5' : 'bg-blue-100/20'
+        } blur-3xl`}></div>
+        <div className={`absolute top-1/2 -left-48 w-96 h-96 rounded-full ${
+          darkMode ? 'bg-indigo-900/5' : 'bg-indigo-100/20'
+        } blur-3xl`}></div>
       </div>
 
       {/* Contenido principal */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
         {/* Estadísticas principales */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
-          <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Vehículos en Servicio</p>
-                <p className={`text-2xl font-bold ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                  {estadisticas.vehiculosEnServicio}
-                </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Órdenes Activas</p>
+                  <p className={`text-2xl font-bold ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
+                    {estadisticas.ordenesActivas}
+                  </p>
+                </div>
+                <Clipboard className={`h-8 w-8 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
               </div>
-              <Car className={`h-8 w-8 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
             </div>
-          </div>
 
-          <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Órdenes Activas</p>
-                <p className={`text-2xl font-bold ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
-                  {estadisticas.ordenesActivas}
-                </p>
+            <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Solicitudes del Mes</p>
+                  <p className={`text-2xl font-bold ${darkMode ? 'text-orange-400' : 'text-orange-600'}`}>
+                    {estadisticas.solicitudesMes}
+                  </p>
+                </div>
+                <Users className={`h-8 w-8 ${darkMode ? 'text-orange-400' : 'text-orange-600'}`} />
               </div>
-              <Clipboard className={`h-8 w-8 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
             </div>
-          </div>
 
-          <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Clientes Hoy</p>
-                <p className={`text-2xl font-bold ${darkMode ? 'text-purple-400' : 'text-purple-600'}`}>
-                  {estadisticas.clientesHoy}
-                </p>
+            <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Ingresos de Junio</p>
+                  <p className={`text-2xl font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                    ${estadisticas.ingresosMes.toLocaleString()}
+                  </p>
+                </div>
+                <DollarSign className={`h-8 w-8 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
               </div>
-              <Users className={`h-8 w-8 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
             </div>
           </div>
-
-          <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Ingresos Hoy</p>
-                <p className={`text-2xl font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
-                  ${estadisticas.ingresosDia.toLocaleString()}
-                </p>
-              </div>
-              <DollarSign className={`h-8 w-8 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
-            </div>
-          </div>
-
-          <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Completadas</p>
-                <p className={`text-2xl font-bold ${darkMode ? 'text-orange-400' : 'text-orange-600'}`}>
-                  {estadisticas.ordenesCompletadas}
-                </p>
-              </div>
-              <CheckCircle2 className={`h-8 w-8 ${darkMode ? 'text-orange-400' : 'text-orange-600'}`} />
-            </div>
-          </div>
-
-          <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Tiempo Promedio</p>
-                <p className={`text-2xl font-bold ${darkMode ? 'text-indigo-400' : 'text-indigo-600'}`}>
-                  {estadisticas.tiempoPromedioServicio}
-                </p>
-              </div>
-              <Timer className={`h-8 w-8 ${darkMode ? 'text-indigo-400' : 'text-indigo-600'}`} />
-            </div>
-          </div>
-        </div>
 
         {/* Contenido principal en dos columnas */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
