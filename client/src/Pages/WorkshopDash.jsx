@@ -23,7 +23,7 @@ import { useParams } from 'react-router-dom';
 import { useDarkMode } from '../context/darkModeContext';
 import { Link } from 'react-router-dom';
 const WorkshopDash = () => {
-  const { darkMode, toggleDarkMode } = useDarkMode();
+  const { darkMode } = useDarkMode();
 
   const { id } = useParams();
   const [taller, setTaller] = useState(null);

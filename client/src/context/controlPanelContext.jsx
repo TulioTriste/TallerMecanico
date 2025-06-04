@@ -44,12 +44,45 @@ export function ControlPanelProvider({ children }) {
     }
   }
 
+  const getOrdenesDeTrabajoCount = async (taller_id) => {
+    try {
+      const res = await getOrdenesDeTrabajoCount(taller_id);
+      return res.data.count;
+    } catch (error) {
+      console.error("Error al obtener el conteo de órdenes de trabajo:", error);
+      return 0; // En caso de error, retornar 0 o un valor predeterminado
+    }
+  }
+
+  const getOrdenesDeTrabajoCountByEstado = async (taller_id, estado_id) => {
+    try {
+      const res = await getOrdenesDeTrabajoCountByEstado(taller_id, estado_id);
+      return res.data.count;
+    } catch (error) {
+      console.error("Error al obtener el conteo de órdenes de trabajo por estado:", error);
+      return 0; // En caso de error, retornar 0 o un valor predeterminado
+    }
+  }
+
+  const getCountCitasProx7Dias = async (taller_id) => {
+    try {
+      const res = await getCountCitasProx7Dias(taller_id);
+      return res.data.count;
+    } catch (error) {
+      console.error("Error al obtener el conteo de citas próximas a 7 días:", error);
+      return 0; // En caso de error, retornar 0 o un valor predeterminado
+    }
+  }
+
   return (
     <ControlPanelContext.Provider
       value={{
         registeredVehicles,
         updateRegisteredVehicles,
-        getNextCitaTaller
+        getNextCitaTaller,
+        getOrdenesDeTrabajoCount,
+        getOrdenesDeTrabajoCountByEstado,
+        getCountCitasProx7Dias
       }}
     >
       {children}

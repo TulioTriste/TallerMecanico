@@ -84,6 +84,86 @@ class ControlPanelModel {
             throw error;
         }
     }
+
+    async getOrdenesDeTrabajoCount(taller_id) {
+        try {
+            const pool = await connectToDatabase();
+            const result = await pool.request()
+                .input("tallerId", sql.Int, taller_id)
+                .query(`
+                    SELECT 
+                        COUNT(*) AS total
+                    FROM 
+                        ot
+                    WHERE 
+                        taller_id = @tallerId
+                `);
+                
+            if (result.recordset.length === 0) {
+                return 0;
+            }
+
+            return result.recordset[0].total;
+        } catch (error) {
+            console.error("Error al obtener el conteo de órdenes de trabajo:", error);
+            throw error;
+        }
+    }
+
+    async getOrdenesDeTrabajoCountByEstado(taller_id, estado_id) {
+        try {
+            const pool = await connectToDatabase();
+            const result = await pool.request()
+                .input("tallerId", sql.Int, taller_id)
+                .input("estadoId", sql.Int, estado_id)
+                .query(`
+                    SELECT 
+                        COUNT(*) AS total
+                    FROM 
+                        ot
+                    WHERE 
+                        taller_id = @tallerId AND estado_id = @estadoId
+                    GROUP BY 
+                        taller_id
+                `);
+
+            if (result.recordset.length === 0) {
+                return 0;
+            }
+
+            return result.recordset[0].total;
+        } catch (error) {
+            console.error("Error al obtener el conteo de órdenes de trabajo:", error);
+            throw error;
+        }
+    }
+
+    async getCountCitasProx7Dias(taller_id) {
+        try {
+            const pool = await connectToDatabase();
+            const result = await pool.request()
+                .input("tallerId", sql.Int, taller_id)
+                .query(`
+                    SELECT 
+                        COUNT(*) AS total
+                    FROM 
+                        cita
+                    WHERE 
+                        hora >= CAST(GETDATE() AS DATE)
+                        AND hora < DATEADD(DAY, 7, CAST(GETDATE() AS DATE))
+                        AND taller_id = @tallerId
+                `);
+
+            if (result.recordset.length === 0) {
+                return 0;
+            }
+
+            return result.recordset[0].total;
+        } catch (error) {
+            console.error("Error al obtener el conteo de citas en los próximos 7 días:", error);
+            throw error;
+        }
+    }
 }
 
 export default new ControlPanelModel();

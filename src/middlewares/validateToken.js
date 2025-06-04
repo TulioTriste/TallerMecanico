@@ -24,7 +24,7 @@ export const authRequired = (req, res, next) => {
 export const ownTallerRequired = async (req, res, next) => {
     try {
         const rutUsuario = req.user.rut;
-        const tallerId = req.params.id;
+        const tallerId = req.params.taller_id;
 
         const taller = await tallerModel.getTallerById(tallerId);
 
