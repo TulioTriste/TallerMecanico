@@ -8,18 +8,52 @@ INSERT INTO taller (usuario_rut, nombre, telefono, correo, direccion, inicio_jor
 
 SELECT * FROM taller WHERE taller.usuario_rut = '21.389.785-3';
 
+DELETE FROM cita;
+INSERT INTO cita (taller_id, cliente_rut, patente, hora, descripcion) VALUES
+	(1, '12.345.678-9', 'BBSJ21', DATEADD(HOUR, 1, GETDATE()), 'Cambio de aceite y revisión general'), -- Hoy
+	(1, '12.345.678-9', 'BBSJ21', DATEADD(HOUR, 3, GETDATE()), 'Reparación de frenos'), -- Hoy
+	(1, '12.345.678-9', 'BBSJ21', DATEADD(DAY, 1, GETDATE()), 'Alineación y balanceo'), -- Mañana
+	(1, '12.345.678-9', 'BBSJ21', DATEADD(DAY, 1, DATEADD(HOUR, 12, GETDATE())), 'Diagnóstico de encendido'), -- Mañana
+	(1, '12.345.678-9', 'BBSJ21', DATEADD(DAY, 7, GETDATE()), 'Mantenimiento preventivo 10.000 km'), -- Proxima Semana
+	(1, '12.345.678-9', 'BBSJ21', DATEADD(DAY, 7, DATEADD(HOUR, 12, GETDATE())), 'Revisión de sistema eléctrico'); -- Proxima Semana
+
+SELECT TOP 1
+                        c.cliente_rut,
+                        cl.nombre + ' ' + cl.apaterno AS nombre_cliente,
+                        c.patente,
+                        v.marca,
+                        v.modelo,
+                        c.hora,
+                        c.descripcion
+                    FROM 
+                        cita c
+                        INNER JOIN cliente cl ON c.cliente_rut = cl.cliente_rut
+                        INNER JOIN vehiculo v ON c.patente = v.patente
+                    WHERE 
+                        c.hora > GETDATE()
+                        AND c.taller_id = 1
+                    ORDER BY 
+                        c.hora ASC
+
 
 SELECT * FROM [plan] p ;
 /* Insert de los planes OFICIAL */
-INSERT INTO [plan] (nombre, precio, perfiles)
-VALUES ('Basico', 30000, 0);
-INSERT INTO [plan] (nombre, precio, perfiles)
-VALUES ('Enterprise', 100000, 0);
-INSERT INTO [plan] (nombre, precio, perfiles)
-VALUES ('Company', 250000, 0);
+INSERT INTO [plan] (nombre, precio, perfiles) VALUES 
+		('Basico', 30000, 0),
+		('Enterprise', 100000, 0),
+		('Company', 250000, 0);
 
 
-SELECT * FROM ;
+SELECT * FROM cliente c ;
+INSERT INTO cliente (cliente_rut, nombre, apaterno, amaterno, correo, telefono) VALUES
+		('12.345.678-9', 'Mauricio', 'Urrutia', 'Chandia', 'correodeprueba@taller.com', '56999999999');
+
+
+SELECT * FROM vehiculo v ;
+INSERT INTO vehiculo (patente, cliente_rut, marca, modelo, color, km) VALUES
+		('BBSJ21', '12.345.678-9', 'Citroen', 'C4', 'Rojo Lucifer', '160.000');
+
+SELECT COUNT(*) AS total FROM cliente
 
 /* Data de usuarios Administradores para Pruebas */
 SELECT * FROM usuario u;
@@ -33,14 +67,16 @@ INSERT INTO usuario (usuario_rut,nombre,apellido,correo,password,telefono,direcc
 DROP TABLE IF EXISTS [cotizacion];
 DROP TABLE IF EXISTS [ot];
 DROP TABLE IF EXISTS [empleado];
+DROP TABLE IF EXISTS [vehiculo];
+DROP TABLE IF EXISTS [cliente];
 DROP TABLE IF EXISTS [taller];
 DROP TABLE IF EXISTS [usuario];
 DROP TABLE IF EXISTS [roles];
 DROP TABLE IF EXISTS [plan];
 DROP TABLE IF EXISTS [estado];
-DROP TABLE IF EXISTS [vehiculo];
+DROP TABLE IF EXISTS [usuarios];
 DROP TABLE IF EXISTS [cliente];
-DROP TABLE IF EXISTS [usuarios]; 
+DROP TABLE IF EXISTS [cita]
 
 
 CREATE TABLE [cliente] (
@@ -62,7 +98,7 @@ CREATE TABLE [vehiculo] (
     [km] VARCHAR(10),
     CONSTRAINT [PK_vehiculo] PRIMARY KEY CLUSTERED ([patente] ASC),
     CONSTRAINT [FK_vehiculo_cliente] FOREIGN KEY ([cliente_rut]) REFERENCES [cliente]([cliente_rut])
-        ON UPDATE CASCADE ON DELETE CASCADE
+    ON DELETE NO ACTION
 );
 
 CREATE TABLE [estado] (
@@ -83,9 +119,9 @@ CREATE TABLE [ot] (
     [estado_id] INT NOT NULL,
     CONSTRAINT [PK_ot] PRIMARY KEY CLUSTERED ([ot_id] ASC),
     CONSTRAINT [FK_ot_vehiculo] FOREIGN KEY ([vehiculo_patente]) REFERENCES [vehiculo]([patente])
-        ON UPDATE CASCADE ON DELETE CASCADE,
+        ON UPDATE CASCADE ON DELETE NO ACTION,
     CONSTRAINT [FK_ot_estado] FOREIGN KEY ([estado_id]) REFERENCES [estado]([estado_id])
-        ON UPDATE CASCADE ON DELETE CASCADE
+        ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
 CREATE TABLE [cotizacion] (
@@ -139,6 +175,21 @@ CREATE TABLE [taller] (
     CONSTRAINT [PK_taller] PRIMARY KEY CLUSTERED ([taller_id] ASC),
     CONSTRAINT [FK_taller_usuario] FOREIGN KEY ([usuario_rut]) REFERENCES [usuario]([usuario_rut])
         ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE [cita] (
+	[taller_id] INT NOT NULL,
+	[cliente_rut] VARCHAR(12) NOT NULL,
+	[patente] VARCHAR(8) NOT NULL,
+	[hora] DATETIME NOT NULL,
+	[descripcion] VARCHAR(250),
+	CONSTRAINT [PK_cita] PRIMARY KEY CLUSTERED ([cliente_rut], [patente], [hora]),
+    CONSTRAINT [FK_cita_cliente] FOREIGN KEY ([cliente_rut]) REFERENCES [cliente]([cliente_rut])
+        ON UPDATE CASCADE ON DELETE NO ACTION,
+    CONSTRAINT [FK_cita_vehiculo] FOREIGN KEY ([patente]) REFERENCES [vehiculo]([patente])
+        ON UPDATE CASCADE ON DELETE NO ACTION,
+    CONSTRAINT [FK_cita_taller] FOREIGN KEY ([taller_id]) REFERENCES [taller]([taller_id])
+        ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
 CREATE TABLE [empleado] (

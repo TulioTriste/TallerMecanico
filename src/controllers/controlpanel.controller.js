@@ -9,3 +9,22 @@ export const getCountRegisteredVehicles = async (req, res) => {
     res.status(500).json({ message: "Error al obtener el conteo de vehículos registrados" });
   }
 };
+
+export const getNextCita = async (req, res) => {
+  try {
+    const taller_id = req.params.id;
+    if (!taller_id) {
+      return res.status(400).json({ message: "El ID del taller es requerido" });
+    }
+    
+    const nextCita = await controlpanelModel.getNextCita(taller_id);
+    if (!nextCita) {
+      return res.json({ nextCita: null });
+    }
+
+    res.json({ nextCita });
+  } catch (error) {
+    console.error("Error al obtener la próxima cita:", error);
+    res.status(500).json({ message: "Error al obtener la próxima cita" });
+  }
+}
