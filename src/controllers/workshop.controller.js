@@ -14,7 +14,7 @@ export const getWorkshops = async (req, res) => {
 
 export const getTaller = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = req.params.taller_id;
     const taller = await tallerModel.getTallerById(id);
     
     if (!taller) {

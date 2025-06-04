@@ -5,6 +5,6 @@ import { getTaller, getWorkshops } from "../controllers/workshop.controller.js";
 const router = Router();
 
 router.get("/workshops", authRequired, getWorkshops);
-router.get("/workshop/dashboard/:id", authRequired, ownTallerRequired, getTaller);
+router.get("/workshop/dashboard/:taller_id", authRequired, ownTallerRequired, getTaller);
 
 export default router;

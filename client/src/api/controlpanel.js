@@ -2,7 +2,7 @@ import axios from "./axios";
 
 export const getCountRegisteredVehiclesRequest = async () => axios.get("/cp/registeredvehicles");
 
-export const getNextCita = async (id) => axios.get(`/cp/nextcita/${id}`);
+export const getNextCita = async (taller_id) => axios.get(`/cp/nextcita/${taller_id}`);
 
 export const getOrdenesDeTrabajoCount = async (taller_id) => axios.get(`/cp/ordenestrabajocount/${taller_id}`);
 
