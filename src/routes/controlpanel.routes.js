@@ -1,9 +1,17 @@
 import { Router } from "express";
-import { authRequired } from "../middlewares/validateToken.js";
-import { getCountRegisteredVehicles } from "../controllers/controlpanel.controller.js";
+import { authRequired, ownTallerRequired } from "../middlewares/validateToken.js";
+import { getCountRegisteredVehicles, getNextCita, getOrdenesDeTrabajoCount, getOrdenesDeTrabajoCountByEstado,
+    getCountCitasProx7Dias,
+    getRecentOTs
+ } from "../controllers/controlpanel.controller.js";
 
 const router = Router();
 
 router.get("/registeredvehicles", authRequired, getCountRegisteredVehicles);
+router.get("/nextcita/:taller_id", authRequired, ownTallerRequired, getNextCita);
+router.get("/ordenestrabajocount/:taller_id", authRequired, getOrdenesDeTrabajoCount);
+router.get("/ordenestrabajocountestado/:taller_id/:estado_id", authRequired, getOrdenesDeTrabajoCountByEstado);
+router.get("/citasprox7dias/:taller_id", authRequired, ownTallerRequired, getCountCitasProx7Dias);
+router.get("/otsrecientes/:taller_id/:days", authRequired, ownTallerRequired, getRecentOTs);
 
 export default router;

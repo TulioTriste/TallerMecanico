@@ -6,6 +6,8 @@ import cors from 'cors';
 import authRoutes from './routes/auth.routes.js';
 import workshopRoutes from './routes/workshop.routes.js';
 import controlpanelRoutes from './routes/controlpanel.routes.js';
+import clienteRoutes from './routes/cliente.routes.js';
+import vehiculoRouter from './routes/vehiculo.routes.js';
 import { FRONTEND_URL } from "./config.js";
 
 const app = express();
@@ -24,5 +26,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api", workshopRoutes);
 app.use("/api/cp", controlpanelRoutes);
+app.use("/api/cliente", clienteRoutes);
+app.use("/api/veh", vehiculoRouter);
 
 export default app;

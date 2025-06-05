@@ -4,27 +4,69 @@ import {
   Wrench, 
   MapPin, 
   Clock, 
-  ChevronRight, 
-  Plus,
+  ChevronRight,
   Home
 } from 'lucide-react';
 import { useWorkshop } from '../context/workshopContext';
 import { useDarkMode } from '../context/darkModeContext';
+import { useControlPanel } from '../context/controlPanelContext';
+import { formatCitaFecha } from "../utilities/stringformatter";
 
 const Workshops = () => {
-  const { darkMode, toggleDarkMode } = useDarkMode();
+  const { darkMode } = useDarkMode();
   const [selectedTaller, setSelectedTaller] = useState(null);
 
   const { workshops, cargarTalleres } = useWorkshop(); // Datos de ejemplo de los talleres
+  const { getNextCitaTaller, getOrdenesDeTrabajoCountByEstado, getCountCitasProx7Dias } = useControlPanel(); // Datos de ejemplo de la próxima cita
+  const [nextCitas, setNextCitas] = useState({});
+  const [ordenesTrabajo, setOrdenesTrabajo] = useState({});
+  const [proxCitas, setProxCitas] = useState({});
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchTalleres = async () => {
-      await cargarTalleres();
+    const fetchData = async () => {
+      await cargarTalleres(); // Actualiza la próxima cita al cargar los talleres
     }
-    fetchTalleres();
-  }, [cargarTalleres]);
+    fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    // Solo cuando los talleres están cargados
+    const fetchNextCitas = async () => {
+      const citas = {};
+      for (const taller of workshops) {
+        const cita = await getNextCitaTaller(taller.taller_id);
+        citas[taller.taller_id] = cita;
+      }
+      setNextCitas(citas);
+    };
+    if (workshops.length > 0) {
+      fetchNextCitas();
+    }
+  }, [workshops, getNextCitaTaller]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      const ordenes = {};
+      for (const taller of workshops) {
+        const data = await getOrdenesDeTrabajoCountByEstado(taller.taller_id, 2);
+        ordenes[taller.taller_id] = data;
+      }
+      setOrdenesTrabajo(ordenes);
+
+      const citasProx = {};
+      for (const taller of workshops) {
+        const data = await getCountCitasProx7Dias(taller.taller_id);
+        citasProx[taller.taller_id] = data;
+      }
+      setProxCitas(citasProx);
+    };
+    if (workshops.length > 0) {
+      fetchStats();
+    }
+  }, [workshops]);
 
   const handleTallerSelect = (taller) => {
     setSelectedTaller(taller.id);
@@ -128,7 +170,7 @@ const Workshops = () => {
                   <div className="flex items-center space-x-2">
                     <Clock className={`w-4 h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                     <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Próxima cita: {taller.proximaCita}00:00
+                      Próxima cita: {nextCitas[taller.taller_id]?.hora ? formatCitaFecha(nextCitas[taller.taller_id].hora) : 'Sin citas'}
                     </span>
                   </div>
                 </div>
@@ -139,11 +181,10 @@ const Workshops = () => {
                     <div className={`p-3 rounded-lg ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
                       <div className="text-center">
                         <div className={`text-2xl font-bold ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                          {taller.vehiculosEnServicio}
-                          0
+                          {proxCitas[taller.taller_id]}
                         </div>
                         <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                          Vehículos en servicio
+                          Proximas Citas (1 Semana)
                         </div>
                       </div>
                     </div>
@@ -151,8 +192,7 @@ const Workshops = () => {
                     <div className={`p-3 rounded-lg ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
                       <div className="text-center">
                         <div className={`text-2xl font-bold ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
-                          {taller.ordenesActivas}
-                          0
+                          {ordenesTrabajo[taller.taller_id]}
                         </div>
                         <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                           Órdenes activas

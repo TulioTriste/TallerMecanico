@@ -1,43 +1,81 @@
 import { useState, useEffect } from 'react';
 import { 
-  Wrench, 
-  Car, 
   Users, 
   Calendar, 
   Clipboard, 
   DollarSign,
-  ArrowLeft,
-  Settings,
   Plus,
   MoreVertical,
   Clock,
-  MapPin,
   Phone,
   AlertCircle,
-  CheckCircle2,
-  Timer,
   Zap
 } from 'lucide-react';
 import { useWorkshop } from '../context/workshopContext';
 import { useParams } from 'react-router-dom';
 import { useDarkMode } from '../context/darkModeContext';
 import { Link } from 'react-router-dom';
+import { useControlPanel } from '../context/controlPanelContext';
+import { useCliente } from '../context/clienteContext';
+import { formatFechaDDMMYYYY } from '../utilities/stringformatter';
+import { useVehiculo } from '../context/vehiculoContext';
+
+
 const WorkshopDash = () => {
-  const { darkMode, toggleDarkMode } = useDarkMode();
+  const { darkMode } = useDarkMode();
 
   const { id } = useParams();
   const [taller, setTaller] = useState(null);
   const { getTaller } = useWorkshop();
+  const { getOrdenesDeTrabajoCountByEstado, getOtsRecientes } = useControlPanel();
+  const { getClienteName } = useCliente();
+  const { getVehiculoName } = useVehiculo();
+  const [otCount, setOtCount] = useState(0);
+  const [otRecents, setOtRecents] = useState([]);
+
+  const loadTaller = async () => {
+    try {
+      const taller = await getTaller(id);
+      setTaller(taller);
+    } catch (error) {
+      console.error("Error al cargar el taller:", error);
+      setTaller(null);
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const ordenesCount = await getOrdenesDeTrabajoCountByEstado(id, 2); // Estado 2 es "en_proceso"
+      setOtCount(ordenesCount);
+    } catch (error) {
+      console.error("Error al cargar las estadísticas:", error);
+    }
+  }
+
+  const loadRecentOTs = async () => {
+    try {
+      const recentOTs = await getOtsRecientes(id, 7); // El numero es la cantidad de días
+      const recentOTsWithChanges = await Promise.all(
+        recentOTs.map(async (orden) => {
+          const nombre = await getClienteName(orden.cliente_rut);
+          const vehiculoName = await getVehiculoName(orden.vehiculo_patente);
+          return { ...orden, cliente: nombre, vehiculo: vehiculoName };
+        })
+      );
+      setOtRecents(recentOTsWithChanges);
+    } catch (error) {
+      console.error("Error al cargar las órdenes recientes:", error);
+      setOtRecents([]);
+    }
+  };
 
   useEffect(() => {
-    const fetchTaller = async () => {  
-      const taller = await getTaller(id); // Suponiendo que el ID del taller es 1
-      setTaller(taller);
-    };
-    fetchTaller();
-  }, [getTaller, id]);
+    loadTaller();
+    loadStats();
+    loadRecentOTs();
+  }, []);
 
-  // Estadísticas del dashboard
+  // Estadísticas simuladas
   const estadisticas = {
     ordenesActivas: 12,
     solicitudesMes: 156,  // Cambiado de clientesHoy
@@ -108,11 +146,11 @@ const WorkshopDash = () => {
 
   const getEstadoColor = (estado) => {
     switch (estado) {
-      case 'completado':
+      case 3:
         return darkMode ? 'text-green-400 bg-green-900/30' : 'text-green-700 bg-green-100';
-      case 'en_proceso':
+      case 2:
         return darkMode ? 'text-blue-400 bg-blue-900/30' : 'text-blue-700 bg-blue-100';
-      case 'pendiente':
+      case 1:
         return darkMode ? 'text-yellow-400 bg-yellow-900/30' : 'text-yellow-700 bg-yellow-100';
       default:
         return darkMode ? 'text-gray-400 bg-gray-800' : 'text-gray-700 bg-gray-100';
@@ -121,9 +159,9 @@ const WorkshopDash = () => {
 
   const getEstadoTexto = (estado) => {
     switch (estado) {
-      case 'completado': return 'Completado';
-      case 'en_proceso': return 'En Proceso';
-      case 'pendiente': return 'Pendiente';
+      case 3: return 'Completado';
+      case 2: return 'En Proceso';
+      case 1: return 'Pendiente';
       default: return 'Desconocido';
     }
   };
@@ -188,7 +226,7 @@ const WorkshopDash = () => {
                 <div>
                   <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Órdenes Activas</p>
                   <p className={`text-2xl font-bold ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
-                    {estadisticas.ordenesActivas}
+                    {otCount}
                   </p>
                 </div>
                 <Clipboard className={`h-8 w-8 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
@@ -238,15 +276,15 @@ const WorkshopDash = () => {
               
               <div className="p-6">
                 <div className="space-y-4">
-                  {ordenesRecientes.map((orden) => (
-                    <div key={orden.id} className={`p-4 rounded-lg border ${darkMode ? 'border-gray-700 bg-gray-700/30' : 'border-gray-200 bg-gray-50'}`}>
+                  {otRecents.map((orden) => (
+                    <div key={orden.ot_id} className={`p-4 rounded-lg border ${darkMode ? 'border-gray-700 bg-gray-700/30' : 'border-gray-200 bg-gray-50'}`}>
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center space-x-3">
-                          <div className={`px-3 py-1 rounded-full text-xs font-medium ${getEstadoColor(orden.estado)}`}>
-                            {getEstadoTexto(orden.estado)}
+                          <div className={`px-3 py-1 rounded-full text-xs font-medium ${getEstadoColor(orden.estado_id)}`}>
+                            {getEstadoTexto(orden.estado_id)}
                           </div>
                           <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                            {orden.id}
+                            ORD-{orden.ot_id}
                           </span>
                         </div>
                         <button className={`p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600`}>
@@ -263,19 +301,19 @@ const WorkshopDash = () => {
                         
                         <div>
                           <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Servicio</p>
-                          <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{orden.servicio}</p>
+                          <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{orden.descripcion}</p>
                           <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Técnico: {orden.tecnico}</p>
                         </div>
                         
                         <div>
                           <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Horario</p>
                           <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                            {orden.horaInicio} - {orden.estimado}
+                            {formatFechaDDMMYYYY(orden.fecha_entrada)}
                           </p>
                           <div className="flex items-center space-x-1 mt-1">
                             <Clock className="w-3 h-3 text-blue-500" />
                             <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                              Est. {orden.estimado}
+                              Est. {formatFechaDDMMYYYY(orden.fecha_salida)}
                             </span>
                           </div>
                         </div>
