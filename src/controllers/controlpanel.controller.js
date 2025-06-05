@@ -72,4 +72,23 @@ export const getCountCitasProx7Dias = async (req, res) => {
     console.error("Error al obtener el conteo de citas próximas a 7 días:", error);
     res.status(500).json({ message: "Error al obtener el conteo de citas próximas a 7 días" });
   }
-}
+};
+
+export const getRecentOTs = async (req, res) => {
+  try {
+    const { taller_id, days } = req.params;
+    if (!taller_id) {
+      return res.status(400).json({ message: "El ID del taller es requerido" });
+    }
+
+    if (!days || isNaN(days)) {
+      return res.status(400).json({ message: "El número de días es requerido y debe ser un número" });
+    }
+
+    const recentOTs = await controlpanelModel.getRecentOTs(taller_id, days);
+    res.json(recentOTs);
+  } catch (error) {
+    console.error("Error al obtener las órdenes de trabajo recientes:", error);
+    res.status(500).json({ message: "Error al obtener las órdenes de trabajo recientes" });
+  }
+};

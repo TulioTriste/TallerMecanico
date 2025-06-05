@@ -164,6 +164,30 @@ class ControlPanelModel {
             throw error;
         }
     }
+
+    async getRecentOTs(taller_id, days) {
+        try {
+            const pool = await connectToDatabase();
+            const result = await pool.request()
+                .input("tallerId", sql.Int, taller_id)
+                .input("days", sql.Int, days)
+                .query(`
+                    SELECT 
+                        *
+                    FROM 
+                        ot
+                    WHERE 
+                        taller_id = @tallerId
+                        AND fecha_entrada >= DATEADD(DAY, -@days, CAST(GETDATE() AS DATE))
+                        AND fecha_entrada < DATEADD(DAY, (@days + 1), CAST(GETDATE() AS DATE))
+                    ORDER BY fecha_entrada DESC
+                `);
+            return result.recordset;
+        } catch (error) {
+            console.error("Error al obtener las órdenes de trabajo recientes:", error);
+            throw error;
+        }
+    }
 }
 
 export default new ControlPanelModel();

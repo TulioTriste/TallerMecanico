@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { getCountRegisteredVehiclesRequest, getNextCita } from "../api/controlpanel";
+import { getCountCitasProx7DiasRequest, getCountRegisteredVehiclesRequest, getNextCitaRequest, getOrdenesDeTrabajoCountByEstadoRequest, getOrdenesDeTrabajoCountRequest, getRecentOTsRequest } from "../api/controlpanel";
 
 const ControlPanelContext = createContext();
 
@@ -31,7 +31,7 @@ export function ControlPanelProvider({ children }) {
 
   const getNextCitaTaller = async (id) => {
     try {
-      const res = await getNextCita(id);
+      const res = await getNextCitaRequest(id);
       if (!res.data || !res.data.nextCita) {
         return false; // En caso de no encontrar la cita, retornar false o un valor predeterminado
       }
@@ -46,7 +46,7 @@ export function ControlPanelProvider({ children }) {
 
   const getOrdenesDeTrabajoCount = async (taller_id) => {
     try {
-      const res = await getOrdenesDeTrabajoCount(taller_id);
+      const res = await getOrdenesDeTrabajoCountRequest(taller_id);
       return res.data.count;
     } catch (error) {
       console.error("Error al obtener el conteo de órdenes de trabajo:", error);
@@ -56,7 +56,7 @@ export function ControlPanelProvider({ children }) {
 
   const getOrdenesDeTrabajoCountByEstado = async (taller_id, estado_id) => {
     try {
-      const res = await getOrdenesDeTrabajoCountByEstado(taller_id, estado_id);
+      const res = await getOrdenesDeTrabajoCountByEstadoRequest(taller_id, estado_id);
       return res.data.count;
     } catch (error) {
       console.error("Error al obtener el conteo de órdenes de trabajo por estado:", error);
@@ -66,11 +66,23 @@ export function ControlPanelProvider({ children }) {
 
   const getCountCitasProx7Dias = async (taller_id) => {
     try {
-      const res = await getCountCitasProx7Dias(taller_id);
+      const res = await getCountCitasProx7DiasRequest(taller_id);
       return res.data.count;
     } catch (error) {
       console.error("Error al obtener el conteo de citas próximas a 7 días:", error);
       return 0; // En caso de error, retornar 0 o un valor predeterminado
+    }
+  }
+
+  const getOtsRecientes = async (taller_id, days) => {
+    try {
+      const res = await getRecentOTsRequest(taller_id, days);
+      console.log("Órdenes de trabajo recientes:", res.data);
+      return res.data;
+    }
+    catch (error) {
+      console.error("Error al obtener las órdenes de trabajo recientes:", error);
+      return []; // En caso de error, retornar un array vacío o un valor predeterminado
     }
   }
 
@@ -82,7 +94,8 @@ export function ControlPanelProvider({ children }) {
         getNextCitaTaller,
         getOrdenesDeTrabajoCount,
         getOrdenesDeTrabajoCountByEstado,
-        getCountCitasProx7Dias
+        getCountCitasProx7Dias,
+        getOtsRecientes
       }}
     >
       {children}

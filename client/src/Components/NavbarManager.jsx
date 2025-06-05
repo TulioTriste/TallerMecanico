@@ -4,7 +4,7 @@ import PrivateNavbar from "./NavbarPrincipal/PrivateNavbar";
 
 export default function NavbarManager() {
   const { isAuthenticated } = useAuth();
-  console.log('Estado de autenticación:', isAuthenticated);
+  //console.log('Estado de autenticación:', isAuthenticated);
 
   return isAuthenticated ? <PrivateNavbar /> : <PublicNavbar />;
 }

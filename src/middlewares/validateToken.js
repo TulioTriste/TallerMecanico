@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { TOKEN_KEY_SECRET } from '../config.js';
 import tallerModel from "../models/taller.model.js";
+import userModel from '../models/user.model.js';
 
 export const authRequired = (req, res, next) => {
     const { token } = req.cookies;
@@ -41,4 +42,16 @@ export const ownTallerRequired = async (req, res, next) => {
         console.error('Error en ownTallerRequired:', error);
         res.status(500).json({ message: 'Error interno del servidor' });
     }
+}
+
+export const planRequired = (req, res, next) => {
+    const rut = req.user.rut;
+
+    const hasPlan = userModel.hasPlanUser(rut);
+
+    if (!hasPlan) {
+        return res.status(403).json({ message: 'Plan requerido para acceder a esta funcionalidad' });
+    }
+
+    next();
 }

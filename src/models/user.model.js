@@ -113,6 +113,25 @@ class UserModel {
       throw error;
     }
   }
-}
+
+  async hasPlanUser(rut) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+        .request()
+        .input("usuario_rut", sql.VarChar, rut)
+        .query(`SELECT 
+                    plan_id
+                FROM 
+                    usuario
+                WHERE usuario_rut = @usuario_rut`);
+      
+      return result.recordset[0].plan_id !== undefined && result.recordset[0].plan_id !== null;
+    } catch (error) {
+      console.error("Error al verificar si el usuario tiene un plan:", error);
+      throw error;
+    }
+  }
+};
 
 export default new UserModel();

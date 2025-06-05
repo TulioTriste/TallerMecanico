@@ -3,6 +3,12 @@ SELECT * FROM taller;
 SELECT * FROM taller WHERE taller.usuario_rut = '21.389.785-3';
 
 
+SELECT 
+                    plan_id
+                FROM 
+                    usuario
+                WHERE usuario_rut = '21.389.785-3';
+
 SELECT TOP 1
         c.cliente_rut,
         cl.nombre + ' ' + cl.apaterno AS nombre_cliente,
@@ -26,9 +32,11 @@ SELECT * FROM [plan] p ;
 
 
 SELECT * FROM cliente c ;
+SELECT nombre + ' ' + apaterno nombre FROM cliente WHERE cliente_rut = '12.345.678-9';
 
 
 SELECT * FROM vehiculo v ;
+SELECT marca + ' ' + modelo 
 
 SELECT COUNT(*) AS total FROM cliente
 
@@ -39,19 +47,31 @@ SELECT * FROM estado;
 SELECT * FROM ot;
 
 SELECT 
-	COUNT(*) AS total
-FROM 
-    ot
-WHERE 
-    taller_id = 1 AND estado_id = 2
-GROUP BY 
-    taller_id;
+		COUNT(*) AS total
+	FROM 
+	    ot
+	WHERE 
+	    taller_id = 1 AND estado_id = 2
+	GROUP BY 
+	    taller_id;
 
 SELECT 
-	COUNT(*) AS total
-FROM 
-	cita
-WHERE 
-	hora >= CAST(GETDATE() AS DATE)
- 	AND hora < DATEADD(DAY, 7, CAST(GETDATE() AS DATE))
- 	AND taller_id = 1;
+		COUNT(*) AS total
+	FROM 
+		cita
+	WHERE 
+		hora >= CAST(GETDATE() AS DATE)
+	 	AND hora < DATEADD(DAY, 7, CAST(GETDATE() AS DATE))
+	 	AND taller_id = 1;
+
+
+SELECT 
+		*
+	FROM 
+		ot
+	WHERE 
+		taller_id = 1
+		AND fecha_entrada >= DATEADD(DAY, -7, CAST(GETDATE() AS DATE))
+	 	AND fecha_entrada < DATEADD(DAY, 8, CAST(GETDATE() AS DATE))
+	ORDER BY fecha_entrada DESC;
+

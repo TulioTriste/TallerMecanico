@@ -1,17 +1,22 @@
 /* Query Completa de creación de tablas */
 DROP TABLE IF EXISTS [cotizacion];
 DROP TABLE IF EXISTS [ot];
-DROP TABLE IF EXISTS [empleado];
-DROP TABLE IF EXISTS [cliente];
 DROP TABLE IF EXISTS [cita];
+DROP TABLE IF EXISTS [empleado];
 DROP TABLE IF EXISTS [vehiculo];
 DROP TABLE IF EXISTS [taller];
 DROP TABLE IF EXISTS [usuario];
 DROP TABLE IF EXISTS [roles];
 DROP TABLE IF EXISTS [plan];
 DROP TABLE IF EXISTS [estado];
-DROP TABLE IF EXISTS [usuarios];
+DROP TABLE IF EXISTS [cliente];
 
+CREATE TABLE [estado] (
+    [estado_id] INT NOT NULL,
+    [nombre] VARCHAR(120),
+    [descripcion] VARCHAR(250),
+    CONSTRAINT [PK_estado] PRIMARY KEY CLUSTERED ([estado_id] ASC)
+);
 
 CREATE TABLE [cliente] (
     [cliente_rut] VARCHAR(12) NOT NULL,
@@ -28,49 +33,11 @@ CREATE TABLE [vehiculo] (
     [cliente_rut] VARCHAR(12) NOT NULL,
     [marca] VARCHAR(120) NOT NULL,
     [modelo] VARCHAR(120) NOT NULL,
+    [anio] INT NOT NULL,
     [color] VARCHAR(120) NOT NULL,
     CONSTRAINT [PK_vehiculo] PRIMARY KEY CLUSTERED ([patente] ASC),
     CONSTRAINT [FK_vehiculo_cliente] FOREIGN KEY ([cliente_rut]) REFERENCES [cliente]([cliente_rut])
     ON DELETE NO ACTION
-);
-
-CREATE TABLE [estado] (
-    [estado_id] INT NOT NULL,
-    [nombre] VARCHAR(120),
-    [descripcion] VARCHAR(250),
-    CONSTRAINT [PK_estado] PRIMARY KEY CLUSTERED ([estado_id] ASC)
-);
-
-CREATE TABLE [ot] (
-    [ot_id] INT NOT NULL IDENTITY(1,1),
-    [taller_id] INT NOT NULL,
-    [vehiculo_patente] VARCHAR(8) NOT NULL,
-    [fecha_entrada] DATE NOT NULL,
-    [fecha_salida] DATE,
-    [descripcion] VARCHAR(250),
-    [km] VARCHAR(10) NOT NULL,
-    [estado_id] INT NOT NULL,
-    CONSTRAINT [PK_ot] PRIMARY KEY CLUSTERED ([ot_id] ASC),
-    CONSTRAINT [FK_ot_vehiculo] FOREIGN KEY ([vehiculo_patente]) REFERENCES [vehiculo]([patente])
-        ON UPDATE CASCADE ON DELETE NO ACTION,
-    CONSTRAINT [FK_ot_estado] FOREIGN KEY ([estado_id]) REFERENCES [estado]([estado_id])
-        ON UPDATE CASCADE ON DELETE NO ACTION
-);
-
-CREATE TABLE [cotizacion] (
-    [cotizacion_id] INT NOT NULL IDENTITY(1,1),
-    [ot_id] INT NOT NULL,
-    [precio] INT NOT NULL,
-    CONSTRAINT [PK_cotizacion] PRIMARY KEY CLUSTERED ([cotizacion_id] ASC),
-    CONSTRAINT [FK_cotizacion_ot] FOREIGN KEY ([ot_id]) REFERENCES [ot]([ot_id])
-        ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE TABLE [roles] (
-    [roles_id] INT NOT NULL IDENTITY(1,1),
-    [nombre] VARCHAR(250) NOT NULL,
-    [descripcion] VARCHAR(250),
-    CONSTRAINT [PK_roles] PRIMARY KEY CLUSTERED ([roles_id] ASC)
 );
 
 CREATE TABLE [plan] (
@@ -96,6 +63,13 @@ CREATE TABLE [usuario] (
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+CREATE TABLE [roles] (
+    [roles_id] INT NOT NULL IDENTITY(1,1),
+    [nombre] VARCHAR(250) NOT NULL,
+    [descripcion] VARCHAR(250),
+    CONSTRAINT [PK_roles] PRIMARY KEY CLUSTERED ([roles_id] ASC)
+);
+
 CREATE TABLE [taller] (
     [taller_id] INT NOT NULL IDENTITY(1,1),
     [usuario_rut] VARCHAR(13) NOT NULL,
@@ -108,21 +82,6 @@ CREATE TABLE [taller] (
     CONSTRAINT [PK_taller] PRIMARY KEY CLUSTERED ([taller_id] ASC),
     CONSTRAINT [FK_taller_usuario] FOREIGN KEY ([usuario_rut]) REFERENCES [usuario]([usuario_rut])
         ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE TABLE [cita] (
-	[taller_id] INT NOT NULL,
-	[cliente_rut] VARCHAR(12) NOT NULL,
-	[patente] VARCHAR(8) NOT NULL,
-	[hora] DATETIME NOT NULL,
-	[descripcion] VARCHAR(250),
-	CONSTRAINT [PK_cita] PRIMARY KEY CLUSTERED ([cliente_rut], [patente], [hora]),
-    CONSTRAINT [FK_cita_cliente] FOREIGN KEY ([cliente_rut]) REFERENCES [cliente]([cliente_rut])
-        ON UPDATE CASCADE ON DELETE NO ACTION,
-    CONSTRAINT [FK_cita_vehiculo] FOREIGN KEY ([patente]) REFERENCES [vehiculo]([patente])
-        ON UPDATE CASCADE ON DELETE NO ACTION,
-    CONSTRAINT [FK_cita_taller] FOREIGN KEY ([taller_id]) REFERENCES [taller]([taller_id])
-        ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
 CREATE TABLE [empleado] (
@@ -139,4 +98,48 @@ CREATE TABLE [empleado] (
         ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT [FK_empleado_roles] FOREIGN KEY ([roles_id]) REFERENCES [roles]([roles_id])
         ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE [ot] (
+    [ot_id] INT NOT NULL IDENTITY(1,1),
+    [cliente_rut] VARCHAR(12) NOT NULL,
+    [taller_id] INT NOT NULL,
+    [vehiculo_patente] VARCHAR(8) NOT NULL,
+    [tecnico] VARCHAR(150) NOT NULL,
+    [fecha_entrada] DATE NOT NULL,
+    [fecha_salida] DATE NOT NULL,
+    [descripcion] VARCHAR(250),
+    [km] VARCHAR(10) NOT NULL,
+    [estado_id] INT NOT NULL,
+    CONSTRAINT [PK_ot] PRIMARY KEY CLUSTERED ([ot_id] ASC),
+    CONSTRAINT [FK_ot_cliente] FOREIGN KEY ([cliente_rut]) REFERENCES [cliente]([cliente_rut])
+    	ON UPDATE CASCADE ON DELETE NO ACTION,
+    CONSTRAINT [FK_ot_vehiculo] FOREIGN KEY ([vehiculo_patente]) REFERENCES [vehiculo]([patente])
+        ON UPDATE CASCADE ON DELETE NO ACTION,
+    CONSTRAINT [FK_ot_estado] FOREIGN KEY ([estado_id]) REFERENCES [estado]([estado_id])
+        ON UPDATE CASCADE ON DELETE NO ACTION
+);
+
+CREATE TABLE [cotizacion] (
+    [cotizacion_id] INT NOT NULL IDENTITY(1,1),
+    [ot_id] INT NOT NULL,
+    [precio] INT NOT NULL,
+    CONSTRAINT [PK_cotizacion] PRIMARY KEY CLUSTERED ([cotizacion_id] ASC),
+    CONSTRAINT [FK_cotizacion_ot] FOREIGN KEY ([ot_id]) REFERENCES [ot]([ot_id])
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE [cita] (
+	[taller_id] INT NOT NULL,
+	[cliente_rut] VARCHAR(12) NOT NULL,
+	[patente] VARCHAR(8) NOT NULL,
+	[hora] DATETIME NOT NULL,
+	[descripcion] VARCHAR(250),
+	CONSTRAINT [PK_cita] PRIMARY KEY CLUSTERED ([cliente_rut], [patente], [hora]),
+    CONSTRAINT [FK_cita_cliente] FOREIGN KEY ([cliente_rut]) REFERENCES [cliente]([cliente_rut])
+        ON UPDATE CASCADE ON DELETE NO ACTION,
+    CONSTRAINT [FK_cita_vehiculo] FOREIGN KEY ([patente]) REFERENCES [vehiculo]([patente])
+        ON UPDATE CASCADE ON DELETE NO ACTION,
+    CONSTRAINT [FK_cita_taller] FOREIGN KEY ([taller_id]) REFERENCES [taller]([taller_id])
+        ON UPDATE CASCADE ON DELETE NO ACTION
 );

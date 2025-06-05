@@ -11,14 +11,13 @@ import { useWorkshop } from '../context/workshopContext';
 import { useDarkMode } from '../context/darkModeContext';
 import { useControlPanel } from '../context/controlPanelContext';
 import { formatCitaFecha } from "../utilities/stringformatter";
-import { getCountCitasProx7Dias, getOrdenesDeTrabajoCountByEstado } from '../api/controlpanel';
 
 const Workshops = () => {
   const { darkMode } = useDarkMode();
   const [selectedTaller, setSelectedTaller] = useState(null);
 
   const { workshops, cargarTalleres } = useWorkshop(); // Datos de ejemplo de los talleres
-  const { getNextCitaTaller } = useControlPanel(); // Datos de ejemplo de la próxima cita
+  const { getNextCitaTaller, getOrdenesDeTrabajoCountByEstado, getCountCitasProx7Dias } = useControlPanel(); // Datos de ejemplo de la próxima cita
   const [nextCitas, setNextCitas] = useState({});
   const [ordenesTrabajo, setOrdenesTrabajo] = useState({});
   const [proxCitas, setProxCitas] = useState({});
@@ -52,15 +51,15 @@ const Workshops = () => {
     const fetchStats = async () => {
       const ordenes = {};
       for (const taller of workshops) {
-        const res = await getOrdenesDeTrabajoCountByEstado(taller.taller_id, 2);
-        ordenes[taller.taller_id] = res.data.count;
+        const data = await getOrdenesDeTrabajoCountByEstado(taller.taller_id, 2);
+        ordenes[taller.taller_id] = data;
       }
       setOrdenesTrabajo(ordenes);
 
       const citasProx = {};
       for (const taller of workshops) {
-        const res = await getCountCitasProx7Dias(taller.taller_id);
-        citasProx[taller.taller_id] = res.data.count;
+        const data = await getCountCitasProx7Dias(taller.taller_id);
+        citasProx[taller.taller_id] = data;
       }
       setProxCitas(citasProx);
     };
