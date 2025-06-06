@@ -1,37 +1,50 @@
-import { useState, useEffect } from 'react';
-import { 
+import { useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import {
   UserPlus,
-  Moon, 
+  Moon,
   Sun,
   Mail,
   Phone,
   Building2,
-  UserCog
-} from 'lucide-react';
+  UserCog,
+  Eye,
+  EyeOff,
+  CreditCard,
+} from "lucide-react";
 
 export default function FormularioEmpleado() {
+  const navigate = useNavigate();
+  const { id: tallerId } = useParams(); // Obtener el ID del taller de la URL
+
   const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const savedMode = localStorage?.getItem('darkMode');
-      return savedMode === 'true' || window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (typeof window !== "undefined") {
+      const savedMode = localStorage?.getItem("darkMode");
+      return (
+        savedMode === "true" ||
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+      );
     }
     return false;
   });
 
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [roles, setRoles] = useState([
-    { id: 1, nombre: 'Administrador' },
-    { id: 2, nombre: 'Mecánico' },
-    { id: 3, nombre: 'Recepcionista' }
+    { id: 1, nombre: "Administrador" },
+    { id: 2, nombre: "Mecánico" },
+    { id: 3, nombre: "Recepcionista" },
   ]);
 
   const [formData, setFormData] = useState({
-    nombre: '',
-    apellido: '',
-    correo: '',
-    celular: '',
-    roles_id: '',
-    taller_id: ''
+    empleado_rut: "",
+    taller_id: tallerId || "", // Usar el ID del taller si está disponible
+    roles_id: "",
+    nombre: "",
+    apellido: "",
+    cel: "",
+    correo: "",
+    password: "",
   });
 
   const handleSubmit = async (e) => {
@@ -39,13 +52,13 @@ export default function FormularioEmpleado() {
     setLoading(true);
     try {
       // Aquí iría la lógica para enviar los datos al backend
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      alert('Empleado guardado exitosamente');
-      // Redireccionar a la lista de empleados
-      window.location.href = '/empleados';
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      alert("Empleado guardado exitosamente");
+      // Usar navigate en lugar de window.location.href
+      navigate(`/workshop/dashboard/${tallerId}`);
     } catch (error) {
-      console.error('Error:', error);
-      alert('Error al guardar el empleado');
+      console.error("Error:", error);
+      alert("Error al guardar el empleado");
     } finally {
       setLoading(false);
     }
@@ -53,58 +66,106 @@ export default function FormularioEmpleado() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   return (
-    <div className={`min-h-screen py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${
-      darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-gray-100'
-    }`}>
+    <div
+      className={`min-h-screen pt-16 py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${
+        darkMode ? "bg-gray-900" : "bg-gradient-to-br from-gray-50 to-gray-100"
+      }`}
+    >
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div className="flex-1">
-            <div className={`inline-flex items-center justify-center p-3 rounded-full mb-4 ${
-              darkMode ? 'bg-blue-900' : 'bg-blue-100'
-            }`}>
-              <UserPlus className={`w-8 h-8 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+            <div
+              className={`inline-flex items-center justify-center p-3 rounded-full mb-4 ${
+                darkMode ? "bg-blue-900" : "bg-blue-100"
+              }`}
+            >
+              <UserPlus
+                className={`w-8 h-8 ${darkMode ? "text-blue-400" : "text-blue-600"}`}
+              />
             </div>
-            <h1 className={`text-3xl font-bold mb-2 ${
-              darkMode ? 'text-white' : 'text-gray-900'
-            }`}>
+            <h1
+              className={`text-3xl font-bold mb-2 ${
+                darkMode ? "text-white" : "text-gray-900"
+              }`}
+            >
               Nuevo Empleado
             </h1>
-            <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>
               Ingresa los datos del nuevo empleado
             </p>
           </div>
-          
+
           <button
             onClick={() => setDarkMode(!darkMode)}
             className={`p-2 rounded-full transition-colors ${
               darkMode
-                ? 'bg-gray-800 text-yellow-300 hover:bg-gray-700'
-                : 'bg-white text-gray-700 hover:bg-gray-100 shadow-sm'
+                ? "bg-gray-800 text-yellow-300 hover:bg-gray-700"
+                : "bg-white text-gray-700 hover:bg-gray-100 shadow-sm"
             }`}
           >
-            {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            {darkMode ? (
+              <Sun className="w-5 h-5" />
+            ) : (
+              <Moon className="w-5 h-5" />
+            )}
           </button>
         </div>
 
         {/* Formulario */}
-        <form onSubmit={handleSubmit} className={`rounded-xl shadow-md p-8 ${
-          darkMode ? 'bg-gray-800' : 'bg-white'
-        }`}>
+        <form
+          onSubmit={handleSubmit}
+          className={`rounded-xl shadow-md p-8 ${
+            darkMode ? "bg-gray-800" : "bg-white"
+          }`}
+        >
           <div className="space-y-6">
+            {/* RUT */}
+            <div>
+              <label
+                className={`block text-sm font-medium mb-1 ${
+                  darkMode ? "text-gray-300" : "text-gray-700"
+                }`}
+              >
+                RUT
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                  <CreditCard
+                    className={darkMode ? "text-gray-500" : "text-gray-400"}
+                  />
+                </div>
+                <input
+                  type="text"
+                  name="empleado_rut"
+                  value={formData.empleado_rut}
+                  onChange={handleInputChange}
+                  placeholder="Ej: 12345678-9"
+                  required
+                  className={`block w-full pl-10 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    darkMode
+                      ? "bg-gray-700 border-gray-600 text-white"
+                      : "border-gray-300 text-gray-900"
+                  }`}
+                />
+              </div>
+            </div>
+
             {/* Datos personales */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className={`block text-sm font-medium mb-1 ${
-                  darkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}>
+                <label
+                  className={`block text-sm font-medium mb-1 ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
                   Nombre
                 </label>
                 <input
@@ -115,16 +176,18 @@ export default function FormularioEmpleado() {
                   required
                   className={`block w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                     darkMode
-                      ? 'bg-gray-700 border-gray-600 text-white'
-                      : 'border-gray-300 text-gray-900'
+                      ? "bg-gray-700 border-gray-600 text-white"
+                      : "border-gray-300 text-gray-900"
                   }`}
                 />
               </div>
-              
+
               <div>
-                <label className={`block text-sm font-medium mb-1 ${
-                  darkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}>
+                <label
+                  className={`block text-sm font-medium mb-1 ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
                   Apellido
                 </label>
                 <input
@@ -135,75 +198,89 @@ export default function FormularioEmpleado() {
                   required
                   className={`block w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                     darkMode
-                      ? 'bg-gray-700 border-gray-600 text-white'
-                      : 'border-gray-300 text-gray-900'
+                      ? "bg-gray-700 border-gray-600 text-white"
+                      : "border-gray-300 text-gray-900"
                   }`}
                 />
               </div>
             </div>
 
             {/* Contacto */}
-            <div>
-              <label className={`block text-sm font-medium mb-1 ${
-                darkMode ? 'text-gray-300' : 'text-gray-700'
-              }`}>
-                Correo Electrónico
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                  <Mail className={darkMode ? 'text-gray-500' : 'text-gray-400'} />
-                </div>
-                <input
-                  type="email"
-                  name="correo"
-                  value={formData.correo}
-                  onChange={handleInputChange}
-                  required
-                  className={`block w-full pl-10 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    darkMode
-                      ? 'bg-gray-700 border-gray-600 text-white'
-                      : 'border-gray-300 text-gray-900'
-                  }`}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className={`block text-sm font-medium mb-1 ${
-                darkMode ? 'text-gray-300' : 'text-gray-700'
-              }`}>
-                Celular
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                  <Phone className={darkMode ? 'text-gray-500' : 'text-gray-400'} />
-                </div>
-                <input
-                  type="tel"
-                  name="celular"
-                  value={formData.celular}
-                  onChange={handleInputChange}
-                  required
-                  className={`block w-full pl-10 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    darkMode
-                      ? 'bg-gray-700 border-gray-600 text-white'
-                      : 'border-gray-300 text-gray-900'
-                  }`}
-                />
-              </div>
-            </div>
-
-            {/* Rol y Taller */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className={`block text-sm font-medium mb-1 ${
-                  darkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}>
+                <label
+                  className={`block text-sm font-medium mb-1 ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  Correo Electrónico
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                    <Mail
+                      className={darkMode ? "text-gray-500" : "text-gray-400"}
+                    />
+                  </div>
+                  <input
+                    type="email"
+                    name="correo"
+                    value={formData.correo}
+                    onChange={handleInputChange}
+                    required
+                    className={`block w-full pl-10 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      darkMode
+                        ? "bg-gray-700 border-gray-600 text-white"
+                        : "border-gray-300 text-gray-900"
+                    }`}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-1 ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  Celular
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                    <Phone
+                      className={darkMode ? "text-gray-500" : "text-gray-400"}
+                    />
+                  </div>
+                  <input
+                    type="tel"
+                    name="cel"
+                    value={formData.cel}
+                    onChange={handleInputChange}
+                    required
+                    className={`block w-full pl-10 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      darkMode
+                        ? "bg-gray-700 border-gray-600 text-white"
+                        : "border-gray-300 text-gray-900"
+                    }`}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Rol y Contraseña */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-1 ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
                   Rol
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                    <UserCog className={darkMode ? 'text-gray-500' : 'text-gray-400'} />
+                    <UserCog
+                      className={darkMode ? "text-gray-500" : "text-gray-400"}
+                    />
                   </div>
                   <select
                     name="roles_id"
@@ -212,12 +289,12 @@ export default function FormularioEmpleado() {
                     required
                     className={`block w-full pl-10 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       darkMode
-                        ? 'bg-gray-700 border-gray-600 text-white'
-                        : 'border-gray-300 text-gray-900'
+                        ? "bg-gray-700 border-gray-600 text-white"
+                        : "border-gray-300 text-gray-900"
                     }`}
                   >
                     <option value="">Seleccionar rol</option>
-                    {roles.map(rol => (
+                    {roles.map((rol) => (
                       <option key={rol.id} value={rol.id}>
                         {rol.nombre}
                       </option>
@@ -227,30 +304,41 @@ export default function FormularioEmpleado() {
               </div>
 
               <div>
-                <label className={`block text-sm font-medium mb-1 ${
-                  darkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}>
-                  Taller
+                <label
+                  className={`block text-sm font-medium mb-1 ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  Contraseña
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                    <Building2 className={darkMode ? 'text-gray-500' : 'text-gray-400'} />
-                  </div>
-                  <select
-                    name="taller_id"
-                    value={formData.taller_id}
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
                     onChange={handleInputChange}
                     required
-                    className={`block w-full pl-10 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    className={`block w-full pr-10 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       darkMode
-                        ? 'bg-gray-700 border-gray-600 text-white'
-                        : 'border-gray-300 text-gray-900'
+                        ? "bg-gray-700 border-gray-600 text-white"
+                        : "border-gray-300 text-gray-900"
                     }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   >
-                    <option value="">Seleccionar taller</option>
-                    <option value="1">Taller Central</option>
-                    <option value="2">Taller Norte</option>
-                  </select>
+                    {showPassword ? (
+                      <EyeOff
+                        className={darkMode ? "text-gray-500" : "text-gray-400"}
+                      />
+                    ) : (
+                      <Eye
+                        className={darkMode ? "text-gray-500" : "text-gray-400"}
+                      />
+                    )}
+                  </button>
                 </div>
               </div>
             </div>
@@ -259,11 +347,19 @@ export default function FormularioEmpleado() {
             <div className="flex justify-end space-x-4 pt-6">
               <button
                 type="button"
-                onClick={() => window.location.href = '/empleados'}
+                onClick={() => {
+                  if (selectedWorkshop?.taller_id) {
+                    navigate(
+                      `/workshop/dashboard/${selectedWorkshop.taller_id}`,
+                    );
+                  } else {
+                    navigate("/workshops");
+                  }
+                }}
                 className={`px-4 py-2 rounded-lg font-medium ${
                   darkMode
-                    ? 'text-gray-300 hover:bg-gray-700'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? "text-gray-300 hover:bg-gray-700"
+                    : "text-gray-700 hover:bg-gray-100"
                 }`}
               >
                 Cancelar
@@ -273,11 +369,11 @@ export default function FormularioEmpleado() {
                 disabled={loading}
                 className={`px-4 py-2 rounded-lg text-white font-medium ${
                   darkMode
-                    ? 'bg-blue-700 hover:bg-blue-800'
-                    : 'bg-blue-600 hover:bg-blue-700'
+                    ? "bg-blue-700 hover:bg-blue-800"
+                    : "bg-blue-600 hover:bg-blue-700"
                 } disabled:opacity-50`}
               >
-                {loading ? 'Guardando...' : 'Guardar Empleado'}
+                {loading ? "Guardando..." : "Guardar Empleado"}
               </button>
             </div>
           </div>
