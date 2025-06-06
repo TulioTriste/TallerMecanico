@@ -1,5 +1,4 @@
 /* Query Completa de creación de tablas */
-DROP TABLE IF EXISTS [cotizacion];
 DROP TABLE IF EXISTS [ot];
 DROP TABLE IF EXISTS [cita];
 DROP TABLE IF EXISTS [empleado];
@@ -44,7 +43,7 @@ CREATE TABLE [plan] (
     [plan_id] INT NOT NULL IDENTITY(1,1),
     [nombre] VARCHAR(250) NOT NULL,
     [precio] INT NOT NULL,
-    [perfiles] INT NOT NULL,
+    [talleres] INT NOT NULL,
     CONSTRAINT [PK_plan] PRIMARY KEY NONCLUSTERED ([plan_id] ASC)
 );
 
@@ -111,6 +110,7 @@ CREATE TABLE [ot] (
     [descripcion] VARCHAR(250),
     [km] VARCHAR(10) NOT NULL,
     [estado_id] INT NOT NULL,
+    [precio] INT NOT NULL,
     CONSTRAINT [PK_ot] PRIMARY KEY CLUSTERED ([ot_id] ASC),
     CONSTRAINT [FK_ot_cliente] FOREIGN KEY ([cliente_rut]) REFERENCES [cliente]([cliente_rut])
     	ON UPDATE CASCADE ON DELETE NO ACTION,
@@ -120,22 +120,14 @@ CREATE TABLE [ot] (
         ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
-CREATE TABLE [cotizacion] (
-    [cotizacion_id] INT NOT NULL IDENTITY(1,1),
-    [ot_id] INT NOT NULL,
-    [precio] INT NOT NULL,
-    CONSTRAINT [PK_cotizacion] PRIMARY KEY CLUSTERED ([cotizacion_id] ASC),
-    CONSTRAINT [FK_cotizacion_ot] FOREIGN KEY ([ot_id]) REFERENCES [ot]([ot_id])
-        ON UPDATE CASCADE ON DELETE CASCADE
-);
-
 CREATE TABLE [cita] (
+	[cita_id] INT NOT NULL IDENTITY(1, 1),
 	[taller_id] INT NOT NULL,
 	[cliente_rut] VARCHAR(12) NOT NULL,
 	[patente] VARCHAR(8) NOT NULL,
 	[hora] DATETIME NOT NULL,
 	[descripcion] VARCHAR(250),
-	CONSTRAINT [PK_cita] PRIMARY KEY CLUSTERED ([cliente_rut], [patente], [hora]),
+	CONSTRAINT [PK_cita] PRIMARY KEY CLUSTERED ([cita_id] ASC),
     CONSTRAINT [FK_cita_cliente] FOREIGN KEY ([cliente_rut]) REFERENCES [cliente]([cliente_rut])
         ON UPDATE CASCADE ON DELETE NO ACTION,
     CONSTRAINT [FK_cita_vehiculo] FOREIGN KEY ([patente]) REFERENCES [vehiculo]([patente])

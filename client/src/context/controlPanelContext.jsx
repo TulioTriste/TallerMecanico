@@ -1,5 +1,8 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { getCountCitasProx7DiasRequest, getCountRegisteredVehiclesRequest, getNextCitaRequest, getOrdenesDeTrabajoCountByEstadoRequest, getOrdenesDeTrabajoCountRequest, getRecentOTsRequest } from "../api/controlpanel";
+import { getCitasHoyRequest, getCountCitasProx7DiasRequest, getCountOTMesRequest, getCountRegisteredVehiclesRequest, 
+        getIngresosDelMesRequest, 
+        getNextCitaRequest, getOrdenesDeTrabajoCountByEstadoRequest, getOrdenesDeTrabajoCountRequest, 
+        getRecentOTsRequest } from "../api/controlpanel";
 
 const ControlPanelContext = createContext();
 
@@ -33,7 +36,7 @@ export function ControlPanelProvider({ children }) {
     try {
       const res = await getNextCitaRequest(id);
       if (!res.data || !res.data.nextCita) {
-        return false; // En caso de no encontrar la cita, retornar false o un valor predeterminado
+        return false;
       }
       return res.data.nextCita;
     } catch (error) {
@@ -50,7 +53,7 @@ export function ControlPanelProvider({ children }) {
       return res.data.count;
     } catch (error) {
       console.error("Error al obtener el conteo de órdenes de trabajo:", error);
-      return 0; // En caso de error, retornar 0 o un valor predeterminado
+      return 0;
     }
   }
 
@@ -60,7 +63,7 @@ export function ControlPanelProvider({ children }) {
       return res.data.count;
     } catch (error) {
       console.error("Error al obtener el conteo de órdenes de trabajo por estado:", error);
-      return 0; // En caso de error, retornar 0 o un valor predeterminado
+      return 0;
     }
   }
 
@@ -70,19 +73,48 @@ export function ControlPanelProvider({ children }) {
       return res.data.count;
     } catch (error) {
       console.error("Error al obtener el conteo de citas próximas a 7 días:", error);
-      return 0; // En caso de error, retornar 0 o un valor predeterminado
+      return 0;
+    }
+  }
+
+  const getCountOTMes = async (taller_id) => {
+    try {
+      const res = await getCountOTMesRequest(taller_id);
+      return res.data.count;
+    } catch (error) {
+      console.error("Error al obtener el conteo de órdenes de trabajo del mes:", error);
+      return 0;
     }
   }
 
   const getOtsRecientes = async (taller_id, days) => {
     try {
       const res = await getRecentOTsRequest(taller_id, days);
-      console.log("Órdenes de trabajo recientes:", res.data);
       return res.data;
     }
     catch (error) {
       console.error("Error al obtener las órdenes de trabajo recientes:", error);
-      return []; // En caso de error, retornar un array vacío o un valor predeterminado
+      return [];
+    }
+  }
+
+  const getCitasHoy = async (taller_id) => {
+    try {
+      const res = await getCitasHoyRequest(taller_id);
+      return res.data;
+    } catch (error) {
+      console.error("Error al obtener las citas de hoy:", error);
+      return [];
+    }
+  }
+
+  const getIngresosDelMes = async (taller_id) => {
+    try {
+      const res = await getIngresosDelMesRequest(taller_id);
+      return res.data.ingresos;
+    } catch (error) {
+      console.error("Error al obtener los ingresos del mes:", error);
+      return 0;
     }
   }
 
@@ -95,7 +127,10 @@ export function ControlPanelProvider({ children }) {
         getOrdenesDeTrabajoCount,
         getOrdenesDeTrabajoCountByEstado,
         getCountCitasProx7Dias,
-        getOtsRecientes
+        getCountOTMes,
+        getOtsRecientes,
+        getIngresosDelMes,
+        getCitasHoy
       }}
     >
       {children}

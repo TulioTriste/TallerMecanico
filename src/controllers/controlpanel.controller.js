@@ -74,6 +74,21 @@ export const getCountCitasProx7Dias = async (req, res) => {
   }
 };
 
+export const getCountOTMes = async (req, res) => {
+  try {
+    const { taller_id } = req.params;
+    if (!taller_id) {
+      return res.status(400).json({ message: "El ID del taller es requerido" });
+    }
+
+    const count = await controlpanelModel.getCountOTMes(taller_id);
+    res.json({ count });
+  } catch (error) {
+    console.error("Error al obtener el conteo de órdenes de trabajo del mes:", error);
+    res.status(500).json({ message: "Error al obtener el conteo de órdenes de trabajo del mes" });
+  }
+};
+
 export const getRecentOTs = async (req, res) => {
   try {
     const { taller_id, days } = req.params;
@@ -92,3 +107,33 @@ export const getRecentOTs = async (req, res) => {
     res.status(500).json({ message: "Error al obtener las órdenes de trabajo recientes" });
   }
 };
+
+export const getCitasHoy = async (req, res) => {
+  try {
+    const { taller_id } = req.params;
+    if (!taller_id) {
+      return res.status(400).json({ message: "El ID del taller es requerido" });
+    }
+
+    const citasHoy = await controlpanelModel.getCitasHoy(taller_id);
+    res.json(citasHoy);
+  } catch (error) {
+    console.error("Error al obtener las citas de hoy:", error);
+    res.status(500).json({ message: "Error al obtener las citas de hoy" });
+  }
+};
+
+export const getIngresosDelMes = async (req, res) => {
+  try {
+    const { taller_id } = req.params;
+    if (!taller_id) {
+      return res.status(400).json({ message: "El ID del taller es requerido" });
+    }
+
+    const ingresos = await controlpanelModel.getIngresosDelMes(taller_id);
+    res.json({ ingresos });
+  } catch (error) {
+    console.error("Error al obtener los ingresos del mes:", error);
+    res.status(500).json({ message: "Error al obtener los ingresos del mes" });
+  }
+}
