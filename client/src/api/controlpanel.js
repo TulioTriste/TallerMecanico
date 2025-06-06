@@ -11,5 +11,11 @@ export const getOrdenesDeTrabajoCountByEstadoRequest = async (taller_id, estado_
 
 export const getCountCitasProx7DiasRequest = async (taller_id) => axios.get(`/cp/citasprox7dias/${taller_id}`);
 
+export const getCountOTMesRequest = async (taller_id) => axios.get(`/cp/otdelmes/${taller_id}`);
+
 export const getRecentOTsRequest = async (taller_id, days) => 
     axios.get(`/cp/otsrecientes/${taller_id}/${days}`);
+
+export const getCitasHoyRequest = async (taller_id) => axios.get(`/cp/citashoy/${taller_id}`);
+
+export const getIngresosDelMesRequest = async (taller_id) => axios.get(`/cp/ingresosdelmes/${taller_id}`);

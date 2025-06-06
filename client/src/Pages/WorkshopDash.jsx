@@ -17,7 +17,7 @@ import { useDarkMode } from '../context/darkModeContext';
 import { Link } from 'react-router-dom';
 import { useControlPanel } from '../context/controlPanelContext';
 import { useCliente } from '../context/clienteContext';
-import { formatFechaDDMMYYYY } from '../utilities/stringformatter';
+import { formatFechaDDMMYYYY, formatFechaHHMM } from '../utilities/stringformatter';
 import { useVehiculo } from '../context/vehiculoContext';
 
 
@@ -27,11 +27,15 @@ const WorkshopDash = () => {
   const { id } = useParams();
   const [taller, setTaller] = useState(null);
   const { getTaller } = useWorkshop();
-  const { getOrdenesDeTrabajoCountByEstado, getOtsRecientes } = useControlPanel();
+  const { getOrdenesDeTrabajoCountByEstado, getOtsRecientes, getCountOTMes, getIngresosDelMes, 
+          getCitasHoy } = useControlPanel();
   const { getClienteName } = useCliente();
   const { getVehiculoName } = useVehiculo();
   const [otCount, setOtCount] = useState(0);
+  const [otMesCount, setOtMesCount] = useState(0);
   const [otRecents, setOtRecents] = useState([]);
+  const [citasHoy, setCitasHoy] = useState([]);
+  const [ingresosMes, setIngresosMes] = useState(0);
 
   const loadTaller = async () => {
     try {
@@ -47,6 +51,12 @@ const WorkshopDash = () => {
     try {
       const ordenesCount = await getOrdenesDeTrabajoCountByEstado(id, 2); // Estado 2 es "en_proceso"
       setOtCount(ordenesCount);
+
+      const otMesCount = await getCountOTMes(id);
+      setOtMesCount(otMesCount);
+
+      const ingresos = await getIngresosDelMes(id);
+      setIngresosMes(ingresos);
     } catch (error) {
       console.error("Error al cargar las estadísticas:", error);
     }
@@ -69,80 +79,23 @@ const WorkshopDash = () => {
     }
   };
 
+  const loadCitasHoy = async () => {
+    try {
+      const citasCargadas = await getCitasHoy(id);
+      
+      setCitasHoy(citasCargadas);
+    } catch (error) {
+      console.error("Error al cargar las citas de hoy:", error);
+      setCitasHoy([]);
+    }
+  };
+
   useEffect(() => {
     loadTaller();
     loadStats();
     loadRecentOTs();
+    loadCitasHoy();
   }, []);
-
-  // Estadísticas simuladas
-  const estadisticas = {
-    ordenesActivas: 12,
-    solicitudesMes: 156,  // Cambiado de clientesHoy
-    ingresosMes: 4500000,  // Cambiado de ingresosDia
-  };
-
-  // Órdenes recientes
-  const ordenesRecientes = [
-    {
-      id: "ORD-001",
-      cliente: "Juan Pérez",
-      vehiculo: "Toyota Corolla 2019",
-      servicio: "Cambio de aceite y filtros",
-      estado: "en_proceso",
-      tecnico: "Carlos Silva",
-      horaInicio: "09:30",
-      estimado: "11:00"
-    },
-    {
-      id: "ORD-002", 
-      cliente: "María González",
-      vehiculo: "Honda Civic 2020",
-      servicio: "Revisión de frenos",
-      estado: "completado",
-      tecnico: "Ana López",
-      horaInicio: "08:00",
-      estimado: "10:30"
-    },
-    {
-      id: "ORD-003",
-      cliente: "Pedro Martínez",
-      vehiculo: "Nissan Sentra 2018",
-      servicio: "Alineación y balanceo",
-      estado: "pendiente",
-      tecnico: "Luis Rojas",
-      horaInicio: "14:00",
-      estimado: "15:30"
-    }
-  ];
-
-  // Citas próximas
-  const citasProximas = [
-    {
-      id: 1,
-      cliente: "Roberto Silva",
-      vehiculo: "Ford Focus 2021",
-      servicio: "Mantención 10.000 km",
-      hora: "10:30",
-      telefono: "+56 9 8765 4321"
-    },
-    {
-      id: 2,
-      cliente: "Carmen Díaz",
-      vehiculo: "Chevrolet Sail 2019",
-      servicio: "Revisión técnica",
-      hora: "11:45",
-      telefono: "+56 9 5555 6666"
-    },
-    {
-      id: 3,
-      cliente: "Miguel Torres",
-      vehiculo: "Hyundai Accent 2020",
-      servicio: "Cambio de neumáticos",
-      hora: "15:00",
-      telefono: "+56 9 7777 8888"
-    }
-  ];
 
   const getEstadoColor = (estado) => {
     switch (estado) {
@@ -236,9 +189,9 @@ const WorkshopDash = () => {
             <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Solicitudes del Mes</p>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Ordenes De Trabajo del Mes</p>
                   <p className={`text-2xl font-bold ${darkMode ? 'text-orange-400' : 'text-orange-600'}`}>
-                    {estadisticas.solicitudesMes}
+                    {otMesCount}
                   </p>
                 </div>
                 <Users className={`h-8 w-8 ${darkMode ? 'text-orange-400' : 'text-orange-600'}`} />
@@ -250,7 +203,7 @@ const WorkshopDash = () => {
                 <div>
                   <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Ingresos de Junio</p>
                   <p className={`text-2xl font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
-                    ${estadisticas.ingresosMes.toLocaleString()}
+                    ${ingresosMes.toLocaleString()}
                   </p>
                 </div>
                 <DollarSign className={`h-8 w-8 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
@@ -340,11 +293,11 @@ const WorkshopDash = () => {
               
               <div className="p-6">
                 <div className="space-y-4">
-                  {citasProximas.map((cita) => (
-                    <div key={cita.id} className={`p-4 rounded-lg ${darkMode ? 'bg-gray-700/30' : 'bg-gray-50'}`}>
+                  {citasHoy.map((cita) => (
+                    <div key={cita.cita_id} className={`p-4 rounded-lg ${darkMode ? 'bg-gray-700/30' : 'bg-gray-50'}`}>
                       <div className="flex items-center justify-between mb-2">
                         <span className={`text-sm font-medium ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                          {cita.hora}
+                          {formatFechaHHMM(cita.hora)}
                         </span>
                         <button className={`p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600`}>
                           <Phone className="w-4 h-4" />
@@ -352,13 +305,13 @@ const WorkshopDash = () => {
                       </div>
                       
                       <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {cita.cliente}
+                        {cita.nombre_cliente}
                       </p>
                       <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                        {cita.vehiculo}
+                        {cita.nombre_vehiculo}
                       </p>
                       <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                        {cita.servicio}
+                        {cita.descripcion}
                       </p>
                     </div>
                   ))}

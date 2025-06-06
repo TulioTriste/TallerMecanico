@@ -1,8 +1,8 @@
 --DELETE FROM [plan];
-INSERT INTO [plan] (nombre, precio, perfiles) VALUES 
-	('Basico', 30000, 0),
-	('Enterprise', 100000, 0),
-	('Company', 250000, 0);
+INSERT INTO [plan] (nombre, precio, talleres) VALUES 
+	('Basico', 30000, 1),
+	('Enterprise', 100000, 5),
+	('Company', 250000, 15);
 
 
 --DELETE FROM [estado];
@@ -49,11 +49,11 @@ INSERT INTO cita (taller_id, cliente_rut, patente, hora, descripcion) VALUES
 	(1, '12.345.678-9', 'BBSJ21', DATEADD(DAY, 7, DATEADD(HOUR, 12, GETDATE())), 'Revisión de sistema eléctrico'); -- Proxima Semana
 	
 --DELETE FROM [ot];
-INSERT INTO ot (taller_id, cliente_rut, vehiculo_patente, tecnico, fecha_entrada, fecha_salida, descripcion, km, estado_id) VALUES 
-	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', GETDATE(), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 1),
-	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', GETDATE(), DATEADD(MONTH, 2, GETDATE()), 'Pruebaaaa', '170.000', 2),
-	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', DATEADD(DAY, 2, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 2),
-	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', DATEADD(DAY, 3, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 2),
-	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', DATEADD(DAY, 5, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 2),
-	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', DATEADD(DAY, 8, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 2),
-	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', DATEADD(DAY, 16, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 2);
+INSERT INTO ot (taller_id, cliente_rut, vehiculo_patente, tecnico, fecha_entrada, fecha_salida, descripcion, km, estado_id, precio) VALUES 
+	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', GETDATE(), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 1, 100000),
+	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', GETDATE(), DATEADD(MONTH, 2, GETDATE()), 'Pruebaaaa', '170.000', 2, 50000),
+	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', DATEADD(DAY, 2, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 2, 150000),
+	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', DATEADD(DAY, 3, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 2, 200000),
+	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', DATEADD(DAY, 5, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 2, 250000),
+	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', DATEADD(DAY, 8, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 3, 300000),
+	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', DATEADD(DAY, 16, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 3, 500000);

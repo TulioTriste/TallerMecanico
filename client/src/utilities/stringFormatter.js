@@ -41,3 +41,11 @@ export function formatFechaDDMMYYYY(fechaStr) {
   const anio = fecha.getFullYear();
   return `${dia}/${mes}/${anio}`;
 };
+
+export function formatFechaHHMM(fechaStr) {
+  if (!fechaStr) return "";
+  const fecha = new Date(fechaStr);
+  const hora = String(fecha.getHours()).padStart(2, "0");
+  const minutos = String(fecha.getMinutes()).padStart(2, "0");
+  return `${hora}:${minutos}`;
+}
