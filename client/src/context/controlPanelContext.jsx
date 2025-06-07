@@ -2,7 +2,9 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { getCitasHoyRequest, getCountCitasProx7DiasRequest, getCountOTMesRequest, getCountRegisteredVehiclesRequest, 
         getIngresosDelMesRequest, 
         getNextCitaRequest, getOrdenesDeTrabajoCountByEstadoRequest, getOrdenesDeTrabajoCountRequest, 
-        getRecentOTsRequest } from "../api/controlpanel";
+        getRecentOTsRequest, 
+        getRolesRequest} from "../api/controlpanel";
+import { getEmpleadosByTallerRequest } from "../api/empleado";
 
 const ControlPanelContext = createContext();
 
@@ -14,6 +16,7 @@ export const useControlPanel = () => {
 
 export function ControlPanelProvider({ children }) {
   const [registeredVehicles, setRegisteredVehicles] = useState(false);
+  const [roles, setRoles] = useState([]);
 
   const updateRegisteredVehicles = async () => {
     try {
@@ -25,10 +28,22 @@ export function ControlPanelProvider({ children }) {
     }
   };
 
+  const updateRoles = async () => {
+    try {
+      const res = await getRolesRequest();
+      setRoles(res.data);
+    } catch (error) {
+      console.error("Error al obtener los roles:", error);
+      setRoles([]); // En caso de error, se puede establecer a un array vacío
+    }
+  };
+
   // Puesto para que se actualize solo cada 10 segundos
   useEffect(() => {
     updateRegisteredVehicles();
-    const interval = setInterval(updateRegisteredVehicles, 10000);
+    updateRoles();
+
+    const interval = setInterval(updateRegisteredVehicles, 10000); // Dentro del setInterval, se actualiza cada 10 segundos
     return () => clearInterval(interval);
   }, []);
 
@@ -118,10 +133,21 @@ export function ControlPanelProvider({ children }) {
     }
   }
 
+  const getEmpleadosByTaller = async (taller_id) => {
+    try {
+      const res = await getEmpleadosByTallerRequest(taller_id);
+      return res.data;
+    } catch (error) {
+      console.error("Error al obtener los empleados del taller:", error);
+      return [];
+    }
+  }
+
   return (
     <ControlPanelContext.Provider
       value={{
         registeredVehicles,
+        roles,
         updateRegisteredVehicles,
         getNextCitaTaller,
         getOrdenesDeTrabajoCount,
@@ -130,7 +156,8 @@ export function ControlPanelProvider({ children }) {
         getCountOTMes,
         getOtsRecientes,
         getIngresosDelMes,
-        getCitasHoy
+        getCitasHoy,
+        getEmpleadosByTaller
       }}
     >
       {children}

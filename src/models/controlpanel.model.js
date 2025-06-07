@@ -275,6 +275,17 @@ class ControlPanelModel {
             throw error;
         }
     }
+
+    async getRoles() {
+        try {
+            const pool = await connectToDatabase();
+            const result = await pool.request().query("SELECT * FROM roles");
+            return result.recordset;
+        } catch (error) {
+            console.error("Error al obtener los roles:", error);
+            throw error;
+        }
+    }
 }
 
 export default new ControlPanelModel();

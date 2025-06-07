@@ -132,6 +132,25 @@ class UserModel {
       throw error;
     }
   }
+
+  async getPlanUser(rut) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+        .request()
+        .input("usuario_rut", sql.VarChar, rut)
+        .query(`SELECT 
+                    plan_id
+                FROM 
+                    usuario
+                WHERE usuario_rut = @usuario_rut`);
+      
+      return result.recordset[0].plan_id; // Devuelve el ID del plan del usuario
+    } catch (error) {
+      console.error("Error al obtener el plan del usuario:", error);
+      throw error;
+    }
+  }
 };
 
 export default new UserModel();

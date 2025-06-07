@@ -136,4 +136,14 @@ export const getIngresosDelMes = async (req, res) => {
     console.error("Error al obtener los ingresos del mes:", error);
     res.status(500).json({ message: "Error al obtener los ingresos del mes" });
   }
+};
+
+export const getRoles = async (req, res) => {
+  try {
+    const roles = await controlpanelModel.getRoles();
+    res.json(roles);
+  } catch (error) {
+    console.error("Error al obtener los roles:", error);
+    res.status(500).json({ message: "Error al obtener los roles" });
+  }
 }

@@ -64,13 +64,34 @@ SELECT
 
 SELECT COUNT(*) AS total FROM cliente
 
-/* Data de usuarios Administradores para Pruebas */
+SELECT 
+        plan_id
+    FROM 
+        usuario
+    WHERE usuario_rut = '21.389.785-3';
+
+
 SELECT * FROM usuario u;
 
 SELECT * FROM cotizacion c ;
 
 SELECT * FROM estado;
 SELECT * FROM ot;
+SELECT * FROM roles r ;
+SELECT * FROM empleado e ;
+
+SELECT 
+    e.empleado_rut,
+    e.taller_id,
+    e.roles_id,
+    e.nombre,
+    e.apellido,
+    e.cel,
+    e.correo,
+    r.nombre AS nombre_rol
+FROM empleado e
+INNER JOIN roles r ON e.roles_id = r.roles_id
+WHERE e.taller_id = 1;
 
 SELECT 
 		COUNT(*) AS total

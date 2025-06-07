@@ -10,9 +10,10 @@ import {
   Building2,
   Search
 } from 'lucide-react';
+import { useControlPanel } from '../context/controlPanelContext';
 
 export default function ListaEmpleados() {
-  const { sucursalId } = useParams();
+  const { id } = useParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -22,8 +23,26 @@ export default function ListaEmpleados() {
     return false;
   });
 
+  const { getEmpleadosByTaller } = useControlPanel();
+  const [empleados, setEmpleados] = useState([]);
+
+  useEffect(() => {
+    // Simulación de fetch de empleados por sucursal
+    const fetchEmpleados = async () => {
+      try {
+        // Aquí deberías hacer la llamada a tu API para obtener los empleados
+        const res = await getEmpleadosByTaller(id);
+        setEmpleados(res);
+      } catch (error) {
+        console.error('Error al obtener empleados:', error);
+      }
+    }
+
+    fetchEmpleados();
+  }, []);
+
   // Datos de ejemplo - Reemplazar con fetch real
-  const [empleados] = useState([
+  /*const [empleados] = useState([
     {
       id: 1,
       nombre: 'Juan',
@@ -46,15 +65,14 @@ export default function ListaEmpleados() {
       sucursalId: 1,
       taller: 'Taller Central'
     }
-  ]);
+  ]);*/
 
   // Filtrar empleados por sucursal y término de búsqueda
   const empleadosFiltrados = empleados
-    .filter(emp => emp.sucursalId === parseInt(sucursalId))
     .filter(emp => 
       emp.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
       emp.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      emp.rut.includes(searchTerm)
+      emp.empleado_rut.includes(searchTerm)
     );
 
   const toggleDarkMode = () => {
@@ -98,7 +116,7 @@ export default function ListaEmpleados() {
             </button>
             
             <button
-              onClick={() => window.location.href = '/empleados/nuevo'}
+              onClick={() => window.location.href = `/workshop/sucursal/${id}/nuevo`}
               className={`flex items-center px-4 py-2 rounded-lg text-white font-medium transition-all ${
                 darkMode
                   ? 'bg-blue-700 hover:bg-blue-800'
@@ -159,7 +177,7 @@ export default function ListaEmpleados() {
               darkMode ? 'divide-gray-700' : 'divide-gray-200'
             }`}>
               {empleadosFiltrados.map((empleado) => (
-                <tr key={empleado.id} className={
+                <tr key={empleado.empleado_rut} className={
                   darkMode ? 'bg-gray-800' : 'bg-white'
                 }>
                   <td className={`px-6 py-4 whitespace-nowrap ${
@@ -169,7 +187,7 @@ export default function ListaEmpleados() {
                       <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
                         darkMode ? 'bg-gray-700' : 'bg-gray-100'
                       }`}>
-                        <span className="text-xl">{empleado.nombre[0]}{empleado.apellido[0]}</span>
+                        <span className="text-xl">{empleado.nombre.charAt(0).toUpperCase()} {empleado.apellido.charAt(0).toUpperCase()}</span>
                       </div>
                       <div className="ml-4">
                         <div className={`font-medium ${
@@ -181,18 +199,18 @@ export default function ListaEmpleados() {
                   <td className={`px-6 py-4 whitespace-nowrap ${
                     darkMode ? 'text-gray-300' : 'text-gray-500'
                   }`}>
-                    {empleado.rut}
+                    {empleado.empleado_rut}
                   </td>
                   <td className={`px-6 py-4 whitespace-nowrap ${
                     darkMode ? 'text-gray-300' : 'text-gray-500'
                   }`}>
                     <div>{empleado.correo}</div>
-                    <div>{empleado.celular}</div>
+                    <div>{empleado.cel}</div>
                   </td>
                   <td className={`px-6 py-4 whitespace-nowrap ${
                     darkMode ? 'text-gray-300' : 'text-gray-500'
                   }`}>
-                    {empleado.rol}
+                    {empleado.nombre_rol}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button

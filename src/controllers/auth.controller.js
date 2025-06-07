@@ -31,14 +31,14 @@ export const register = async (req, res) => {
         res.json({
             message: responseMessage,
             user: {
-                rut: userFound.usuario_rut,
-                nombre: userFound.nombre,
-                apellido: userFound.apellido,
-                correo: userFound.correo,
-                telefono: userFound.telefono,
-                direccion: userFound.direccion,
-                empresa: userFound.empresa,
-                plan_id: userFound.plan_id,
+                rut: newUser.usuario_rut,
+                nombre: newUser.nombre,
+                apellido: newUser.apellido,
+                correo: newUser.correo,
+                telefono: newUser.telefono,
+                direccion: newUser.direccion,
+                empresa: newUser.empresa,
+                plan_id: newUser.plan_id,
             },
         });
     } catch (error) {
