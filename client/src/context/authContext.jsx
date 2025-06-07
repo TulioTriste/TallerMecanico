@@ -50,9 +50,9 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await loginRequest(user);
       if (res.status === 200) {
-        console.log("Aprobado por chayanne");
         setUser(res.data.user);
         setIsAuthenticated(true);
+        console.log(user);
       }
     } catch (error) {
       if (error.response && error.response.data) {

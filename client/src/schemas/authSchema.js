@@ -7,6 +7,8 @@ export const loginSchema = z.object({
   password: z.string().min(6, {
     message: "Password must be at least 6 characters",
   }),
+  rememberMe: z.boolean().optional(),
+  }).refine((data) => data.rememberMe === true || data.rememberMe === false, {
 });
 
 export const registerSchema = z

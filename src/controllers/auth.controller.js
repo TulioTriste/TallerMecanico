@@ -25,7 +25,8 @@ export const register = async (req, res) => {
             rut: newUser.usuario_rut,
             correo: newUser.correo,
             nombre: newUser.nombre, 
-        });
+        }, 
+        rememberMe = true);
 
         res.cookie("token", token);
         res.json({
@@ -51,7 +52,7 @@ export const register = async (req, res) => {
 }
 
 export const login = async (req, res) => {
-    const { correo, password } = req.body;
+    const { correo, password, rememberMe } = req.body;
 
     let userFound = await UserModel.getUserByCorreo(correo);
 
@@ -74,11 +75,13 @@ export const login = async (req, res) => {
             rut: userFound.usuario_rut,
             correo: userFound.correo,
             nombre: userFound.nombre,
-        });
+        },
+        rememberMe);
 
         res.cookie("token", token);
         return res.status(200).json({
             message: "El Usuario ha sido encontrado exitosamente",
+            token,
             user: {
                 rut: userFound.usuario_rut,
                 nombre: userFound.nombre,
