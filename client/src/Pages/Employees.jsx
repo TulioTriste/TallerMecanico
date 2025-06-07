@@ -7,10 +7,9 @@ import {
   Trash2, 
   Moon, 
   Sun,
-  Building2,
   Search
 } from 'lucide-react';
-import { useControlPanel } from '../context/controlPanelContext';
+import { useEmpleado } from '../context/empleadosContext';
 
 export default function ListaEmpleados() {
   const { id } = useParams();
@@ -23,12 +22,10 @@ export default function ListaEmpleados() {
     return false;
   });
 
-  const { getEmpleadosByTaller } = useControlPanel();
+  const { getEmpleadosByTaller, deleteEmpleado } = useEmpleado();
   const [empleados, setEmpleados] = useState([]);
 
-  useEffect(() => {
-    // Simulación de fetch de empleados por sucursal
-    const fetchEmpleados = async () => {
+  const fetchEmpleados = async () => {
       try {
         // Aquí deberías hacer la llamada a tu API para obtener los empleados
         const res = await getEmpleadosByTaller(id);
@@ -38,37 +35,13 @@ export default function ListaEmpleados() {
       }
     }
 
+  useEffect(() => {
     fetchEmpleados();
   }, []);
 
-  // Datos de ejemplo - Reemplazar con fetch real
-  /*const [empleados] = useState([
-    {
-      id: 1,
-      nombre: 'Juan',
-      apellido: 'Pérez',
-      rut: '12.345.678-9',
-      correo: 'juan@taller.com',
-      celular: '+56912345678',
-      rol: 'Mecánico',
-      sucursalId: 1,
-      taller: 'Taller Central'
-    },
-    {
-      id: 2,
-      nombre: 'María',
-      apellido: 'González',
-      rut: '98.765.432-1',
-      correo: 'maria@taller.com',
-      celular: '+56987654321',
-      rol: 'Administrador',
-      sucursalId: 1,
-      taller: 'Taller Central'
-    }
-  ]);*/
-
-  // Filtrar empleados por sucursal y término de búsqueda
-  const empleadosFiltrados = empleados
+  const empleadosOrdenados = [...empleados].sort((a, b) => a.roles_id - b.roles_id);
+  
+  const empleadosFiltrados = empleadosOrdenados
     .filter(emp => 
       emp.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
       emp.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -224,9 +197,12 @@ export default function ListaEmpleados() {
                       <Edit className="w-5 h-5" />
                     </button>
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         if (window.confirm('¿Estás seguro de eliminar este empleado?')) {
-                          // Lógica para eliminar
+                          {
+                            await deleteEmpleado({ empleado_rut: empleado.empleado_rut });
+                            fetchEmpleados();
+                          }
                         }
                       }}
                       className={`inline-flex items-center p-2 rounded-lg ${

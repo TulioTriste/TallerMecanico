@@ -62,6 +62,23 @@ class EmpleadoModel {
       throw error;
     }
   }
+
+  async deleteEmpleado(empleado_rut) {
+    try {
+      const pool = await connectToDatabase();
+      const request = pool.request();
+      request.input("empleado_rut", sql.VarChar, empleado_rut);
+
+      const result = await request.query(`
+        DELETE FROM empleado WHERE empleado_rut = @empleado_rut
+      `);
+
+      return result.rowsAffected[0] > 0;
+    } catch (error) {
+      console.error("Error deleting empleado:", error);
+      throw error;
+    }
+  }
 }
 
 export default new EmpleadoModel();
