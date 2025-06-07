@@ -93,6 +93,8 @@ FROM empleado e
 INNER JOIN roles r ON e.roles_id = r.roles_id
 WHERE e.taller_id = 1;
 
+DELETE FROM empleado WHERE empleado_rut = '33.333.333-3';
+
 SELECT 
 		COUNT(*) AS total
 	FROM 

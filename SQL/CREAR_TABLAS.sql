@@ -19,9 +19,7 @@ CREATE TABLE [estado] (
 
 CREATE TABLE [cliente] (
     [cliente_rut] VARCHAR(12) NOT NULL,
-    [nombre] VARCHAR(120) NOT NULL,
-    [apaterno] VARCHAR(120) NOT NULL,
-    [amaterno] VARCHAR(120),
+    [nombre] VARCHAR(255) NOT NULL,
     [correo] VARCHAR(250),
     [telefono] VARCHAR(12) NOT NULL,
     [created_at] DATE NOT NULL DEFAULT GETDATE(),
