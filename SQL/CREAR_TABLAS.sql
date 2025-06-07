@@ -11,7 +11,7 @@ DROP TABLE IF EXISTS [estado];
 DROP TABLE IF EXISTS [cliente];
 
 CREATE TABLE [estado] (
-    [estado_id] INT NOT NULL,
+    [estado_id] INT NOT NULL IDENTITY(1,1),
     [nombre] VARCHAR(120),
     [descripcion] VARCHAR(250),
     CONSTRAINT [PK_estado] PRIMARY KEY CLUSTERED ([estado_id] ASC)
@@ -24,6 +24,7 @@ CREATE TABLE [cliente] (
     [amaterno] VARCHAR(120),
     [correo] VARCHAR(250),
     [telefono] VARCHAR(12) NOT NULL,
+    [created_at] DATE NOT NULL DEFAULT GETDATE(),
     CONSTRAINT [PK_cliente] PRIMARY KEY CLUSTERED ([cliente_rut] ASC)
 );
 
@@ -34,6 +35,7 @@ CREATE TABLE [vehiculo] (
     [modelo] VARCHAR(120) NOT NULL,
     [anio] INT NOT NULL,
     [color] VARCHAR(120) NOT NULL,
+    [created_at] DATE NOT NULL DEFAULT GETDATE(),
     CONSTRAINT [PK_vehiculo] PRIMARY KEY CLUSTERED ([patente] ASC),
     CONSTRAINT [FK_vehiculo_cliente] FOREIGN KEY ([cliente_rut]) REFERENCES [cliente]([cliente_rut])
     ON DELETE NO ACTION
@@ -55,6 +57,7 @@ CREATE TABLE [usuario] (
     [password] VARCHAR(60) NOT NULL,
     [telefono] VARCHAR(12) NOT NULL,
     [direccion] VARCHAR(255) NOT NULL,
+    [created_at] DATE NOT NULL DEFAULT GETDATE(),
     [empresa] CHAR(1),
     [plan_id] INT,
     CONSTRAINT [PK_usuario] PRIMARY KEY CLUSTERED ([usuario_rut] ASC),
@@ -78,6 +81,7 @@ CREATE TABLE [taller] (
     [direccion] VARCHAR(250) NOT NULL,
     [inicio_jornada] INT NOT NULL, /* El formato para esto debe de ser por ejemplo 1700, lo cual significaría que serían las 5 PM */
     [termino_jornada] INT NOT NULL,
+    [created_at] DATE NOT NULL DEFAULT GETDATE(),
     CONSTRAINT [PK_taller] PRIMARY KEY CLUSTERED ([taller_id] ASC),
     CONSTRAINT [FK_taller_usuario] FOREIGN KEY ([usuario_rut]) REFERENCES [usuario]([usuario_rut])
         ON UPDATE CASCADE ON DELETE CASCADE
@@ -91,7 +95,8 @@ CREATE TABLE [empleado] (
     [apellido] VARCHAR(120),
     [cel] VARCHAR(12),
     [correo] VARCHAR(250) NOT NULL,
-    [password] VARCHAR(60) NOT NULL,
+    [password] VARCHAR(255) NOT NULL,
+    [created_at] DATE NOT NULL DEFAULT GETDATE(),
     CONSTRAINT [PK_empleado] PRIMARY KEY CLUSTERED ([empleado_rut] ASC),
     CONSTRAINT [FK_empleado_taller] FOREIGN KEY ([taller_id]) REFERENCES [taller]([taller_id])
         ON UPDATE CASCADE ON DELETE CASCADE,
@@ -111,6 +116,7 @@ CREATE TABLE [ot] (
     [km] VARCHAR(10) NOT NULL,
     [estado_id] INT NOT NULL,
     [precio] INT NOT NULL,
+    [created_at] DATE NOT NULL DEFAULT GETDATE(),
     CONSTRAINT [PK_ot] PRIMARY KEY CLUSTERED ([ot_id] ASC),
     CONSTRAINT [FK_ot_cliente] FOREIGN KEY ([cliente_rut]) REFERENCES [cliente]([cliente_rut])
     	ON UPDATE CASCADE ON DELETE NO ACTION,
@@ -127,6 +133,7 @@ CREATE TABLE [cita] (
 	[patente] VARCHAR(8) NOT NULL,
 	[hora] DATETIME NOT NULL,
 	[descripcion] VARCHAR(250),
+    [created_at] DATE NOT NULL DEFAULT GETDATE(),
 	CONSTRAINT [PK_cita] PRIMARY KEY CLUSTERED ([cita_id] ASC),
     CONSTRAINT [FK_cita_cliente] FOREIGN KEY ([cliente_rut]) REFERENCES [cliente]([cliente_rut])
         ON UPDATE CASCADE ON DELETE NO ACTION,

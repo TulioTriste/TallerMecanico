@@ -19,3 +19,5 @@ export const getRecentOTsRequest = async (taller_id, days) =>
 export const getCitasHoyRequest = async (taller_id) => axios.get(`/cp/citashoy/${taller_id}`);
 
 export const getIngresosDelMesRequest = async (taller_id) => axios.get(`/cp/ingresosdelmes/${taller_id}`);
+
+export const getRolesRequest = async () => axios.get("/cp/getroles");

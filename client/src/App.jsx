@@ -20,6 +20,7 @@ import ProfilePage from "./Pages/Profile";
 import { ClienteProvider } from "./context/clienteContext";
 import { VehiculoProvider } from "./context/vehiculoContext";
 import CreateWorkshop from "./Pages/CreateWorkshop";
+import { EmpleadoProvider } from "./context/empleadosContext";
 
 function App() {
   return (
@@ -29,56 +30,59 @@ function App() {
           <ControlPanelProvider>
             <ClienteProvider>
               <VehiculoProvider>
-                <BrowserRouter>
-                  <NavbarManager />
-                  <Routes>
-                    {/* Rutas públicas */}
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/register" element={<RegisterPage />} />
-                    <Route
-                      path="/recoverpassword"
-                      element={<RecoverPasswordPage />}
-                    />
-                    <Route path="/plans" element={<PlansPage />} />
+                <EmpleadoProvider>
+                  <BrowserRouter>
+                  
+                    <NavbarManager />
+                    
+                    <Routes>
+                      {/* Rutas públicas */}
+                      <Route path="/" element={<Dashboard />} />
+                      <Route path="/login" element={<LoginPage />} />
+                      <Route path="/register" element={<RegisterPage />} />
+                      <Route
+                        path="/recoverpassword"
+                        element={<RecoverPasswordPage />}
+                      />
+                      <Route path="/plans" element={<PlansPage />} />
 
-                    {/* Rutas protegidas */}
-                    <Route element={<ProtectedRoute />}>
-                      <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/workshops" element={<Workshops />} />
-                      <Route
-                        path="/workshop/dashboard/:id"
-                        element={<WorkshopDash />}
-                      />
-                      <Route
-                        path="/workshop/nuevaorden"
-                        element={<WorkOrderForm />}
-                      />
-                      <Route path="/sucursal" element={<SeleccionSucursal />} />
-                      <Route
-                        path="/sucursal/:id/empleados"
-                        element={<ListaEmpleados />}
-                      />
-                      <Route
-                        path="/sucursal/:id/nuevo"
-                        element={<FormularioEmpleado />}
-                      />
-                      <Route
-                        path="/sucursal/:sucursalId/empleados/editar/:empleadoId"
-                        element={<FormularioEmpleado />}
-                      />
-                      <Route path="/profile" element={<ProfilePage />} />
-                      <Route
-                        path="/workshop/create"
-                        element={<CreateWorkshop />}
-                      />
-                      <Route
-                        path="/empleados/nuevo"
-                        element={<FormularioEmpleado />}
-                      />
-                    </Route>
-                  </Routes>
-                </BrowserRouter>
+                      {/* Rutas protegidas */}
+                      <Route element={<ProtectedRoute />}>
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/workshops" element={<Workshops />} />
+
+                        <Route
+                          path="/workshop/dashboard/:id"
+                          element={<WorkshopDash />}
+                        />
+
+                        <Route
+                          path="/workshop/sucursal/:id/nuevaorden"
+                          element={<WorkOrderForm />}
+                        />
+
+                        <Route path="/sucursal" element={<SeleccionSucursal />} />
+
+                        <Route
+                          path="/workshop/sucursal/:id/empleados"
+                          element={<ListaEmpleados />}
+                        />
+
+                        <Route
+                          path="/workshop/sucursal/:id/nuevo"
+                          element={<FormularioEmpleado />}
+                        />
+
+                        <Route path="/profile" element={<ProfilePage />} />
+
+                        <Route
+                          path="/workshop/create"
+                          element={<CreateWorkshop />}
+                        />
+                      </Route>
+                    </Routes>
+                  </BrowserRouter>
+                </EmpleadoProvider>
               </VehiculoProvider>
             </ClienteProvider>
           </ControlPanelProvider>

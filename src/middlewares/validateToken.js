@@ -8,12 +8,12 @@ export const authRequired = (req, res, next) => {
 
     if (!token) {
         console.log('No token provided');
-        return res.status(401).json({ message: 'Unauthorizedb' });
+        return res.status(401).json({ message: 'Unauthorized No Token' });
     }
 
     jwt.verify(token, TOKEN_KEY_SECRET, (err, decoded) => {
         if (err) {
-            return res.status(401).json({ message: 'Unauthorizeda' });
+            return res.status(401).json({ message: 'Unauthorized Token Error' });
         }
 
         req.user = decoded;
@@ -25,6 +25,7 @@ export const authRequired = (req, res, next) => {
 export const ownTallerRequired = async (req, res, next) => {
     try {
         const rutUsuario = req.user.rut;
+        console.log(req.params);
         const tallerId = req.params.taller_id;
 
         const taller = await tallerModel.getTallerById(tallerId);
@@ -51,6 +52,18 @@ export const planRequired = (req, res, next) => {
 
     if (!hasPlan) {
         return res.status(403).json({ message: 'Plan requerido para acceder a esta funcionalidad' });
+    }
+
+    next();
+}
+
+export const canAddTallerByPlan = (req, res, next) => {
+    const rut = req.user.rut;
+
+    const canAdd = userModel.canAddByPlan(rut);
+
+    if (!canAdd) {
+        return res.status(403).json({ message: 'No puedes agregar más elementos con tu plan actual' });
     }
 
     next();

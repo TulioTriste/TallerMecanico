@@ -135,7 +135,7 @@ const WorkshopDash = () => {
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex justify-end space-x-4">
           <Link 
-            to={`/sucursal/${taller.taller_id}/empleados`}
+            to={`/workshop/sucursal/${taller.taller_id}/empleados`}
             className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
               darkMode 
                 ? 'bg-gray-700 hover:bg-gray-600 text-white' 

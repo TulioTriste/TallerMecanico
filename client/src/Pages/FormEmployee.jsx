@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   UserPlus,
   Moon,
@@ -12,50 +12,39 @@ import {
   EyeOff,
   CreditCard,
 } from "lucide-react";
+import { useDarkMode } from "../context/darkModeContext";
+import { useForm } from "react-hook-form";
+import { useEmpleado } from "../context/empleadosContext";
+import { useControlPanel } from "../context/controlPanelContext";
 
 export default function FormularioEmpleado() {
   const navigate = useNavigate();
   const { id: tallerId } = useParams(); // Obtener el ID del taller de la URL
-
-  const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window !== "undefined") {
-      const savedMode = localStorage?.getItem("darkMode");
-      return (
-        savedMode === "true" ||
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-      );
-    }
-    return false;
-  });
+  const { darkMode } = useDarkMode();
+  const { addEmpleado } = useEmpleado();
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [roles, setRoles] = useState([
-    { id: 1, nombre: "Administrador" },
-    { id: 2, nombre: "Mecánico" },
-    { id: 3, nombre: "Recepcionista" },
-  ]);
+  const {roles} = useControlPanel();
 
-  const [formData, setFormData] = useState({
-    empleado_rut: "",
-    taller_id: tallerId || "", // Usar el ID del taller si está disponible
-    roles_id: "",
-    nombre: "",
-    apellido: "",
-    cel: "",
-    correo: "",
-    password: "",
-  });
+  const {
+    register,
+    handleSubmit
+  } = useForm();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
+    //e.preventDefault();
+    data = {taller_id: tallerId,
+      ...data};
+
     setLoading(true);
     try {
-      // Aquí iría la lógica para enviar los datos al backend
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      alert("Empleado guardado exitosamente");
-      // Usar navigate en lugar de window.location.href
-      navigate(`/workshop/dashboard/${tallerId}`);
+      if (await addEmpleado(data)) {
+        alert("Empleado guardado exitosamente");
+        navigate(`/workshop/dashboard/${tallerId}`);
+      } else {
+        alert("Error al guardar el empleado");
+      }
     } catch (error) {
       console.error("Error:", error);
       alert("Error al guardar el empleado");
@@ -64,13 +53,13 @@ export default function FormularioEmpleado() {
     }
   };
 
-  const handleInputChange = (e) => {
+  /*const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-  };
+  };*/
 
   return (
     <div
@@ -104,7 +93,7 @@ export default function FormularioEmpleado() {
           </div>
 
           <button
-            onClick={() => setDarkMode(!darkMode)}
+            //onClick={() => toggleDarkMode(!darkMode)}
             className={`p-2 rounded-full transition-colors ${
               darkMode
                 ? "bg-gray-800 text-yellow-300 hover:bg-gray-700"
@@ -121,7 +110,7 @@ export default function FormularioEmpleado() {
 
         {/* Formulario */}
         <form
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit(onSubmit)}
           className={`rounded-xl shadow-md p-8 ${
             darkMode ? "bg-gray-800" : "bg-white"
           }`}
@@ -145,8 +134,9 @@ export default function FormularioEmpleado() {
                 <input
                   type="text"
                   name="empleado_rut"
-                  value={formData.empleado_rut}
-                  onChange={handleInputChange}
+                  //value={formData.empleado_rut}
+                  {...register("empleado_rut")}
+                  //onChange={handleInputChange}
                   placeholder="Ej: 12345678-9"
                   required
                   className={`block w-full pl-10 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
@@ -171,8 +161,9 @@ export default function FormularioEmpleado() {
                 <input
                   type="text"
                   name="nombre"
-                  value={formData.nombre}
-                  onChange={handleInputChange}
+                  //value={formData.nombre}
+                  {...register("nombre")}
+                  //onChange={handleInputChange}
                   required
                   className={`block w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                     darkMode
@@ -193,8 +184,9 @@ export default function FormularioEmpleado() {
                 <input
                   type="text"
                   name="apellido"
-                  value={formData.apellido}
-                  onChange={handleInputChange}
+                  //value={formData.apellido}
+                  {...register("apellido")}
+                  //onChange={handleInputChange}
                   required
                   className={`block w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                     darkMode
@@ -224,8 +216,9 @@ export default function FormularioEmpleado() {
                   <input
                     type="email"
                     name="correo"
-                    value={formData.correo}
-                    onChange={handleInputChange}
+                    //value={formData.correo}
+                    {...register("correo")}
+                    //onChange={handleInputChange}
                     required
                     className={`block w-full pl-10 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       darkMode
@@ -253,8 +246,9 @@ export default function FormularioEmpleado() {
                   <input
                     type="tel"
                     name="cel"
-                    value={formData.cel}
-                    onChange={handleInputChange}
+                    //value={formData.cel}
+                    {...register("cel")}
+                    //onChange={handleInputChange}
                     required
                     className={`block w-full pl-10 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       darkMode
@@ -284,8 +278,9 @@ export default function FormularioEmpleado() {
                   </div>
                   <select
                     name="roles_id"
-                    value={formData.roles_id}
-                    onChange={handleInputChange}
+                    //value={formData.roles_id}
+                    {...register("roles_id")}
+                    //onChange={handleInputChange}
                     required
                     className={`block w-full pl-10 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       darkMode
@@ -295,7 +290,7 @@ export default function FormularioEmpleado() {
                   >
                     <option value="">Seleccionar rol</option>
                     {roles.map((rol) => (
-                      <option key={rol.id} value={rol.id}>
+                      <option key={rol.roles_id} value={rol.roles_id}>
                         {rol.nombre}
                       </option>
                     ))}
@@ -315,8 +310,9 @@ export default function FormularioEmpleado() {
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
+                    //value={formData.password}
+                    {...register("password")}
+                    //onChange={handleInputChange}
                     required
                     className={`block w-full pr-10 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       darkMode
@@ -348,13 +344,9 @@ export default function FormularioEmpleado() {
               <button
                 type="button"
                 onClick={() => {
-                  if (selectedWorkshop?.taller_id) {
-                    navigate(
-                      `/workshop/dashboard/${selectedWorkshop.taller_id}`,
-                    );
-                  } else {
-                    navigate("/workshops");
-                  }
+                  navigate(
+                    `/workshop/sucursal/${tallerId}/empleados`,
+                  );
                 }}
                 className={`px-4 py-2 rounded-lg font-medium ${
                   darkMode

@@ -1,0 +1,67 @@
+import { connectToDatabase } from "../bd.js";
+import sql from "mssql";
+
+class EmpleadoModel {
+
+  async insertEmpleado(data) {
+    try {
+      const pool = await connectToDatabase();
+      const request = pool.request();
+
+      request
+            .input("empleado_rut", sql.VarChar, data.empleado_rut)
+            .input("taller_id", sql.Int, data.taller_id)
+            .input("roles_id", sql.Int, data.roles_id)
+            .input("nombre", sql.VarChar, data.nombre)
+            .input("apellido", sql.VarChar, data.apellido)
+            .input("cel", sql.VarChar, data.telefono)
+            .input("correo", sql.VarChar, data.correo)
+            .input("password", sql.VarChar, data.password);
+
+      const result = await request.query(`
+        INSERT INTO empleado (empleado_rut, taller_id, roles_id, nombre, apellido, cel, correo, password)
+        VALUES (@empleado_rut, @taller_id, @roles_id, @nombre, @apellido, @cel, @correo, @password)
+      `);
+
+      // Check if the insert was successful
+      if (result.rowsAffected.length === 0) {
+        throw new Error("No rows were affected by the insert operation.");
+      }
+
+      return result.rowsAffected[0] > 0;
+    } catch (error) {
+      console.error("Error inserting empleado:", error);
+      throw error;
+    }
+  }
+
+  async getEmpleadosByTaller(taller_id) {
+    try {
+      const pool = await connectToDatabase();
+      const request = pool.request();
+      request.input("taller_id", sql.Int, taller_id);
+
+      const result = await request.query(`
+        SELECT 
+            e.empleado_rut,
+            e.taller_id,
+            e.roles_id,
+            e.nombre,
+            e.apellido,
+            e.cel,
+            e.correo,
+            r.nombre AS nombre_rol
+        FROM empleado e
+        INNER JOIN roles r ON e.roles_id = r.roles_id
+        WHERE e.taller_id = @taller_id
+      `);
+
+      return result.recordset;
+    } catch (error) {
+      console.error("Error fetching empleados by taller:", error);
+      throw error;
+    }
+  }
+}
+
+export default new EmpleadoModel();

@@ -5,7 +5,8 @@ import { getCountRegisteredVehicles, getNextCita, getOrdenesDeTrabajoCount, getO
     getRecentOTs,
     getCountOTMes,
     getIngresosDelMes,
-    getCitasHoy
+    getCitasHoy,
+    getRoles
  } from "../controllers/controlpanel.controller.js";
 
 const router = Router();
@@ -19,5 +20,6 @@ router.get("/otdelmes/:taller_id", authRequired, ownTallerRequired, getCountOTMe
 router.get("/otsrecientes/:taller_id/:days", authRequired, ownTallerRequired, getRecentOTs);
 router.get("/citashoy/:taller_id", authRequired, ownTallerRequired, getCitasHoy);
 router.get("/ingresosdelmes/:taller_id", authRequired, ownTallerRequired, getIngresosDelMes);
+router.get("/getroles", authRequired, getRoles)
 
 export default router;

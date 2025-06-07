@@ -6,10 +6,17 @@ INSERT INTO [plan] (nombre, precio, talleres) VALUES
 
 
 --DELETE FROM [estado];
-INSERT INTO [estado] (estado_id, nombre, descripcion) VALUES
-	(1, 'Pendiente', ''),
-	(2, 'Ingresada', ''),
-	(3, 'Terminada', '');
+INSERT INTO [estado] (nombre, descripcion) VALUES
+	('Pendiente', ''),
+	('Ingresada', ''),
+	('Terminada', '');
+
+--DELETE FROM [roles];
+INSERT INTO [roles] (nombre, descripcion) VALUES
+	('Administrador', ''),
+	('Jefe de Sucursal', ''),
+	('Mecanico', ''),
+	('Practicante', '');
 
 
 --DELETE FROM [cliente];
@@ -21,10 +28,9 @@ INSERT INTO cliente (cliente_rut, nombre, apaterno, amaterno, correo, telefono) 
 INSERT INTO vehiculo (patente, cliente_rut, marca, modelo, anio, color) VALUES
 	('BBSJ21', '12.345.678-9', 'Citroen', 'C4', 2008, 'Rojo Lucifer');
 
-
 --DELETE FROM [usuario];
 INSERT INTO usuario (usuario_rut,nombre,apellido,correo,password,telefono,direccion,empresa,plan_id) VALUES
-	(N'21.389.785-3',N'Sebastián',N'Morales',N'lunaloboez@gmail.com',N'$2b$10$pCDYfQR.1Fh7dCTz1jEAIetWSwwGForI4bQYng.pamkLThsXZWBGC',N'56990855934',N'Cerro el plomo 5260, piso 8',NULL,NULL),
+	(N'21.389.785-3',N'Sebastián',N'Morales',N'lunaloboez@gmail.com',N'$2b$10$pCDYfQR.1Fh7dCTz1jEAIetWSwwGForI4bQYng.pamkLThsXZWBGC',N'56990855934',N'Cerro el plomo 5260, piso 8',NULL,2),
 	(N'21.549.868-9',N'Bastian',N'Ampuero',N'ampuerobastian05@gmail.com',N'$2b$10$KkjOwmpImC5PqStqRirkeuOSfj1KdVpt5IchlgaoQ9G5qi2C5FYSG',N'56972196202',N'los trapenses 0668',NULL,NULL);
 
 
@@ -34,6 +40,8 @@ INSERT INTO taller (usuario_rut, nombre, telefono, correo, direccion, inicio_jor
 	('21.389.785-3', 'Taller Las Condes', '56922222222', 'tallerlascondes@prueba.com', 'Las Condes 0684, Las Condes', 0900, 1800),
 	('21.549.868-9', 'Taller Providencia', '56933333333', 'tallerprovidencia@prueba.com', 'Providencia 1234, Providencia', 1000, 2000);
 
+INSERT INTO empleado (empleado_rut, taller_id, roles_id, nombre, apellido, cel, correo, password) VALUES 
+	('55.555.555-K', 1, 2, 'Vicente', 'Fernandez', '56988888888', 'jefesucursal@gmail.com', '@Prueba1234');
 
 --INSERT INTO taller (usuario_rut, nombre, telefono, correo, direccion, inicio_jornada, termino_jornada) VALUES
 --	('21.389.785-3', 'Taller Prueba', '56911111111', 'tallerprueba@prueba.com', 'adasdasd, Santiago', 0900, 1700);

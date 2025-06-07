@@ -18,7 +18,7 @@ import { useDarkMode } from "../context/darkModeContext";
 import { useControlPanel } from "../context/controlPanelContext";
 
 export default function Dashboard() {
-  const { darkMode, toggleDarkMode } = useDarkMode();
+  const { darkMode } = useDarkMode();
   const [billingCycle, setBillingCycle] = useState("monthly");
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [tooltipVisible, setTooltipVisible] = useState(false);
