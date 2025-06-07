@@ -41,7 +41,7 @@ export default function FormularioEmpleado() {
     try {
       if (await addEmpleado(data)) {
         alert("Empleado guardado exitosamente");
-        navigate(`/workshop/dashboard/${tallerId}`);
+        navigate(`/workshop/sucursal/${tallerId}/empleados`);
       } else {
         alert("Error al guardar el empleado");
       }

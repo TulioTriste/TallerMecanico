@@ -7,10 +7,9 @@ import {
   Trash2,
   Moon,
   Sun,
-  Building2,
-  Search,
-} from "lucide-react";
-import { useControlPanel } from "../context/controlPanelContext";
+  Search
+} from 'lucide-react';
+import { useEmpleado } from '../context/empleadosContext';
 
 export default function ListaEmpleados() {
   const { id } = useParams();
@@ -26,11 +25,10 @@ export default function ListaEmpleados() {
     return false;
   });
 
-  const { getEmpleadosByTaller } = useControlPanel();
+  const { getEmpleadosByTaller, deleteEmpleado } = useEmpleado();
   const [empleados, setEmpleados] = useState([]);
 
-  useEffect(() => {
-    const fetchEmpleados = async () => {
+  const fetchEmpleados = async () => {
       try {
         const res = await getEmpleadosByTaller(id);
         setEmpleados(res);
@@ -39,11 +37,14 @@ export default function ListaEmpleados() {
       }
     };
 
+  useEffect(() => {
     fetchEmpleados();
   }, []);
 
-  const empleadosFiltrados = empleados.filter(
-    (emp) =>
+  const empleadosOrdenados = [...empleados].sort((a, b) => a.roles_id - b.roles_id);
+  
+  const empleadosFiltrados = empleadosOrdenados
+    .filter(emp => 
       emp.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
       emp.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
       emp.empleado_rut.includes(searchTerm),
@@ -247,13 +248,12 @@ export default function ListaEmpleados() {
                       <Edit className="w-5 h-5" />
                     </button>
                     <button
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            "¿Estás seguro de eliminar este empleado?",
-                          )
-                        ) {
-                          // Lógica para eliminar
+                      onClick={async () => {
+                        if (window.confirm('¿Estás seguro de eliminar este empleado?')) {
+                          {
+                            await deleteEmpleado({ empleado_rut: empleado.empleado_rut });
+                            fetchEmpleados();
+                          }
                         }
                       }}
                       className={`inline-flex items-center p-2 rounded-lg ${

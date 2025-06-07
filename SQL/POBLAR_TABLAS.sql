@@ -20,8 +20,8 @@ INSERT INTO [roles] (nombre, descripcion) VALUES
 
 
 --DELETE FROM [cliente];
-INSERT INTO cliente (cliente_rut, nombre, apaterno, amaterno, correo, telefono) VALUES
-	('12.345.678-9', 'Mauricio', 'Urrutia', 'Chandia', 'correodeprueba@taller.com', '56999999999');
+INSERT INTO cliente (cliente_rut, nombre, correo, telefono) VALUES
+	('12.345.678-9', 'Mauricio Urrutia Chandia', 'correodeprueba@taller.com', '56999999999');
 
 
 --DELETE FROM [vehiculo];
