@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { insertEmpleadoRequest } from "../api/empleado";
+import { deleteEmpleadoRequest, getEmpleadosByTallerRequest, insertEmpleadoRequest } from "../api/empleado";
 
 const EmpleadoContext = createContext();
 
@@ -14,9 +14,31 @@ export function EmpleadoProvider({ children }) {
   const addEmpleado = async (data) => {
     try {
       const response = await insertEmpleadoRequest(data);
-      return response.status === 201; // Retorna true si la inserción fue exitosa
+      return response.status === 200; // Retorna true si la inserción fue exitosa
     } catch (error) {
       console.error("Error al agregar el empleado:", error);
+      throw error; // Propagar el error para manejarlo en el componente que llama
+    }
+  };
+
+  
+
+  const getEmpleadosByTaller = async (taller_id) => {
+    try {
+      const res = await getEmpleadosByTallerRequest(taller_id);
+      return res.data;
+    } catch (error) {
+      console.error("Error al obtener los empleados del taller:", error);
+      return [];
+    }
+  };
+
+  const deleteEmpleado = async (data) => {
+    try {
+      const response = await deleteEmpleadoRequest(data);
+      return response.status === 200; // Retorna true si la eliminación fue exitosa
+    } catch (error) {
+      console.error("Error al eliminar el empleado:", error);
       throw error; // Propagar el error para manejarlo en el componente que llama
     }
   };
@@ -24,7 +46,9 @@ export function EmpleadoProvider({ children }) {
   return (
     <EmpleadoContext.Provider
       value={{
-        addEmpleado
+        addEmpleado,
+        getEmpleadosByTaller,
+        deleteEmpleado
       }}
     >
       {children}

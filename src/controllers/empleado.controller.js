@@ -21,7 +21,7 @@ export const insertEmpleado = async (req, res) => {
         const result = await empleadoModel.insertEmpleado(data);
 
         if (result) {
-            return res.status(201).json({
+            return res.status(200).json({
                 message: "Empleado registrado exitosamente",
                 empleado: data
             });
@@ -60,3 +60,27 @@ export const getEmpleadosByTaller = async (req, res) => {
         });
     }
 };
+
+export const deleteEmpleado = async (req, res) => {
+    const { empleado_rut } = req.body;
+
+    try {
+        const result = await empleadoModel.deleteEmpleado(empleado_rut);
+
+        if (result) {
+            return res.status(200).json({
+                message: "Empleado eliminado exitosamente"
+            });
+        } else {
+            return res.status(404).json({
+                message: "Empleado no encontrado"
+            });
+        }
+    } catch (error) {
+        console.error("Error al eliminar empleado:", error);
+        return res.status(500).json({
+            message: "Error interno del servidor",
+            error: error.message
+        });
+    }
+}

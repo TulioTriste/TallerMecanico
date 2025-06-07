@@ -4,7 +4,6 @@ import { getCitasHoyRequest, getCountCitasProx7DiasRequest, getCountOTMesRequest
         getNextCitaRequest, getOrdenesDeTrabajoCountByEstadoRequest, getOrdenesDeTrabajoCountRequest, 
         getRecentOTsRequest, 
         getRolesRequest} from "../api/controlpanel";
-import { getEmpleadosByTallerRequest } from "../api/empleado";
 
 const ControlPanelContext = createContext();
 
@@ -133,16 +132,6 @@ export function ControlPanelProvider({ children }) {
     }
   }
 
-  const getEmpleadosByTaller = async (taller_id) => {
-    try {
-      const res = await getEmpleadosByTallerRequest(taller_id);
-      return res.data;
-    } catch (error) {
-      console.error("Error al obtener los empleados del taller:", error);
-      return [];
-    }
-  }
-
   return (
     <ControlPanelContext.Provider
       value={{
@@ -156,8 +145,7 @@ export function ControlPanelProvider({ children }) {
         getCountOTMes,
         getOtsRecientes,
         getIngresosDelMes,
-        getCitasHoy,
-        getEmpleadosByTaller
+        getCitasHoy
       }}
     >
       {children}
