@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useDarkMode } from "../context/darkModeContext";
 import { useControlPanel } from "../context/controlPanelContext";
+import Footer from "../Components/Footer";
 
 export default function Dashboard() {
   const { darkMode } = useDarkMode();
@@ -745,24 +746,7 @@ export default function Dashboard() {
         </div>
 
         {/* Footer */}
-        <footer
-          className={`px-6 py-8 ${darkMode ? "bg-gray-800" : "bg-white"} shadow-inner`}
-        >
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <Wrench
-                className={`h-6 w-6 ${darkMode ? "text-blue-400" : "text-blue-600"}`}
-              />
-              <span className="font-bold">MechaniTech</span>
-            </div>
-
-            <div
-              className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
-            >
-              © 2025 MechaniTech. Todos los derechos reservados.
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );
