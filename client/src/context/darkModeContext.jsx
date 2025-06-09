@@ -2,30 +2,41 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 const DarkModeContext = createContext();
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useDarkMode = () => {
   const context = useContext(DarkModeContext);
-  if (!context) throw new Error("useDarkMode must be used within a DarkModeProvider");
+  if (!context)
+    throw new Error("useDarkMode must be used within a DarkModeProvider");
   return context;
 };
 
 export function DarkModeProvider({ children }) {
-  const [darkMode, setDarkMode] = useState(false);
+  // Inicializar el estado desde localStorage o preferencia del sistema
+  const [darkMode, setDarkMode] = useState(() => {
+    // Primero intentar obtener de localStorage
+    const savedMode = localStorage.getItem("darkMode");
+    if (savedMode !== null) {
+      return savedMode === "true";
+    }
+    // Si no hay valor en localStorage, usar preferencia del sistema
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
 
   useEffect(() => {
-    const matchMedia = window.matchMedia('(prefers-color-scheme: dark)');
-    setDarkMode(matchMedia.matches);
+    // Actualizar el tema cuando cambie darkMode
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      document.body.classList.add("bg-gray-900");
+    } else {
+      document.documentElement.classList.remove("dark");
+      document.body.classList.remove("bg-gray-900");
+    }
 
-    // Escuchar cambios en el tema del sistema
-    const handler = (e) => setDarkMode(e.matches);
-    matchMedia.addEventListener('change', handler);
-
-    return () => matchMedia.removeEventListener('change', handler);
-  }, [setDarkMode]);
+    // Guardar en localStorage
+    localStorage.setItem("darkMode", darkMode.toString());
+  }, [darkMode]);
 
   const toggleDarkMode = () => {
-    setDarkMode((prevMode) => !prevMode);
-    localStorage.setItem("darkMode", !darkMode);
+    setDarkMode((prev) => !prev);
   };
 
   return (
@@ -33,6 +44,7 @@ export function DarkModeProvider({ children }) {
       value={{
         darkMode,
         toggleDarkMode,
+        setDarkMode,
       }}
     >
       {children}
