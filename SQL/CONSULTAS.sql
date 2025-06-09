@@ -71,6 +71,9 @@ SELECT
     WHERE usuario_rut = '21.389.785-3';
 
 
+UPDATE usuario SET password = 'pruebaa' WHERE usuario_rut = '21.389.785-3';
+
+
 SELECT * FROM usuario u;
 
 SELECT * FROM cotizacion c ;

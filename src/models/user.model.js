@@ -151,6 +151,21 @@ class UserModel {
       throw error;
     }
   }
+
+  async updateUserPassword(rut, newPassword) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+        .request()
+        .input("usuario_rut", sql.VarChar, rut)
+        .input("password", sql.VarChar, newPassword)
+        .query("UPDATE usuario SET password = @password WHERE usuario_rut = @usuario_rut");
+      return result;
+    } catch (error) {
+      console.error("Error al actualizar la contraseña del usuario:", error);
+      throw error;
+    }
+  }
 };
 
 export default new UserModel();

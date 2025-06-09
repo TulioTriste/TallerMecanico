@@ -26,7 +26,7 @@ export const register = async (req, res) => {
             correo: newUser.correo,
             nombre: newUser.nombre, 
         }, 
-        rememberMe = true);
+        true);
 
         res.cookie("token", token);
         res.json({
