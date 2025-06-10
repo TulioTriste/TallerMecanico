@@ -22,22 +22,22 @@ import { VehiculoProvider } from "./context/vehiculoContext";
 import CreateWorkshop from "./Pages/CreateWorkshop";
 import { EmpleadoProvider } from "./context/empleadosContext";
 import VehicleDetails from "./Pages/VehicleDetails";
-import ChangePassword from "./Pages/ChangePassword";
 import Settings from "./Pages/Settings";
 import { ThemeWrapper } from "./Components/ThemeWrapper";
 import WorkOrders from "./Pages/WorkOrders";
+import RecoverPasswordApprovePage from "./Pages/RecoverPasswordApproved.jsx";
 
 function App() {
   return (
     <DarkModeProvider>
       <ThemeWrapper>
-        <AuthProvider>
-          <WorkshopProvider>
-            <ControlPanelProvider>
-              <ClienteProvider>
-                <VehiculoProvider>
-                  <EmpleadoProvider>
-                    <BrowserRouter>
+        <BrowserRouter>
+          <AuthProvider>
+            <WorkshopProvider>
+              <ControlPanelProvider>
+                <ClienteProvider>
+                  <VehiculoProvider>
+                    <EmpleadoProvider>
                       <div className="min-h-screen">
                         <NavbarManager />
                         <Routes>
@@ -48,6 +48,10 @@ function App() {
                           <Route
                             path="/recoverpassword"
                             element={<RecoverPasswordPage />}
+                          />
+                          <Route
+                              path="/newpassword"
+                              element={<RecoverPasswordApprovePage />}
                           />
                           <Route path="/plans" element={<PlansPage />} />
 
@@ -84,10 +88,6 @@ function App() {
                               path="/vehicle/:orderId"
                               element={<VehicleDetails />}
                             />
-                            <Route
-                              path="/change-password"
-                              element={<ChangePassword />}
-                            />
                             <Route path="/settings" element={<Settings />} />
                             <Route
                               path="/workshop/orders/:id"
@@ -96,13 +96,13 @@ function App() {
                           </Route>
                         </Routes>
                       </div>
-                    </BrowserRouter>
-                  </EmpleadoProvider>
-                </VehiculoProvider>
-              </ClienteProvider>
-            </ControlPanelProvider>
-          </WorkshopProvider>
-        </AuthProvider>
+                    </EmpleadoProvider>
+                  </VehiculoProvider>
+                </ClienteProvider>
+              </ControlPanelProvider>
+            </WorkshopProvider>
+          </AuthProvider>
+        </BrowserRouter>
       </ThemeWrapper>
     </DarkModeProvider>
   );

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import {
   Lock,
   ArrowLeft,
-  Wrench,
   Moon,
   Sun,
   Check,
@@ -10,19 +9,33 @@ import {
   EyeOff,
 } from "lucide-react";
 import { useDarkMode } from "../context/darkModeContext";
+import {useSearchParams} from "react-router-dom";
+import {resetPasswordSchema} from "../schemas/authSchema.js";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useForm} from "react-hook-form";
+import {useAuth} from "../context/authContext.jsx";
 
-export default function NewPassword() {
-  const [formData, setFormData] = useState({
-    password: "",
-    confirmPassword: "",
-  });
+export default function RecoverPasswordApprovePage() {
+  const [searchParams] = useSearchParams();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const { resetPassword } = useAuth();
   const { darkMode, toggleDarkMode } = useDarkMode();
+
+  const {
+    register,
+    handleSubmit,
+  } = useForm({
+    resolver: zodResolver(resetPasswordSchema),
+  });
+
+  const token = searchParams.get("token");
+  const email = searchParams.get("email");
 
   useEffect(() => {
     if (darkMode) {
@@ -50,32 +63,54 @@ export default function NewPassword() {
     }
   }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
     setError("");
     setSuccess(false);
-    setLoading(true);
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Las contraseñas no coinciden");
+    try {
+      setLoading(true);
+
+      data = {
+        password: data.newPassword,
+        token: token,
+        email: email,
+      }
+
+      const res = await resetPassword(data);
+      if (res) {
+        setSuccess(true);
+      } else {
+        setError("Error al cambiar la contraseña. Por favor, inténtalo de nuevo.");
+      }
+    } catch (err) {
+      console.error("Error al cambiar la contraseña:", err);
+      setError("Error al cambiar la contraseña. Por favor, inténtalo de nuevo.");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    // Simulación de cambio de contraseña
-    setTimeout(() => {
-      setSuccess(true);
-      setLoading(false);
-    }, 1500);
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  if (!token) {
+    return (
+        <div className="w-full min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+          <div className="text-center text-red-600 dark:text-red-400">
+            <h1 className="text-2xl font-bold">Error</h1>
+            <p>Token no proporcionado. Por favor, verifica el enlace.</p>
+          </div>
+        </div>
+    );
+  }
+
+  if (!email) {
+    return (
+        <div className="w-full min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+          <div className="text-center text-red-600 dark:text-red-400">
+            <h1 className="text-2xl font-bold">Error</h1>
+            <p>Correo electrónico no proporcionado. Por favor, verifica el enlace.</p>
+          </div>
+        </div>
+    );
+  }
 
   return (
     <div
@@ -181,7 +216,7 @@ export default function NewPassword() {
               </a>
             </div>
           ) : (
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <div className="space-y-6">
                 {/* Nueva contraseña */}
                 <div>
@@ -198,9 +233,8 @@ export default function NewPassword() {
                       id="password"
                       name="password"
                       type={showPassword ? "text" : "password"}
-                      value={formData.password}
-                      onChange={handleInputChange}
                       required
+                      {...register("newPassword")}
                       className={`block w-full pr-10 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                         darkMode
                           ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400 border"
@@ -241,9 +275,8 @@ export default function NewPassword() {
                       id="confirmPassword"
                       name="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
-                      value={formData.confirmPassword}
-                      onChange={handleInputChange}
                       required
+                      {...register("confirmNewPassword")}
                       className={`block w-full pr-10 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                         darkMode
                           ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400 border"

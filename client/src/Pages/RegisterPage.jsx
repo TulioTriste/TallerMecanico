@@ -22,7 +22,6 @@ export default function RegisterForm() {
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
-    console.log("value", data);
     setLoading(true);
     try {
       await signup(data);

@@ -1,5 +1,13 @@
 import { Router } from "express";
-import { login, register, logout, verifyToken } from "../controllers/auth.controller.js";
+import {
+    login,
+    register,
+    logout,
+    verifyToken,
+    isValidMail,
+    requestResetPassword,
+    getRutByCorreo, resetPassword
+} from "../controllers/auth.controller.js";
 import { validateSchema } from "../middlewares/validator.middleware.js";
 import { loginSchema, registerSchema } from "../schemas/auth.schema.js";
 
@@ -9,4 +17,9 @@ router.post("/register", validateSchema(registerSchema), register);
 router.post("/login", validateSchema(loginSchema), login);
 router.post("/logout", logout);
 router.get("/verify", verifyToken);
+router.post("/valid-email", isValidMail)
+router.post("/request-reset-password", requestResetPassword);
+router.get("/getrut-bycorreo", getRutByCorreo);
+router.post("/reset-password", resetPassword);
+
 export default router;

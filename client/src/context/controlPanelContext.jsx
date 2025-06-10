@@ -4,6 +4,7 @@ import { getCitasHoyRequest, getCountCitasProx7DiasRequest, getCountOTMesRequest
         getNextCitaRequest, getOrdenesDeTrabajoCountByEstadoRequest, getOrdenesDeTrabajoCountRequest, 
         getRecentOTsRequest, 
         getRolesRequest} from "../api/controlpanel";
+import { useLocation } from "react-router-dom";
 
 const ControlPanelContext = createContext();
 
@@ -16,6 +17,8 @@ export const useControlPanel = () => {
 export function ControlPanelProvider({ children }) {
   const [registeredVehicles, setRegisteredVehicles] = useState(false);
   const [roles, setRoles] = useState([]);
+  const location = useLocation();
+
 
   const updateRegisteredVehicles = async () => {
     try {
@@ -39,12 +42,19 @@ export function ControlPanelProvider({ children }) {
 
   // Puesto para que se actualize solo cada 10 segundos
   useEffect(() => {
-    updateRegisteredVehicles();
-    updateRoles();
+    const routesNeedingUpdates = ['/dashboard', '/workshop/dashboard'];
+    const shouldUpdate = routesNeedingUpdates.some(route =>
+        location.pathname === route || location.pathname.startsWith(route)
+    );
 
-    const interval = setInterval(updateRegisteredVehicles, 10000); // Dentro del setInterval, se actualiza cada 10 segundos
-    return () => clearInterval(interval);
-  }, []);
+    if (shouldUpdate) {
+      updateRegisteredVehicles();
+      updateRoles();
+
+      const interval = setInterval(updateRegisteredVehicles, 10000); // Dentro del setInterval, se actualiza cada 10 segundos
+      return () => clearInterval(interval);
+    }
+  }, [location.pathname]);
 
   const getNextCitaTaller = async (id) => {
     try {
