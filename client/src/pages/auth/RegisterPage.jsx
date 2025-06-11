@@ -34,37 +34,6 @@ export default function RegisterForm() {
     if (isAuthenticated) navigate("/profile");
   }, [isAuthenticated, navigate]);
 
-  // Aplicar modo oscuro al body/html completo cuando cambia
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-      document.body.classList.add('bg-gray-900');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.body.classList.remove('bg-gray-900');
-    }
-
-    // Guardar preferencia en localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('darkMode', darkMode.toString());
-    }
-  }, [darkMode]);
-
-  // Establecer el color de fondo inicial
-  useEffect(() => {
-    // Asegurar que el body ocupe todo el espacio
-    document.body.style.minHeight = '100vh';
-    document.body.style.margin = '0';
-    document.body.style.padding = '0';
-
-    // Color de fondo inicial
-    if (darkMode) {
-      document.body.className = 'bg-gray-900';
-    } else {
-      document.body.className = 'bg-gradient-to-br from-gray-50 to-gray-100';
-    }
-  }, [darkMode]);
-
   // Formatear RUT chileno (XX.XXX.XXX-X)
   const formatRut = (value) => {
     // Eliminar cualquier caracter que no sea número o K/k
@@ -96,20 +65,6 @@ export default function RegisterForm() {
       <div className={`w-full min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-gray-100'
         }`}>
         <div className="w-full max-w-md mx-auto">
-          {/* Dark mode toggle */}
-          <div className="absolute top-4 right-4">
-            <button
-              onClick={toggleDarkMode}
-              className={`p-2 rounded-full transition-colors ${darkMode
-                  ? 'bg-gray-800 text-yellow-300 hover:bg-gray-700'
-                  : 'bg-white text-gray-700 hover:bg-gray-100 shadow-sm'
-                }`}
-              aria-label={darkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-            >
-              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
-          </div>
-
           {/* Header */}
           <div className="text-center mb-8">
             <div className={`inline-flex items-center justify-center p-3 rounded-full mb-4 ${darkMode ? 'bg-blue-900' : 'bg-blue-100'

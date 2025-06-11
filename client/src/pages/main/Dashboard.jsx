@@ -150,11 +150,6 @@ export default function Dashboard() {
     },
   ];
 
-  // Agregar una clase al elemento body para prevenir el parpadeo inicial
-  useEffect(() => {
-    document.body.className = darkMode ? "dark-mode" : "light-mode";
-  }, [darkMode]);
-
   // Ocultar el contenido hasta que estemos en el cliente para evitar parpadeo
   if (!isClient) {
     return (

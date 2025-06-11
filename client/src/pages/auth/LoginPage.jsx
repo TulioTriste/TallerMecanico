@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Mail, Lock, LogIn, Wrench, Moon, Sun } from 'lucide-react';
+import { Mail, Lock, LogIn, Wrench } from 'lucide-react';
 import Navbar from '../../Components/NavbarPrincipal/PublicNavbar.jsx';
 import { useAuth } from '../../context/authContext.jsx';
 import { useNavigate } from 'react-router-dom';
@@ -7,10 +7,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from '../../schemas/authSchema.js';
 import { Message } from '../../Components/ui/Message.jsx';
+import {useDarkMode} from "../../context/darkModeContext.jsx";
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const { signin, errors: loginErrors, isAuthenticated, user } = useAuth();
+  const { darkMode } = useDarkMode();
 
   const {
     register,
@@ -41,78 +43,12 @@ export default function LoginForm() {
     }
   }, [isAuthenticated, navigate, user]);
 
-  const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const savedMode = localStorage.getItem('darkMode');
-      if (savedMode !== null) {
-        return savedMode === 'true';
-      }
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-    return false;
-  });
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && localStorage.getItem('darkMode') === null) {
-      const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const handleDarkModeChange = (event) => {
-        setDarkMode(event.matches);
-      };
-      darkModeMediaQuery.addEventListener('change', handleDarkModeChange);
-      return () => {
-        darkModeMediaQuery.removeEventListener('change', handleDarkModeChange);
-      };
-    }
-  }, []);
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-      document.body.classList.add('bg-gray-900');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.body.classList.remove('bg-gray-900');
-    }
-
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('darkMode', darkMode.toString());
-    }
-  }, [darkMode]);
-
-  useEffect(() => {
-    document.body.style.minHeight = '100vh';
-    document.body.style.margin = '0';
-    document.body.style.padding = '0';
-    if (darkMode) {
-      document.body.className = 'bg-gray-900';
-    } else {
-      document.body.className = 'bg-gradient-to-br from-gray-50 to-gray-100';
-    }
-  }, [darkMode]);
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
-
   return (
     <>
       <Navbar />
       <div className={`w-full min-h-screen flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-gray-100'
         }`}>
         <div className="w-full max-w-md mx-auto">
-          <div className="absolute top-4 right-4">
-            <button
-              onClick={toggleDarkMode}
-              className={`p-2 rounded-full transition-colors ${darkMode
-                ? 'bg-gray-800 text-yellow-300 hover:bg-gray-700'
-                : 'bg-white text-gray-700 hover:bg-gray-100 shadow-sm'
-                }`}
-              aria-label={darkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-            >
-              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
-          </div>
-
           <div className="text-center mb-10">
             <div className={`inline-flex items-center justify-center p-3 rounded-full mb-4 ${darkMode ? 'bg-blue-900' : 'bg-blue-100'
               }`}>

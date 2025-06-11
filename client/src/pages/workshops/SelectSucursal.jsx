@@ -1,27 +1,16 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, Moon, Sun, Users } from 'lucide-react';
+import { Building2, Users } from 'lucide-react';
+import {useDarkMode} from "../../context/darkModeContext.jsx";
 
 export default function SeleccionSucursal() {
   const navigate = useNavigate();
-  const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const savedMode = localStorage?.getItem('darkMode');
-      return savedMode === 'true' || window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-    return false;
-  });
+  const { darkMode } = useDarkMode();
 
   // Ejemplo de sucursales - Reemplazar con datos reales de tu API
   const sucursales = [
     { id: 1, nombre: 'Taller Central', direccion: 'Av. Principal 123', empleados: 15 },
     { id: 2, nombre: 'Taller Norte', direccion: 'Calle Norte 456', empleados: 8 },
   ];
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    localStorage.setItem('darkMode', !darkMode);
-  };
 
   return (
     <div className={`min-h-screen py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-300 pt-20 ${
@@ -45,17 +34,6 @@ export default function SeleccionSucursal() {
               Selecciona una sucursal para ver sus empleados
             </p>
           </div>
-          
-          <button
-            onClick={toggleDarkMode}
-            className={`p-2 rounded-full transition-colors ${
-              darkMode
-                ? 'bg-gray-800 text-yellow-300 hover:bg-gray-700'
-                : 'bg-white text-gray-700 hover:bg-gray-100 shadow-sm'
-            }`}
-          >
-            {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </button>
         </div>
 
         {/* Grid de Sucursales */}

@@ -37,32 +37,6 @@ export default function RecoverPasswordApprovePage() {
   const token = searchParams.get("token");
   const email = searchParams.get("email");
 
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-      document.body.classList.add("bg-gray-900");
-    } else {
-      document.documentElement.classList.remove("dark");
-      document.body.classList.remove("bg-gray-900");
-    }
-
-    if (typeof window !== "undefined") {
-      localStorage.setItem("darkMode", darkMode.toString());
-    }
-  }, [darkMode]);
-
-  useEffect(() => {
-    document.body.style.minHeight = "100vh";
-    document.body.style.margin = "0";
-    document.body.style.padding = "0";
-
-    if (darkMode) {
-      document.body.className = "bg-gray-900";
-    } else {
-      document.body.className = "bg-gradient-to-br from-gray-50 to-gray-100";
-    }
-  }, []);
-
   const onSubmit = async (data) => {
     setError("");
     setSuccess(false);
@@ -119,27 +93,6 @@ export default function RecoverPasswordApprovePage() {
       }`}
     >
       <div className="w-full max-w-md mx-auto">
-        {/* Dark mode toggle */}
-        <div className="absolute top-4 right-4">
-          <button
-            onClick={toggleDarkMode}
-            className={`p-2 rounded-full transition-colors ${
-              darkMode
-                ? "bg-gray-800 text-yellow-300 hover:bg-gray-700"
-                : "bg-white text-gray-700 hover:bg-gray-100 shadow-sm"
-            }`}
-            aria-label={
-              darkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"
-            }
-          >
-            {darkMode ? (
-              <Sun className="w-5 h-5" />
-            ) : (
-              <Moon className="w-5 h-5" />
-            )}
-          </button>
-        </div>
-
         {/* Header */}
         <div className="text-center mb-10">
           <div
