@@ -7,7 +7,6 @@ export const authRequired = (req, res, next) => {
     const { token } = req.cookies;
 
     if (!token) {
-        console.log('No token provided');
         return res.status(401).json({ message: 'Unauthorized No Token' });
     }
 
@@ -25,7 +24,6 @@ export const authRequired = (req, res, next) => {
 export const ownTallerRequired = async (req, res, next) => {
     try {
         const rutUsuario = req.user.rut;
-        console.log(req.params);
         const tallerId = req.params.taller_id;
 
         const taller = await tallerModel.getTallerById(tallerId);

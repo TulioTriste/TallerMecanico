@@ -12,8 +12,8 @@ import {
   Lock,
 } from "lucide-react";
 
-import { useAuth } from "../context/authContext";
-import { useDarkMode } from "../context/darkModeContext";
+import { useAuth } from "../../context/authContext.jsx";
+import { useDarkMode } from "../../context/darkModeContext.jsx";
 
 export default function ProfilePage() {
   const { user } = useAuth();

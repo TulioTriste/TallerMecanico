@@ -7,6 +7,8 @@ export const loginSchema = z.object({
   password: z.string().min(6, {
     message: "Password must be at least 6 characters",
   }),
+  rememberMe: z.boolean().optional(),
+  }).refine((data) => data.rememberMe === true || data.rememberMe === false, {
 });
 
 export const registerSchema = z
@@ -40,3 +42,13 @@ export const registerSchema = z
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
+export const resetPasswordSchema = z.object({
+    newPassword: z.string().min(6, {
+        message: "Password must be at least 6 characters",
+    }),
+    confirmNewPassword: z.string().min(6, {
+        message: "Password must be at least 6 characters",
+    }),
+    }).refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "Passwords do not match",
+});

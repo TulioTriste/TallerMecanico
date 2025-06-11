@@ -12,15 +12,15 @@ import {
   Zap,
 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
-import { useWorkshop } from "../context/workshopContext";
-import { useDarkMode } from "../context/darkModeContext";
-import { useControlPanel } from "../context/controlPanelContext";
-import { useCliente } from "../context/clienteContext";
+import { useWorkshop } from "../../context/workshopContext.jsx";
+import { useDarkMode } from "../../context/darkModeContext.jsx";
+import { useControlPanel } from "../../context/controlPanelContext.jsx";
+import { useCliente } from "../../context/clienteContext.jsx";
 import {
   formatFechaDDMMYYYY,
   formatFechaHHMM,
-} from "../utilities/stringformatter";
-import { useVehiculo } from "../context/vehiculoContext";
+} from "../../utilities/stringFormatter.js";
+import { useVehiculo } from "../../context/vehiculoContext.jsx";
 
 const WorkshopDash = () => {
   const { darkMode } = useDarkMode();

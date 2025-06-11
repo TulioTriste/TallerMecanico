@@ -12,10 +12,10 @@ import {
   EyeOff,
   CreditCard,
 } from "lucide-react";
-import { useDarkMode } from "../context/darkModeContext";
+import { useDarkMode } from "../../context/darkModeContext.jsx";
 import { useForm } from "react-hook-form";
-import { useEmpleado } from "../context/empleadosContext";
-import { useControlPanel } from "../context/controlPanelContext";
+import { useEmpleado } from "../../context/empleadosContext.jsx";
+import { useControlPanel } from "../../context/controlPanelContext.jsx";
 
 export default function FormularioEmpleado() {
   const navigate = useNavigate();
@@ -91,21 +91,6 @@ export default function FormularioEmpleado() {
               Ingresa los datos del nuevo empleado
             </p>
           </div>
-
-          <button
-            //onClick={() => toggleDarkMode(!darkMode)}
-            className={`p-2 rounded-full transition-colors ${
-              darkMode
-                ? "bg-gray-800 text-yellow-300 hover:bg-gray-700"
-                : "bg-white text-gray-700 hover:bg-gray-100 shadow-sm"
-            }`}
-          >
-            {darkMode ? (
-              <Sun className="w-5 h-5" />
-            ) : (
-              <Moon className="w-5 h-5" />
-            )}
-          </button>
         </div>
 
         {/* Formulario */}

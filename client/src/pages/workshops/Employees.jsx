@@ -9,21 +9,13 @@ import {
   Sun,
   Search
 } from 'lucide-react';
-import { useEmpleado } from '../context/empleadosContext';
+import { useEmpleado } from '../../context/empleadosContext.jsx';
+import {useDarkMode} from "../../context/darkModeContext.jsx";
 
 export default function ListaEmpleados() {
   const { id } = useParams();
   const [searchTerm, setSearchTerm] = useState("");
-  const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window !== "undefined") {
-      const savedMode = localStorage?.getItem("darkMode");
-      return (
-        savedMode === "true" ||
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-      );
-    }
-    return false;
-  });
+  const { darkMode } = useDarkMode();
 
   const { getEmpleadosByTaller, deleteEmpleado } = useEmpleado();
   const [empleados, setEmpleados] = useState([]);
@@ -49,11 +41,6 @@ export default function ListaEmpleados() {
       emp.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
       emp.empleado_rut.includes(searchTerm),
   );
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    localStorage.setItem("darkMode", !darkMode);
-  };
 
   return (
     <div
@@ -87,21 +74,6 @@ export default function ListaEmpleados() {
           </div>
 
           <div className="flex items-center space-x-4 w-full sm:w-auto">
-            <button
-              onClick={toggleDarkMode}
-              className={`p-2 rounded-full transition-colors ${
-                darkMode
-                  ? "bg-gray-800 text-yellow-300 hover:bg-gray-700"
-                  : "bg-white text-gray-700 hover:bg-gray-100 shadow-sm"
-              }`}
-            >
-              {darkMode ? (
-                <Sun className="w-5 h-5" />
-              ) : (
-                <Moon className="w-5 h-5" />
-              )}
-            </button>
-
             <button
               onClick={() =>
                 (window.location.href = `/workshop/sucursal/${id}/nuevo`)

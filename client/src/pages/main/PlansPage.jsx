@@ -1,56 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Check, X, Zap, Shield, Wrench, ArrowRight } from 'lucide-react';
-import Navbar from '../Components/NavbarPrincipal/PublicNavbar';
+import Navbar from '../../Components/NavbarPrincipal/PublicNavbar.jsx';
+import {useDarkMode} from "../../context/darkModeContext.jsx";
 
 export default function PricingDashboard() {
   const [billingCycle, setBillingCycle] = useState('monthly');
   const [selectedPlan, setSelectedPlan] = useState(null);
-  const [systemDarkMode, setSystemDarkMode] = useState(false);
-
-  // Detectar preferencia de tema del sistema al cargar y cuando cambie
-  useEffect(() => {
-    // Aplicar estilos globales al HTML y BODY para evitar espacios blancos
-    document.documentElement.style.height = '100%';
-    document.documentElement.style.margin = '0';
-    document.body.style.height = '100%';
-    document.body.style.margin = '0';
-    
-    // Función para detectar y aplicar el tema del sistema
-    const applySystemTheme = () => {
-      const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const isDarkMode = darkModeMediaQuery.matches;
-      setSystemDarkMode(isDarkMode);
-      
-      // Aplicar el color de fondo según el modo del sistema
-      const bgColor = isDarkMode ? 'rgb(17, 24, 39)' : 'rgb(249, 250, 251)';
-      document.documentElement.style.backgroundColor = bgColor;
-      document.body.style.backgroundColor = bgColor;
-    };
-
-    // Aplicar tema inicial
-    applySystemTheme();
-
-    // Escuchar cambios en la preferencia del tema del sistema
-    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = () => applySystemTheme();
-    
-    // Agregar event listener con compatibilidad para navegadores antiguos
-    if (darkModeMediaQuery.addEventListener) {
-      darkModeMediaQuery.addEventListener('change', handleChange);
-    } else if (darkModeMediaQuery.addListener) {
-      // Para compatibilidad con navegadores antiguos
-      darkModeMediaQuery.addListener(handleChange);
-    }
-    
-    // Limpieza
-    return () => {
-      if (darkModeMediaQuery.removeEventListener) {
-        darkModeMediaQuery.removeEventListener('change', handleChange);
-      } else if (darkModeMediaQuery.removeListener) {
-        darkModeMediaQuery.removeListener(handleChange);
-      }
-    };
-  }, []);
+  const { darkMode } = useDarkMode();
 
   const plans = [
     {
@@ -127,23 +83,23 @@ export default function PricingDashboard() {
   return (
     <>
       <Navbar />
-    <div className={`w-full min-h-screen ${systemDarkMode ? 'bg-gray-900' : 'bg-gray-50'} py-16 px-4 sm:px-6 lg:px-8 transition-colors duration-300 flex flex-col`}>
+    <div className={`w-full min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'} py-16 px-4 sm:px-6 lg:px-8 transition-colors duration-300 flex flex-col`}>
       <div className="max-w-6xl mx-auto w-full flex-grow">
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className={`text-3xl font-bold ${systemDarkMode ? 'text-white' : 'text-gray-900'} mb-4 transition-colors duration-300`}>Planes de Precios Flexibles</h2>
-          <p className={`text-lg ${systemDarkMode ? 'text-gray-300' : 'text-gray-600'} max-w-2xl mx-auto transition-colors duration-300`}>
+          <h2 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-4 transition-colors duration-300`}>Planes de Precios Flexibles</h2>
+          <p className={`text-lg ${darkMode ? 'text-gray-300' : 'text-gray-600'} max-w-2xl mx-auto transition-colors duration-300`}>
             Elija el plan perfecto para su taller mecánico y optimice sus operaciones diarias
           </p>
           
           {/* Billing toggle */}
-          <div className={`mt-8 inline-flex items-center ${systemDarkMode ? 'bg-gray-800' : 'bg-white'} p-1 rounded-full border ${systemDarkMode ? 'border-gray-700' : 'border-gray-200'} shadow-sm transition-colors duration-300`}>
+          <div className={`mt-8 inline-flex items-center ${darkMode ? 'bg-gray-800' : 'bg-white'} p-1 rounded-full border ${darkMode ? 'border-gray-700' : 'border-gray-200'} shadow-sm transition-colors duration-300`}>
             <button
               onClick={() => setBillingCycle('monthly')}
               className={`px-4 py-2 text-sm font-medium rounded-full transition-all ${
                 billingCycle === 'monthly' 
                   ? 'bg-blue-600 text-white shadow-md' 
-                  : `${systemDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'}`
+                  : `${darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'}`
               }`}
             >
               Facturación Mensual
@@ -153,7 +109,7 @@ export default function PricingDashboard() {
               className={`px-4 py-2 text-sm font-medium rounded-full transition-all ${
                 billingCycle === 'yearly' 
                   ? 'bg-blue-600 text-white shadow-md' 
-                  : `${systemDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'}`
+                  : `${darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'}`
               }`}
             >
               Facturación Anual <span className="text-xs font-normal">(-17%)</span>
@@ -165,11 +121,11 @@ export default function PricingDashboard() {
         <div className="grid md:grid-cols-3 gap-8 mb-12">
           {plans.map((plan, index) => {
             // Calcular los colores dinámicamente basado en el tema del sistema
-            const cardBackground = systemDarkMode 
+            const cardBackground = darkMode
               ? (index === 0 ? 'bg-blue-900/30' : index === 1 ? 'bg-indigo-900/30' : 'bg-purple-900/30') 
               : (index === 0 ? 'bg-blue-100' : index === 1 ? 'bg-indigo-100' : 'bg-purple-100');
             
-            const cardBorder = systemDarkMode
+            const cardBorder = darkMode
               ? (index === 0 ? 'border-blue-700/50' : index === 1 ? 'border-indigo-700/50' : 'border-purple-700/50')
               : (index === 0 ? 'border-blue-300' : index === 1 ? 'border-indigo-300' : 'border-purple-300');
             
@@ -191,20 +147,20 @@ export default function PricingDashboard() {
                 )}
                 
                 <div className="flex items-center mb-4">
-                  <div className={`p-3 rounded-lg ${systemDarkMode ? 'bg-gray-800' : 'bg-white'} mr-4 transition-colors duration-300`}>
+                  <div className={`p-3 rounded-lg ${darkMode ? 'bg-gray-800' : 'bg-white'} mr-4 transition-colors duration-300`}>
                     {plan.icon}
                   </div>
-                  <h3 className={`text-xl font-bold ${systemDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>{plan.name}</h3>
+                  <h3 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>{plan.name}</h3>
                 </div>
                 
-                <p className={`${systemDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm mb-4 transition-colors duration-300`}>{plan.description}</p>
+                <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'} text-sm mb-4 transition-colors duration-300`}>{plan.description}</p>
                 
                 <div className="mb-6">
                   <div className="flex items-end">
-                    <span className={`text-3xl font-bold ${systemDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                    <span className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
                       {billingCycle === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice}
                     </span>
-                    <span className={`${systemDarkMode ? 'text-gray-400' : 'text-gray-500'} ml-2 pb-1 transition-colors duration-300`}>
+                    <span className={`${darkMode ? 'text-gray-400' : 'text-gray-500'} ml-2 pb-1 transition-colors duration-300`}>
                       {billingCycle === 'monthly' ? '/mes' : '/año'}
                     </span>
                   </div>
@@ -225,7 +181,7 @@ export default function PricingDashboard() {
                       )}
                       <span className={`text-sm ${
                         feature.included 
-                          ? systemDarkMode ? 'text-gray-200' : 'text-gray-700' 
+                          ? darkMode ? 'text-gray-200' : 'text-gray-700' 
                           : 'text-gray-500'
                       } transition-colors duration-300`}>
                         {feature.name}
@@ -239,7 +195,7 @@ export default function PricingDashboard() {
                   className={`w-full flex items-center justify-center py-3 px-4 rounded-lg text-white font-medium transition-all ${
                     selectedPlan === index 
                       ? 'bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md' 
-                      : systemDarkMode 
+                      : darkMode 
                         ? 'bg-gray-700 hover:bg-gray-600' 
                         : 'bg-gray-800 hover:bg-gray-700'
                   }`}
@@ -265,15 +221,15 @@ export default function PricingDashboard() {
         
         {/* Features comparison note */}
         <div className="text-center mt-12">
-          <p className={`${systemDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+          <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
             ¿Necesita ver una comparación completa de características?{' '}
             <a href="#" className="text-blue-600 font-medium hover:text-blue-500">
               Ver tabla comparativa
             </a>
           </p>
           
-          <div className={`mt-8 ${systemDarkMode ? 'bg-blue-900/50 border-blue-800' : 'bg-blue-50 border-blue-200'} border rounded-lg p-4 max-w-2xl mx-auto transition-colors duration-300`}>
-            <p className={`text-sm ${systemDarkMode ? 'text-blue-200' : 'text-blue-800'} transition-colors duration-300`}>
+          <div className={`mt-8 ${darkMode ? 'bg-blue-900/50 border-blue-800' : 'bg-blue-50 border-blue-200'} border rounded-lg p-4 max-w-2xl mx-auto transition-colors duration-300`}>
+            <p className={`text-sm ${darkMode ? 'text-blue-200' : 'text-blue-800'} transition-colors duration-300`}>
               Todos los planes incluyen una prueba gratuita de 14 días. No se requiere tarjeta de crédito hasta que decida continuar.
             </p>
           </div>

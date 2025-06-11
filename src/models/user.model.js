@@ -66,7 +66,6 @@ class UserModel {
   // Obtener un usuario por correo
   async getUserByCorreo(correo) {
     try {
-      console.log("Buscando usuario por correo:", correo);
       const pool = await connectToDatabase();
       const result = await pool
         .request()
@@ -148,6 +147,35 @@ class UserModel {
       return result.recordset[0].plan_id; // Devuelve el ID del plan del usuario
     } catch (error) {
       console.error("Error al obtener el plan del usuario:", error);
+      throw error;
+    }
+  }
+
+  async getRutByEmail(email) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+        .request()
+        .input("correo", sql.VarChar, email)
+        .query("SELECT usuario_rut FROM usuario WHERE correo = @correo");
+      return result.recordset[0] ? result.recordset[0].usuario_rut : null; // Devuelve el RUT del usuario o null si no se encuentra
+    } catch (error) {
+      console.error("Error al obtener el RUT por correo:", error);
+      throw error;
+    }
+  }
+
+  async updateUserPassword(rut, newPassword) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+        .request()
+        .input("usuario_rut", sql.VarChar, rut)
+        .input("password", sql.VarChar, newPassword)
+        .query("UPDATE usuario SET password = @password WHERE usuario_rut = @usuario_rut");
+      return result;
+    } catch (error) {
+      console.error("Error al actualizar la contraseña del usuario:", error);
       throw error;
     }
   }

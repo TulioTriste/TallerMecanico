@@ -140,3 +140,12 @@ CREATE TABLE [cita] (
     CONSTRAINT [FK_cita_taller] FOREIGN KEY ([taller_id]) REFERENCES [taller]([taller_id])
         ON UPDATE CASCADE ON DELETE NO ACTION
 );
+
+CREATE TABLE [password_reset_tokens] (
+	[usuario_rut] VARCHAR(13) NOT NULL,
+	[token] VARCHAR(255) NOT NULL,
+	[expires_at] DATE NOT NULL,
+	[created_at] DATE NOT NULL DEFAULT GETDATE(),
+	CONSTRAINT [PK_token] PRIMARY KEY CLUSTERED ([token] ASC),
+	CONSTRAINT [FK_PRT_usuario_rut] FOREIGN KEY ([usuario_rut]) REFERENCES [usuario]([usuario_rut])
+);

@@ -1,63 +1,52 @@
 import { useState, useEffect } from 'react';
-import { Mail, ArrowLeft, Wrench, Moon, Sun, Send } from 'lucide-react';
-import { useDarkMode } from '../context/darkModeContext';
+import { Mail, ArrowLeft, Wrench, Send } from 'lucide-react';
+import { useDarkMode } from '../../context/darkModeContext.jsx';
+import { useForm } from "react-hook-form";
+import { useAuth } from "../../context/authContext.jsx";
+import {sendResetPasswordRequest} from "../../api/auth.js";
 
 export default function RecoverPasswordForm() {
-  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   
-  const { darkMode, toggleDarkMode } = useDarkMode();
+  const { darkMode } = useDarkMode();
 
-  // Aplicar modo oscuro al body/html completo cuando cambia
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-      document.body.classList.add('bg-gray-900');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.body.classList.remove('bg-gray-900');
-    }
-    
-    // Guardar preferencia en localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('darkMode', darkMode.toString());
-    }
-  }, [darkMode]);
+  const { isValidEmail } = useAuth();
+  const [sentEmail, setSentEmail] = useState('');
+  const {
+    register,
+    handleSubmit
+  } = useForm();
 
-  // Establecer el color de fondo inicial
-  useEffect(() => {
-    // Asegurar que el body ocupe todo el espacio
-    document.body.style.minHeight = '100vh';
-    document.body.style.margin = '0';
-    document.body.style.padding = '0';
-    
-    // Color de fondo inicial
-    if (darkMode) {
-      document.body.className = 'bg-gray-900';
-    } else {
-      document.body.className = 'bg-gradient-to-br from-gray-50 to-gray-100';
-    }
-  }, []);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
     setError('');
     setSuccess(false);
     setLoading(true);
-    
-    // Simulación de envío de correo de recuperación
-    setTimeout(() => {
-      if (email) {
-        // Aquí iría la lógica real de recuperación
-        console.log('Enviando correo de recuperación a:', email);
+
+    try {
+      if (await isValidEmail(data)) {
+        const res = await sendResetPasswordRequest(data);
+        if (res.status !== 200) {
+          setError('Error al enviar el correo de recuperación. Inténtalo de nuevo más tarde.');
+          return;
+        }
+
+        setSentEmail(data.correo);
         setSuccess(true);
       } else {
-        setError('Por favor ingrese un correo electrónico válido');
+        setError('Este correo no existe.');
       }
+    } catch (err) {
+      setError('Error al enviar el correo de recuperación. Inténtalo de nuevo más tarde.');
+      console.error('Error al enviar el correo de recuperación:', err);
+    } finally {
       setLoading(false);
-    }, 1500);
+
+      if (!success) {
+        setSentEmail('');
+      }
+    }
   };
 
   return (
@@ -65,21 +54,6 @@ export default function RecoverPasswordForm() {
       darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-gray-100'
     }`}>
       <div className="w-full max-w-md mx-auto">
-        {/* Dark mode toggle */}
-        <div className="absolute top-4 right-4">
-          <button
-            onClick={toggleDarkMode}
-            className={`p-2 rounded-full transition-colors ${
-              darkMode 
-                ? 'bg-gray-800 text-yellow-300 hover:bg-gray-700' 
-                : 'bg-white text-gray-700 hover:bg-gray-100 shadow-sm'
-            }`}
-            aria-label={darkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-          >
-            {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </button>
-        </div>
-
         {/* Header */}
         <div className="text-center mb-10">
           <div className={`inline-flex items-center justify-center p-3 rounded-full mb-4 ${
@@ -121,14 +95,14 @@ export default function RecoverPasswordForm() {
               <h3 className="text-xl font-semibold mb-2">¡Correo enviado!</h3>
               <p className={`mb-6 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                 Hemos enviado las instrucciones de recuperación a:<br/>
-                <span className="font-medium">{email}</span>
+                <span className="font-medium">{sentEmail}</span>
               </p>
               <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                 Si no lo encuentras, revisa tu carpeta de spam o correo no deseado.
               </p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <div className="mb-6">
                 <label 
                   htmlFor="email" 
@@ -146,9 +120,8 @@ export default function RecoverPasswordForm() {
                     id="email"
                     name="email"
                     type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                     required
+                    {...register('correo', { required: true })}
                     className={`block w-full pl-10 pr-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       darkMode 
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border' 

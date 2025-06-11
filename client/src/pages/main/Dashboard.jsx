@@ -14,9 +14,9 @@ import {
   X,
   ChevronRight,
 } from "lucide-react";
-import { useDarkMode } from "../context/darkModeContext";
-import { useControlPanel } from "../context/controlPanelContext";
-import Footer from "../Components/Footer";
+import { useDarkMode } from "../../context/darkModeContext.jsx";
+import { useControlPanel } from "../../context/controlPanelContext.jsx";
+import Footer from "../../Components/Footer.jsx";
 
 export default function Dashboard() {
   const { darkMode } = useDarkMode();
@@ -149,11 +149,6 @@ export default function Dashboard() {
       popular: false,
     },
   ];
-
-  // Agregar una clase al elemento body para prevenir el parpadeo inicial
-  useEffect(() => {
-    document.body.className = darkMode ? "dark-mode" : "light-mode";
-  }, [darkMode]);
 
   // Ocultar el contenido hasta que estemos en el cliente para evitar parpadeo
   if (!isClient) {

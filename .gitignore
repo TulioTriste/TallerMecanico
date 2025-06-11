@@ -1,3 +1,5 @@
 node_modules/*
 client/eslint.config.js
 src/config.js
+
+.idea/

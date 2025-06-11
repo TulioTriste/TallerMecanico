@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useDarkMode } from "../context/darkModeContext";
+import { useDarkMode } from "../../context/darkModeContext.jsx";
 import { useParams } from "react-router-dom";
-import { useWorkshop } from "../context/workshopContext";
+import { useWorkshop } from "../../context/workshopContext.jsx";
 import { Calendar, Users, CarFront, FileText, DollarSign } from "lucide-react";
 
 export default function WorkOrderForm() {

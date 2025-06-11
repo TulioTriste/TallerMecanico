@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Lock, Eye, EyeOff } from "lucide-react";
-import { useAuth } from "../context/authContext";
-import { useDarkMode } from "../context/darkModeContext";
+import { useAuth } from "../../context/authContext.jsx";
+import { useDarkMode } from "../../context/darkModeContext.jsx";
 
 export default function ChangePassword() {
   const { darkMode } = useDarkMode();

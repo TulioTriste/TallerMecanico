@@ -58,7 +58,7 @@ class ControlPanelModel {
                 .query(`
                     SELECT TOP 1
                         c.cliente_rut,
-                        cl.nombre + ' ' + cl.apaterno AS nombre_cliente,
+                        cl.nombre AS nombre_cliente,
                         c.patente,
                         v.marca,
                         v.modelo,
@@ -224,7 +224,7 @@ class ControlPanelModel {
                     SELECT 
                         c.cita_id,
                         c.cliente_rut,
-                        cl.nombre + ' ' + cl.apaterno AS nombre_cliente,
+                        cl.nombre AS nombre_cliente,
                         c.patente,
                         v.marca + ' ' + v.modelo + ' ' + CAST(v.anio AS VARCHAR(5)) AS nombre_vehiculo,
                         c.hora,

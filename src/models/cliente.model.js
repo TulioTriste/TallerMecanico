@@ -20,7 +20,7 @@ class ClienteModel {
       const result = await pool
         .request()
         .input("cliente_rut", sql.VarChar, rut)
-        .query("SELECT nombre + ' ' + apaterno nombre FROM cliente WHERE cliente_rut = @cliente_rut");
+        .query("SELECT nombre FROM cliente WHERE cliente_rut = @cliente_rut");
       return result.recordset[0].nombre;
     } catch (error) {
       console.error("Error al obtener el nombre de el cliente por RUT:", error);

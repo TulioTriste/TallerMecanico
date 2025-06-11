@@ -3,6 +3,9 @@ import bcrypt from "bcryptjs";
 import { createAccessToken } from "../libs/jwt.js";
 import jwt from "jsonwebtoken";
 import { TOKEN_KEY_SECRET } from "../config.js";
+import { v4 } from "uuid";
+import PassModel from "../models/pass.model.js";
+import { transporter } from "../transporter.js";
 
 export const register = async (req, res) => {
     const { rut, nombre, apellido, correo, password, telefono, direccion } = req.body;
@@ -25,7 +28,8 @@ export const register = async (req, res) => {
             rut: newUser.usuario_rut,
             correo: newUser.correo,
             nombre: newUser.nombre, 
-        });
+        }, 
+        true);
 
         res.cookie("token", token);
         res.json({
@@ -51,7 +55,7 @@ export const register = async (req, res) => {
 }
 
 export const login = async (req, res) => {
-    const { correo, password } = req.body;
+    const { correo, password, rememberMe } = req.body;
 
     let userFound = await UserModel.getUserByCorreo(correo);
 
@@ -74,11 +78,13 @@ export const login = async (req, res) => {
             rut: userFound.usuario_rut,
             correo: userFound.correo,
             nombre: userFound.nombre,
-        });
+        },
+        rememberMe);
 
         res.cookie("token", token);
         return res.status(200).json({
             message: "El Usuario ha sido encontrado exitosamente",
+            token,
             user: {
                 rut: userFound.usuario_rut,
                 nombre: userFound.nombre,
@@ -103,7 +109,6 @@ export const logout = (req, res) => {
     res.cookie("token", "", {
         expires: new Date(0),
     });
-    console.log("Cookie de token eliminada");
     return res.status(200);
 }
 
@@ -113,7 +118,6 @@ export const verifyToken = async (req, res) => {
 
     jwt.verify(token, TOKEN_KEY_SECRET, async (error, user) => {
         if (error) {
-            console.log("Error al verificar el token", error);
             return res.status(401).json({
                 message: "Token no valido",
             });
@@ -160,33 +164,138 @@ export const profile = async (req, res) => {
                 plan_id: userFound.plan_id,
             },
     })
+};
+
+export const getRutByCorreo = async (req, res) => {
+    const { correo } = req.body;
+
+    let userFound = await UserModel.getUserByCorreo(correo);
+
+    if (!userFound) {
+        return res.status(400).json({
+            message: "Este usuario no existe.",
+        });
+    }
+
+    res.status(200).json({
+        message: "El correo es válido",
+        usuario_rut: userFound.usuario_rut,
+    });
 }
-// Añade esto al final de tu auth.controller.js
-// export const getOwnerWorkshops = async (req, res) => {
-//     try {
-//         // Obtenemos el RUT del dueño desde el token verificado
-//         const ownerRut = req.user.rut;
-        
-//         // Aquí asumo que tienes un modelo para talleres, similar a UserModel
-//         const workshops = await WorkshopModel.getWorkshopsByOwnerRut(ownerRut);
-        
-//         if (!workshops || workshops.length === 0) {
-//             return res.status(404).json({
-//                 message: "No se encontraron talleres para este dueño",
-//                 workshops: []
-//             });
-//         }
-        
-//         res.json({
-//             message: "Talleres obtenidos exitosamente",
-//             workshops
-//         });
-        
-//     } catch (error) {
-//         console.error("Error al obtener talleres:", error);
-//         res.status(500).json({
-//             message: "Error al obtener talleres",
-//             error: error.message
-//         });
-//     }
-// };
+
+export const isValidMail = async (req, res) => {
+    const { correo } = req.body;
+
+    let userFound = await UserModel.getUserByCorreo(correo);
+
+    res.status(200).json({
+        message: "El correo es válido",
+        found: !!userFound,
+    });
+};
+
+export const requestResetPassword = async (req, res) => {
+    const { correo } = req.body;
+
+    const usuario_rut = await UserModel.getRutByEmail(correo);
+    if (!usuario_rut) {
+        return res.status(400).json({
+            message: "Este correo no está asociado a ningún usuario.",
+        });
+    }
+
+    const token = v4()
+    const expiresAt = new Date(Date.now() + 3600000); // 1 hour from now
+
+    try {
+        if (!token) {
+            return res.status(400).json({
+                message: "Error al crear la solicitud de restablecimiento de contraseña.",
+            });
+        }
+
+        const request = await PassModel.createRequestReset({
+            usuario_rut,
+            token,
+            expires_at: expiresAt,
+        });
+
+        if (!request) {
+            return res.status(400).json({
+                message: "Error al crear la solicitud de restablecimiento de contraseña.",
+            });
+        }
+
+        const resetLink = "http://localhost:5173/newpassword?token=" + token + "&email=" + correo;
+
+        await transporter.sendMail({
+            from: '"Taller Mecánico" <apptallermecanico@gmail.com>',
+            to: correo,
+            subject: "Solicitud de Restablecimiento de Contraseña",
+            html:
+            `
+                <p>You requested a password reset.</p>
+                <p>Click <a href="${resetLink}">here</a> to reset your password. This link is valid for 1 hour.</p>
+            `,
+        });
+
+        res.status(200).json({
+            message: "Solicitud de restablecimiento de contraseña creada exitosamente.",
+            token,
+        });
+    } catch (error) {
+        console.error("Error al solicitar el restablecimiento de contraseña", error);
+        res.status(500).json({
+            message: "Error al solicitar el restablecimiento de contraseña",
+            error: error.message,
+        });
+    }
+};
+
+export const resetPassword = async (req, res) => {
+    const { email, password, token } = req.body;
+
+    try {
+        const request = await PassModel.getRequestResetByToken(token);
+        if (!request) {
+            return res.status(400).json({
+                message: "Solicitud de restablecimiento de contraseña no encontrada.",
+            });
+        }
+
+        if (new Date() > request.expires_at) {
+            return res.status(400).json({
+                message: "El enlace de restablecimiento de contraseña ha expirado.",
+            });
+        }
+
+        const usuario_rut = await UserModel.getRutByEmail(email);
+
+        if (!usuario_rut) {
+            return res.status(400).json({
+                message: "Este correo no está asociado a ningún usuario.",
+            });
+        }
+
+        const passwordHash = await bcrypt.hash(password, 10);
+        const updatedUser = await PassModel.updatePasswordUser(usuario_rut, passwordHash);
+
+        if (!updatedUser) {
+            return res.status(400).json({
+                message: "Error al actualizar la contraseña del usuario.",
+            });
+        }
+
+        await PassModel.deleteRequestByToken(token);
+
+        res.status(200).json({
+            message: "Contraseña actualizada exitosamente.",
+        });
+    } catch (error) {
+        console.error("Error al restablecer la contraseña", error);
+        res.status(500).json({
+            message: "Error al restablecer la contraseña",
+            error: error.message,
+        });
+    }
+};

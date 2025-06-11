@@ -1,8 +1,14 @@
 import { useEffect } from "react";
 import { createContext, useContext, useState } from "react";
-import { loginRequest, registerRequest, verifyTokenRequest } from "../api/auth";
+import {
+  getRutByCorreoRequest,
+  isValidEmailRequest,
+  loginRequest,
+  registerRequest, resetPasswordRequest,
+  sendResetPasswordRequest,
+  verifyTokenRequest
+} from "../api/auth";
 import Cookies from "js-cookie";
-import { set } from "react-hook-form";
 
 const AuthContext = createContext();
 
@@ -50,7 +56,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await loginRequest(user);
       if (res.status === 200) {
-        console.log("Aprobado por chayanne");
         setUser(res.data.user);
         setIsAuthenticated(true);
       }
@@ -70,6 +75,65 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
     setLoading(false);
   };
+
+  const getRutByCorreo = async (email) => {
+    try {
+      const res = await getRutByCorreoRequest(email);
+
+        if (res.status === 200) {
+          return res.data.usuario_rut;
+        } else {
+          setErrors([res.data.message || "Error al obtener el RUT."]);
+          return null;
+        }
+    } catch (error) {
+      console.error("Error al obtener el RUT:", error);
+      return null;
+    }
+  }
+
+  const isValidEmail = async (email) => {
+    try {
+      const res = await isValidEmailRequest(email);
+
+      return res.status === 200 && res.data.found;
+    } catch (error) {
+      console.error("Error al validar el correo:", error);
+      return false;
+    }
+  }
+
+  const sentRecoverPasswordEmail = async (data) => {
+    try {
+      const res = await sendResetPasswordRequest(data);
+
+      if (res.status === 200) {
+        return true;
+      } else {
+        setErrors([res.data.message || "Error al enviar el correo de recuperación."]);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error al enviar el correo de recuperación:", error);
+      return false;
+    }
+  }
+
+  const resetPassword = async (data) => {
+    try {
+      const res = await resetPasswordRequest(data);
+
+      if (res.status === 200) {
+        return true;
+      } else {
+        setErrors([res.data.message || "Error al restablecer la contraseña."]);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error al restablecer la contraseña:", error);
+      return false;
+    }
+  }
 
   useEffect(() => {
     const checkLogin = async () => {
@@ -110,6 +174,10 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated,
         errors,
         loading,
+        getRutByCorreo,
+        isValidEmail,
+        sentRecoverPasswordEmail,
+        resetPassword
       }}
     >
       {children}
