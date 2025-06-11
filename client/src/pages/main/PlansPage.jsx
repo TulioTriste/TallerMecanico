@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Check, X, Zap, Shield, Wrench, ArrowRight } from 'lucide-react';
-import Navbar from '../Components/NavbarPrincipal/PublicNavbar';
+import Navbar from '../../Components/NavbarPrincipal/PublicNavbar.jsx';
 
 export default function PricingDashboard() {
   const [billingCycle, setBillingCycle] = useState('monthly');

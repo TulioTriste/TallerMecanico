@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Mail, Lock, UserPlus, Wrench, Moon, Sun, User, FileText } from 'lucide-react';
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../../context/authContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema } from '../schemas/authSchema';
-import { useDarkMode } from '../context/darkModeContext';
+import { registerSchema } from '../../schemas/authSchema.js';
+import { useDarkMode } from '../../context/darkModeContext.jsx';
 
 export default function RegisterForm() {
   const [loading, setLoading] = useState(false);

@@ -14,9 +14,9 @@ import {
   X,
   ChevronRight,
 } from "lucide-react";
-import { useDarkMode } from "../context/darkModeContext";
-import { useControlPanel } from "../context/controlPanelContext";
-import Footer from "../Components/Footer";
+import { useDarkMode } from "../../context/darkModeContext.jsx";
+import { useControlPanel } from "../../context/controlPanelContext.jsx";
+import Footer from "../../Components/Footer.jsx";
 
 export default function Dashboard() {
   const { darkMode } = useDarkMode();

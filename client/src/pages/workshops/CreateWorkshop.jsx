@@ -1,9 +1,9 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Home, Phone, Mail, MapPin } from "lucide-react";
-import { useDarkMode } from "../context/darkModeContext";
-import { useAuth } from "../context/authContext";
-import axios from "../api/axios";
+import { useDarkMode } from "../../context/darkModeContext.jsx";
+import { useAuth } from "../../context/authContext.jsx";
+import axios from "../../api/axios.js";
 
 const CreateWorkshop = () => {
   const { darkMode } = useDarkMode();

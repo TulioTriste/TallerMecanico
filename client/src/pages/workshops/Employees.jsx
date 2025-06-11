@@ -9,7 +9,7 @@ import {
   Sun,
   Search
 } from 'lucide-react';
-import { useEmpleado } from '../context/empleadosContext';
+import { useEmpleado } from '../../context/empleadosContext.jsx';
 
 export default function ListaEmpleados() {
   const { id } = useParams();

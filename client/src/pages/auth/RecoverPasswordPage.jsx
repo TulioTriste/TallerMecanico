@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Mail, ArrowLeft, Wrench, Send } from 'lucide-react';
-import { useDarkMode } from '../context/darkModeContext';
+import { useDarkMode } from '../../context/darkModeContext.jsx';
 import { useForm } from "react-hook-form";
-import { useAuth } from "../context/authContext.jsx";
-import {sendResetPasswordRequest} from "../api/auth.js";
+import { useAuth } from "../../context/authContext.jsx";
+import {sendResetPasswordRequest} from "../../api/auth.js";
 
 export default function RecoverPasswordForm() {
   const [loading, setLoading] = useState(false);

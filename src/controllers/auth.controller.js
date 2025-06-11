@@ -109,7 +109,6 @@ export const logout = (req, res) => {
     res.cookie("token", "", {
         expires: new Date(0),
     });
-    console.log("Cookie de token eliminada");
     return res.status(200);
 }
 
@@ -119,7 +118,6 @@ export const verifyToken = async (req, res) => {
 
     jwt.verify(token, TOKEN_KEY_SECRET, async (error, user) => {
         if (error) {
-            console.log("Error al verificar el token", error);
             return res.status(401).json({
                 message: "Token no valido",
             });

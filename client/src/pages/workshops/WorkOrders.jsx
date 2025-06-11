@@ -7,13 +7,13 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import { useWorkshop } from '../context/workshopContext';
+import { useWorkshop } from '../../context/workshopContext.jsx';
 import { useParams } from 'react-router-dom';
-import { useDarkMode } from '../context/darkModeContext';
-import { useControlPanel } from '../context/controlPanelContext';
-import { useCliente } from '../context/clienteContext';
-import { formatFechaDDMMYYYY } from '../utilities/stringformatter';
-import { useVehiculo } from '../context/vehiculoContext';
+import { useDarkMode } from '../../context/darkModeContext.jsx';
+import { useControlPanel } from '../../context/controlPanelContext.jsx';
+import { useCliente } from '../../context/clienteContext.jsx';
+import { formatFechaDDMMYYYY } from '../../utilities/stringFormatter.js';
+import { useVehiculo } from '../../context/vehiculoContext.jsx';
 
 export default function WorkOrders() {
   const { darkMode } = useDarkMode();

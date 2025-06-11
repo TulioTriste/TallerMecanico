@@ -1,31 +1,32 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import RegisterPage from "./Pages/RegisterPage";
-import LoginPage from "./Pages/LoginPage";
-import RecoverPasswordPage from "./Pages/RecoverPasswordPage";
-import Dashboard from "./Pages/Dashboard";
-import PlansPage from "./Pages/PlansPage";
+import RegisterPage from "./pages/auth/RegisterPage.jsx";
+import LoginPage from "./pages/auth/LoginPage.jsx";
+import RecoverPasswordPage from "./pages/auth/RecoverPasswordPage.jsx";
+import Dashboard from "./pages/main/Dashboard.jsx";
+import PlansPage from "./pages/main/PlansPage.jsx";
 import { AuthProvider } from "./context/authContext";
-import Workshops from "./Pages/Workshops";
-import WorkshopDash from "./Pages/WorkshopDash";
+import Workshops from "./pages/workshops/Workshops.jsx";
+import WorkshopDash from "./pages/workshops/WorkshopDash.jsx";
 import { ProtectedRoute } from "./routes";
 import { WorkshopProvider } from "./context/workshopContext";
-import WorkOrderForm from "./Pages/FormNewOt";
-import ListaEmpleados from "./Pages/Employees";
-import FormularioEmpleado from "./Pages/FormEmployee";
-import SeleccionSucursal from "./Pages/SelectSucursal";
+import WorkOrderForm from "./pages/workshops/FormNewOt.jsx";
+import ListaEmpleados from "./pages/workshops/Employees.jsx";
+import FormularioEmpleado from "./pages/workshops/FormEmployee.jsx";
+import SeleccionSucursal from "./pages/workshops/SelectSucursal.jsx";
 import { DarkModeProvider } from "./context/darkModeContext";
 import { ControlPanelProvider } from "./context/controlPanelContext";
 import NavbarManager from "./Components/NavbarManager";
-import ProfilePage from "./Pages/Profile";
+import ProfilePage from "./pages/profile/Profile.jsx";
 import { ClienteProvider } from "./context/clienteContext";
 import { VehiculoProvider } from "./context/vehiculoContext";
-import CreateWorkshop from "./Pages/CreateWorkshop";
+import CreateWorkshop from "./pages/workshops/CreateWorkshop.jsx";
 import { EmpleadoProvider } from "./context/empleadosContext";
-import VehicleDetails from "./Pages/VehicleDetails";
-import Settings from "./Pages/Settings";
+import VehicleDetails from "./pages/workshops/VehicleDetails.jsx";
+import Settings from "./pages/profile/Settings.jsx";
 import { ThemeWrapper } from "./Components/ThemeWrapper";
-import WorkOrders from "./Pages/WorkOrders";
-import RecoverPasswordApprovePage from "./Pages/RecoverPasswordApproved.jsx";
+import WorkOrders from "./pages/workshops/WorkOrders.jsx";
+import RecoverPasswordApprovePage from "./pages/auth/RecoverPasswordApproved.jsx";
+import ErrorPage from "./pages/error/ErrorPage.jsx";
 
 function App() {
   return (
@@ -94,6 +95,7 @@ function App() {
                               element={<WorkOrders />}
                             />
                           </Route>
+                          <Route path="*" element={<ErrorPage/>} />
                         </Routes>
                       </div>
                     </EmpleadoProvider>

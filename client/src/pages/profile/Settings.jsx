@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDarkMode } from "../context/darkModeContext";
+import { useDarkMode } from "../../context/darkModeContext.jsx";
 import { Monitor, Sun, Moon } from "lucide-react";
 
 export default function Settings() {

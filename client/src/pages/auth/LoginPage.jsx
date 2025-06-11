@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Mail, Lock, LogIn, Wrench, Moon, Sun } from 'lucide-react';
-import Navbar from '../Components/NavbarPrincipal/PublicNavbar';
-import { useAuth } from '../context/authContext';
+import Navbar from '../../Components/NavbarPrincipal/PublicNavbar.jsx';
+import { useAuth } from '../../context/authContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema } from '../schemas/authSchema';
-import { Message } from '../Components/ui/Message';
+import { loginSchema } from '../../schemas/authSchema.js';
+import { Message } from '../../Components/ui/Message.jsx';
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false);

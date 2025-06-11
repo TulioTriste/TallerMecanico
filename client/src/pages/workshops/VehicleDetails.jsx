@@ -12,7 +12,7 @@ import {
   Calendar,
   Wrench,
 } from "lucide-react";
-import { useDarkMode } from "../context/darkModeContext";
+import { useDarkMode } from "../../context/darkModeContext.jsx";
 
 export default function VehicleDetails() {
   const { darkMode } = useDarkMode();

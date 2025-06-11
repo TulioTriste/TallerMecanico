@@ -12,10 +12,10 @@ import {
   EyeOff,
   CreditCard,
 } from "lucide-react";
-import { useDarkMode } from "../context/darkModeContext";
+import { useDarkMode } from "../../context/darkModeContext.jsx";
 import { useForm } from "react-hook-form";
-import { useEmpleado } from "../context/empleadosContext";
-import { useControlPanel } from "../context/controlPanelContext";
+import { useEmpleado } from "../../context/empleadosContext.jsx";
+import { useControlPanel } from "../../context/controlPanelContext.jsx";
 
 export default function FormularioEmpleado() {
   const navigate = useNavigate();

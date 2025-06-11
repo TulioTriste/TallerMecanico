@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Wrench, MapPin, Clock, ChevronRight, Home, Plus } from "lucide-react";
-import { useWorkshop } from "../context/workshopContext";
-import { useDarkMode } from "../context/darkModeContext";
-import { useControlPanel } from "../context/controlPanelContext";
-import { formatCitaFecha } from "../utilities/stringformatter";
+import { useWorkshop } from "../../context/workshopContext.jsx";
+import { useDarkMode } from "../../context/darkModeContext.jsx";
+import { useControlPanel } from "../../context/controlPanelContext.jsx";
+import { formatCitaFecha } from "../../utilities/stringFormatter.js";
 
 const Workshops = () => {
   const { darkMode } = useDarkMode();

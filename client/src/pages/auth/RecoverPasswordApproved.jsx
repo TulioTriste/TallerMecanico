@@ -8,12 +8,12 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { useDarkMode } from "../context/darkModeContext";
+import { useDarkMode } from "../../context/darkModeContext.jsx";
 import {useSearchParams} from "react-router-dom";
-import {resetPasswordSchema} from "../schemas/authSchema.js";
+import {resetPasswordSchema} from "../../schemas/authSchema.js";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useForm} from "react-hook-form";
-import {useAuth} from "../context/authContext.jsx";
+import {useAuth} from "../../context/authContext.jsx";
 
 export default function RecoverPasswordApprovePage() {
   const [searchParams] = useSearchParams();
