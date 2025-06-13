@@ -1,10 +1,17 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import { getCitasHoyRequest, getCountCitasProx7DiasRequest, getCountOTMesRequest, getCountRegisteredVehiclesRequest, 
-        getIngresosDelMesRequest, 
-        getNextCitaRequest, getOrdenesDeTrabajoCountByEstadoRequest, getOrdenesDeTrabajoCountRequest, 
-        getRecentOTsRequest, 
-        getRolesRequest} from "../api/controlpanel";
-import { useLocation } from "react-router-dom";
+import {createContext, useContext, useEffect, useState} from "react";
+import {
+  getCitasHoyRequest,
+  getCountCitasProx7DiasRequest,
+  getCountOTMesRequest,
+  getCountRegisteredVehiclesRequest,
+  getIngresosDelMesRequest,
+  getNextCitaRequest,
+  getOrdenesDeTrabajoCountByEstadoRequest,
+  getOrdenesDeTrabajoCountRequest,
+  getRecentOTsRequest,
+  getRolesRequest
+} from "../api/controlpanel";
+import {useLocation} from "react-router-dom";
 
 const ControlPanelContext = createContext();
 
@@ -14,7 +21,7 @@ export const useControlPanel = () => {
   return context;
 };
 
-export function ControlPanelProvider({ children }) {
+export function ControlPanelProvider({children}) {
   const [registeredVehicles, setRegisteredVehicles] = useState(false);
   const [roles, setRoles] = useState([]);
   const location = useLocation();
@@ -42,9 +49,9 @@ export function ControlPanelProvider({ children }) {
 
   // Puesto para que se actualize solo cada 10 segundos
   useEffect(() => {
-    const routesNeedingUpdates = ['/dashboard', '/workshop/dashboard'];
+    const routesNeedingUpdates = ['/dashboard', '/workshop/dashboard', 'workshop/sucursal/*/nuevo'];
     const shouldUpdate = routesNeedingUpdates.some(route =>
-        location.pathname === route || location.pathname.startsWith(route)
+      location.pathname === route || location.pathname.startsWith(route)
     );
 
     if (shouldUpdate) {
@@ -115,8 +122,7 @@ export function ControlPanelProvider({ children }) {
     try {
       const res = await getRecentOTsRequest(taller_id, days);
       return res.data;
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Error al obtener las órdenes de trabajo recientes:", error);
       return [];
     }

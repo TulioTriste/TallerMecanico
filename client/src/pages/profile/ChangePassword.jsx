@@ -1,10 +1,9 @@
-import { useState } from "react";
-import { Lock, Eye, EyeOff } from "lucide-react";
-import { useAuth } from "../../context/authContext.jsx";
-import { useDarkMode } from "../../context/darkModeContext.jsx";
+import {useState} from "react";
+import {Eye, EyeOff, Lock} from "lucide-react";
+import {useDarkMode} from "../../context/darkModeContext.jsx";
 
 export default function ChangePassword() {
-  const { darkMode } = useDarkMode();
+  const {darkMode} = useDarkMode();
   const [showPassword, setShowPassword] = useState({
     current: false,
     new: false,
@@ -125,7 +124,7 @@ export default function ChangePassword() {
                   type={showPassword.new ? "text" : "password"}
                   value={formData.newPassword}
                   onChange={(e) =>
-                    setFormData({ ...formData, newPassword: e.target.value })
+                    setFormData({...formData, newPassword: e.target.value})
                   }
                   className={`w-full py-3 px-4 bg-transparent focus:outline-none ${
                     darkMode ? "text-white" : "text-gray-900"

@@ -1,21 +1,8 @@
-import { useState } from "react";
-import {
-  Building2,
-  Phone,
-  Mail,
-  Car,
-  Clock,
-  CheckCircle2,
-  MapPin,
-  User,
-  FileImage,
-  Calendar,
-  Wrench,
-} from "lucide-react";
-import { useDarkMode } from "../../context/darkModeContext.jsx";
+import {Building2, Car, CheckCircle2, FileImage, Mail, MapPin, Phone, User, Wrench,} from "lucide-react";
+import {useDarkMode} from "../../context/darkModeContext.jsx";
 
 export default function VehicleDetails() {
-  const { darkMode } = useDarkMode();
+  const {darkMode} = useDarkMode();
 
   const mockData = {
     sucursal: {
@@ -146,7 +133,7 @@ export default function VehicleDetails() {
               {/* Información del Cliente */}
               <div className="h-full">
                 <h3 className="text-lg font-semibold mb-4 flex items-center">
-                  <User className="w-5 h-5 mr-2" />
+                  <User className="w-5 h-5 mr-2"/>
                   Información del Cliente
                 </h3>
                 <div
@@ -166,11 +153,11 @@ export default function VehicleDetails() {
                       </dd>
                     </div>
                     <div className="flex items-center">
-                      <Phone className="w-5 h-5 mr-2" />
+                      <Phone className="w-5 h-5 mr-2"/>
                       <span>{mockData.cliente.telefono}</span>
                     </div>
                     <div className="flex items-center">
-                      <Mail className="w-5 h-5 mr-2" />
+                      <Mail className="w-5 h-5 mr-2"/>
                       <span>{mockData.cliente.email}</span>
                     </div>
                   </dl>
@@ -180,7 +167,7 @@ export default function VehicleDetails() {
               {/* Información de la Sucursal */}
               <div className="h-full">
                 <h3 className="text-lg font-semibold mb-4 flex items-center">
-                  <Building2 className="w-5 h-5 mr-2" />
+                  <Building2 className="w-5 h-5 mr-2"/>
                   Sucursal Asignada
                 </h3>
                 <div
@@ -203,11 +190,11 @@ export default function VehicleDetails() {
                       </dd>
                     </div>
                     <div className="flex items-center">
-                      <MapPin className="w-5 h-5 mr-2" />
+                      <MapPin className="w-5 h-5 mr-2"/>
                       <span>{mockData.sucursal.direccion}</span>
                     </div>
                     <div className="flex items-center">
-                      <Phone className="w-5 h-5 mr-2" />
+                      <Phone className="w-5 h-5 mr-2"/>
                       <span>{mockData.sucursal.telefono}</span>
                     </div>
                   </dl>
@@ -217,7 +204,7 @@ export default function VehicleDetails() {
               {/* Detalles del Servicio */}
               <div className="md:col-span-2">
                 <h3 className="text-lg font-semibold mb-4 flex items-center">
-                  <Wrench className="w-5 h-5 mr-2" />
+                  <Wrench className="w-5 h-5 mr-2"/>
                   Detalles del Servicio
                 </h3>
                 <div
@@ -281,7 +268,7 @@ export default function VehicleDetails() {
         >
           <div className="p-6">
             <h2 className="text-lg font-semibold mb-4 flex items-center">
-              <FileImage className="w-5 h-5 mr-2" />
+              <FileImage className="w-5 h-5 mr-2"/>
               Registro Fotográfico
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

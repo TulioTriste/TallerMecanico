@@ -1,21 +1,21 @@
-import { useState, useEffect } from "react";
-import { useDarkMode } from "../../context/darkModeContext.jsx";
-import { useParams } from "react-router-dom";
-import { useWorkshop } from "../../context/workshopContext.jsx";
-import { Calendar, Users, CarFront, FileText, DollarSign } from "lucide-react";
+import {useEffect, useState} from "react";
+import {useDarkMode} from "../../context/darkModeContext.jsx";
+import {useParams} from "react-router-dom";
+import {useWorkshop} from "../../context/workshopContext.jsx";
+import {Calendar, CarFront, DollarSign, FileText, Users} from "lucide-react";
 
 export default function WorkOrderForm() {
-  const { darkMode } = useDarkMode();
-  const { id } = useParams();
-  const { getTaller } = useWorkshop();
+  const {darkMode} = useDarkMode();
+  const {id} = useParams();
+  const {getTaller} = useWorkshop();
   const [taller, setTaller] = useState(null);
 
   // Lista hardcodeada de técnicos (después se reemplazará con datos reales)
   const tecnicos = [
-    { id: 1, nombre: "Juan Pérez" },
-    { id: 2, nombre: "Ana García" },
-    { id: 3, nombre: "Carlos Rodríguez" },
-    { id: 4, nombre: "María López" },
+    {id: 1, nombre: "Juan Pérez"},
+    {id: 2, nombre: "Ana García"},
+    {id: 3, nombre: "Carlos Rodríguez"},
+    {id: 4, nombre: "María López"},
   ];
 
   const [formData, setFormData] = useState({
@@ -95,7 +95,7 @@ export default function WorkOrderForm() {
                   type="text"
                   value={formData.cliente_rut}
                   onChange={(e) =>
-                    setFormData({ ...formData, cliente_rut: e.target.value })
+                    setFormData({...formData, cliente_rut: e.target.value})
                   }
                   className={`w-full px-4 py-2 rounded-lg ${
                     darkMode
@@ -112,7 +112,7 @@ export default function WorkOrderForm() {
                   Patente Vehículo
                 </label>
                 <div className="relative">
-                  <CarFront className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <CarFront className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"/>
                   <input
                     type="text"
                     value={formData.vehiculo_patente}
@@ -141,7 +141,7 @@ export default function WorkOrderForm() {
                   type="number"
                   value={formData.km_actual}
                   onChange={(e) =>
-                    setFormData({ ...formData, km_actual: e.target.value })
+                    setFormData({...formData, km_actual: e.target.value})
                   }
                   className={`w-full px-4 py-2 rounded-lg ${
                     darkMode
@@ -163,7 +163,7 @@ export default function WorkOrderForm() {
                   Técnico Asignado
                 </label>
                 <div className="relative">
-                  <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"/>
                   <input
                     type="text"
                     value={searchTecnico}
@@ -194,7 +194,7 @@ export default function WorkOrderForm() {
                           darkMode ? "hover:bg-gray-600" : "hover:bg-gray-100"
                         }`}
                         onClick={() => {
-                          setFormData({ ...formData, tecnico: tecnico.nombre });
+                          setFormData({...formData, tecnico: tecnico.nombre});
                           setSearchTecnico(tecnico.nombre);
                           setShowTecnicos(false);
                         }}
@@ -212,12 +212,12 @@ export default function WorkOrderForm() {
                   Fecha Estimada de Salida
                 </label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"/>
                   <input
                     type="date"
                     value={formData.fecha_salida}
                     onChange={(e) =>
-                      setFormData({ ...formData, fecha_salida: e.target.value })
+                      setFormData({...formData, fecha_salida: e.target.value})
                     }
                     className={`w-full pl-10 px-4 py-2 rounded-lg ${
                       darkMode
@@ -234,11 +234,11 @@ export default function WorkOrderForm() {
                   Descripción del Servicio
                 </label>
                 <div className="relative">
-                  <FileText className="absolute left-3 top-3 text-gray-400" />
+                  <FileText className="absolute left-3 top-3 text-gray-400"/>
                   <textarea
                     value={formData.descripcion}
                     onChange={(e) =>
-                      setFormData({ ...formData, descripcion: e.target.value })
+                      setFormData({...formData, descripcion: e.target.value})
                     }
                     className={`w-full pl-10 px-4 py-2 rounded-lg ${
                       darkMode
@@ -255,12 +255,12 @@ export default function WorkOrderForm() {
               <div>
                 <label className="block text-sm font-medium mb-2">Precio</label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"/>
                   <input
                     type="number"
                     value={formData.precio}
                     onChange={(e) =>
-                      setFormData({ ...formData, precio: e.target.value })
+                      setFormData({...formData, precio: e.target.value})
                     }
                     className={`w-full pl-10 px-4 py-2 rounded-lg ${
                       darkMode

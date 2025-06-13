@@ -1,13 +1,13 @@
-import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { Home, Phone, Mail, MapPin } from "lucide-react";
-import { useDarkMode } from "../../context/darkModeContext.jsx";
-import { useAuth } from "../../context/authContext.jsx";
+import {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {Home, Mail, MapPin, Phone} from "lucide-react";
+import {useDarkMode} from "../../context/darkModeContext.jsx";
+import {useAuth} from "../../context/authContext.jsx";
 import axios from "../../api/axios.js";
 
 const CreateWorkshop = () => {
-  const { darkMode } = useDarkMode();
-  const { auth } = useAuth();
+  const {darkMode} = useDarkMode();
+  const {auth} = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -21,7 +21,7 @@ const CreateWorkshop = () => {
   const [success, setSuccess] = useState("");
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const {name, value} = e.target;
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,

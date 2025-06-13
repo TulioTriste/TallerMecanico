@@ -1,4 +1,4 @@
-import { connectToDatabase } from "../bd.js";
+import {connectToDatabase} from "../bd.js";
 import sql from "mssql";
 
 class TallerModel {
@@ -15,7 +15,7 @@ class TallerModel {
             FROM 
                 vehiculo v
             WHERE v.patente = @patente`);
-            
+
       return result.recordset[0].nombre;
     } catch (error) {
       console.error("Error al obtener el nombre de el cliente por RUT:", error);

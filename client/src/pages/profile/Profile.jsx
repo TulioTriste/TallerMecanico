@@ -1,24 +1,14 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  User,
-  Mail,
-  Phone,
-  Building,
-  Calendar,
-  Camera,
-  Shield,
-  Save,
-  Lock,
-} from "lucide-react";
+import {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {Building, Calendar, Camera, Lock, Mail, Phone, Save, Shield, User,} from "lucide-react";
 
-import { useAuth } from "../../context/authContext.jsx";
-import { useDarkMode } from "../../context/darkModeContext.jsx";
+import {useAuth} from "../../context/authContext.jsx";
+import {useDarkMode} from "../../context/darkModeContext.jsx";
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const {user} = useAuth();
   const navigate = useNavigate();
-  const { darkMode } = useDarkMode();
+  const {darkMode} = useDarkMode();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     nombre: user?.nombre || "",
@@ -74,7 +64,7 @@ export default function ProfilePage() {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <User className="w-16 h-16 text-gray-400" />
+                      <User className="w-16 h-16 text-gray-400"/>
                     </div>
                   )}
                 </div>
@@ -85,7 +75,7 @@ export default function ProfilePage() {
                       : "bg-gray-100 hover:bg-gray-200"
                   }`}
                 >
-                  <Camera className="w-5 h-5" />
+                  <Camera className="w-5 h-5"/>
                 </button>
               </div>
               <h2 className="mt-4 text-xl font-semibold">{user?.nombre}</h2>
@@ -113,7 +103,7 @@ export default function ProfilePage() {
                   }`}
                 >
                   <div className="flex items-center">
-                    <Shield className="w-5 h-5 mr-3 text-blue-500" />
+                    <Shield className="w-5 h-5 mr-3 text-blue-500"/>
                     <div>
                       <p className="text-sm font-medium">Plan Actual</p>
                       <p
@@ -130,7 +120,7 @@ export default function ProfilePage() {
                   }`}
                 >
                   <div className="flex items-center">
-                    <Calendar className="w-5 h-5 mr-3 text-blue-500" />
+                    <Calendar className="w-5 h-5 mr-3 text-blue-500"/>
                     <div>
                       <p className="text-sm font-medium">Miembro desde</p>
                       <p
@@ -151,7 +141,7 @@ export default function ProfilePage() {
                       : "bg-blue-600 hover:bg-blue-700 text-white"
                   }`}
                 >
-                  <Lock className="w-5 h-5 mr-2" />
+                  <Lock className="w-5 h-5 mr-2"/>
                   Cambiar Contraseña
                 </button>
               </div>
@@ -203,7 +193,7 @@ export default function ProfilePage() {
                       type="text"
                       value={formData.nombre}
                       onChange={(e) =>
-                        setFormData({ ...formData, nombre: e.target.value })
+                        setFormData({...formData, nombre: e.target.value})
                       }
                       disabled={!isEditing}
                       className={`w-full py-3 px-4 bg-transparent focus:outline-none ${
@@ -266,7 +256,7 @@ export default function ProfilePage() {
                       type="tel"
                       value={formData.telefono}
                       onChange={(e) =>
-                        setFormData({ ...formData, telefono: e.target.value })
+                        setFormData({...formData, telefono: e.target.value})
                       }
                       disabled={!isEditing}
                       className={`w-full py-3 px-4 bg-transparent focus:outline-none ${
@@ -299,7 +289,7 @@ export default function ProfilePage() {
                       type="text"
                       value={formData.empresa}
                       onChange={(e) =>
-                        setFormData({ ...formData, empresa: e.target.value })
+                        setFormData({...formData, empresa: e.target.value})
                       }
                       disabled={!isEditing}
                       className={`w-full py-3 px-4 bg-transparent focus:outline-none ${
@@ -315,7 +305,7 @@ export default function ProfilePage() {
                       type="submit"
                       className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium flex items-center"
                     >
-                      <Save className="w-5 h-5 mr-2" />
+                      <Save className="w-5 h-5 mr-2"/>
                       Guardar Cambios
                     </button>
                   </div>

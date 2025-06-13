@@ -1,4 +1,4 @@
-import { connectToDatabase } from "../bd.js";
+import {connectToDatabase} from "../bd.js";
 import sql from "mssql";
 
 class TallerModel {
@@ -26,7 +26,7 @@ class TallerModel {
         .input("inicio_jornada", sql.Int, inicio_jornada)
         .input("termino_jornada", sql.Int, termino_jornada)
         .query(
-          "INSERT INTO taller (usuario_rut, nombre, telefono, direccion, correo, inicio_jornada, termino jornada)" + 
+          "INSERT INTO taller (usuario_rut, nombre, telefono, direccion, correo, inicio_jornada, termino jornada)" +
           " VALUES (@usuario_rut, @nombre, @telefono, @direccion, @correo, @inicio_jornada, @termino_jornada)"
         );
       // Devuelve los valores ingresados

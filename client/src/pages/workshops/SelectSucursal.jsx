@@ -1,15 +1,15 @@
-import { useNavigate } from 'react-router-dom';
-import { Building2, Users } from 'lucide-react';
+import {useNavigate} from 'react-router-dom';
+import {Building2, Users} from 'lucide-react';
 import {useDarkMode} from "../../context/darkModeContext.jsx";
 
 export default function SeleccionSucursal() {
   const navigate = useNavigate();
-  const { darkMode } = useDarkMode();
+  const {darkMode} = useDarkMode();
 
   // Ejemplo de sucursales - Reemplazar con datos reales de tu API
   const sucursales = [
-    { id: 1, nombre: 'Taller Central', direccion: 'Av. Principal 123', empleados: 15 },
-    { id: 2, nombre: 'Taller Norte', direccion: 'Calle Norte 456', empleados: 8 },
+    {id: 1, nombre: 'Taller Central', direccion: 'Av. Principal 123', empleados: 15},
+    {id: 2, nombre: 'Taller Norte', direccion: 'Calle Norte 456', empleados: 8},
   ];
 
   return (
@@ -23,7 +23,7 @@ export default function SeleccionSucursal() {
             <div className={`inline-flex items-center justify-center p-3 rounded-full mb-4 ${
               darkMode ? 'bg-blue-900' : 'bg-blue-100'
             }`}>
-              <Building2 className={`w-8 h-8 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+              <Building2 className={`w-8 h-8 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}/>
             </div>
             <h1 className={`text-3xl font-bold mb-2 ${
               darkMode ? 'text-white' : 'text-gray-900'
@@ -49,9 +49,9 @@ export default function SeleccionSucursal() {
               <div className="flex items-center justify-between mb-4">
                 <Building2 className={`w-6 h-6 ${
                   darkMode ? 'text-blue-400' : 'text-blue-600'
-                }`} />
+                }`}/>
                 <div className="flex items-center">
-                  <Users className="w-5 h-5 mr-2" />
+                  <Users className="w-5 h-5 mr-2"/>
                   <span className={`${
                     darkMode ? 'text-gray-300' : 'text-gray-600'
                   }`}>

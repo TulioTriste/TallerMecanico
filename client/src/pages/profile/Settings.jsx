@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { useDarkMode } from "../../context/darkModeContext.jsx";
-import { Monitor, Sun, Moon } from "lucide-react";
+import {useState} from "react";
+import {useDarkMode} from "../../context/darkModeContext.jsx";
+import {Monitor, Moon, Sun} from "lucide-react";
 
 export default function Settings() {
-  const { darkMode, setDarkMode } = useDarkMode();
+  const {darkMode, setDarkMode} = useDarkMode();
   const [activeTab, setActiveTab] = useState("appearance");
   const [selectedTheme, setSelectedTheme] = useState(
     darkMode ? "dark" : "light",
@@ -60,7 +60,7 @@ export default function Settings() {
                       : "text-gray-700 hover:bg-gray-50"
                 }`}
               >
-                <Monitor className="w-5 h-5" />
+                <Monitor className="w-5 h-5"/>
                 <span>Apariencia</span>
               </button>
             </nav>

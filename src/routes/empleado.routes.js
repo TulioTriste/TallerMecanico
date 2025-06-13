@@ -1,6 +1,6 @@
-import { Router } from "express";
-import { authRequired, ownTallerRequired, planRequired } from "../middlewares/validateToken.js";
-import { deleteEmpleado, getEmpleadosByTaller, insertEmpleado } from "../controllers/empleado.controller.js";
+import {Router} from "express";
+import {authRequired, ownTallerRequired, planRequired} from "../middlewares/validateToken.js";
+import {deleteEmpleado, getEmpleadosByTaller, insertEmpleado} from "../controllers/empleado.controller.js";
 
 const router = Router();
 

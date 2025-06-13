@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS [roles];
 DROP TABLE IF EXISTS [plan];
 DROP TABLE IF EXISTS [estado];
 DROP TABLE IF EXISTS [cliente];
+DROP TABLE IF EXISTS [alertas];
 
 CREATE TABLE [estado] (
     [estado_id] INT NOT NULL IDENTITY(1,1),
@@ -22,7 +23,7 @@ CREATE TABLE [cliente] (
     [nombre] VARCHAR(255) NOT NULL,
     [correo] VARCHAR(250),
     [telefono] VARCHAR(12) NOT NULL,
-    [created_at] DATE NOT NULL DEFAULT GETDATE(),
+    [created_at] DATETIME NOT NULL DEFAULT GETDATE(),
     CONSTRAINT [PK_cliente] PRIMARY KEY CLUSTERED ([cliente_rut] ASC)
 );
 
@@ -33,7 +34,7 @@ CREATE TABLE [vehiculo] (
     [modelo] VARCHAR(120) NOT NULL,
     [anio] INT NOT NULL,
     [color] VARCHAR(120) NOT NULL,
-    [created_at] DATE NOT NULL DEFAULT GETDATE(),
+    [created_at] DATETIME NOT NULL DEFAULT GETDATE(),
     CONSTRAINT [PK_vehiculo] PRIMARY KEY CLUSTERED ([patente] ASC),
     CONSTRAINT [FK_vehiculo_cliente] FOREIGN KEY ([cliente_rut]) REFERENCES [cliente]([cliente_rut])
     ON DELETE NO ACTION
@@ -55,7 +56,7 @@ CREATE TABLE [usuario] (
     [password] VARCHAR(60) NOT NULL,
     [telefono] VARCHAR(12) NOT NULL,
     [direccion] VARCHAR(255) NOT NULL,
-    [created_at] DATE NOT NULL DEFAULT GETDATE(),
+    [created_at] DATETIME NOT NULL DEFAULT GETDATE(),
     [empresa] CHAR(1),
     [plan_id] INT,
     CONSTRAINT [PK_usuario] PRIMARY KEY CLUSTERED ([usuario_rut] ASC),
@@ -79,7 +80,7 @@ CREATE TABLE [taller] (
     [direccion] VARCHAR(250) NOT NULL,
     [inicio_jornada] INT NOT NULL, /* El formato para esto debe de ser por ejemplo 1700, lo cual significaría que serían las 5 PM */
     [termino_jornada] INT NOT NULL,
-    [created_at] DATE NOT NULL DEFAULT GETDATE(),
+    [created_at] DATETIME NOT NULL DEFAULT GETDATE(),
     CONSTRAINT [PK_taller] PRIMARY KEY CLUSTERED ([taller_id] ASC),
     CONSTRAINT [FK_taller_usuario] FOREIGN KEY ([usuario_rut]) REFERENCES [usuario]([usuario_rut])
         ON UPDATE CASCADE ON DELETE CASCADE
@@ -94,7 +95,7 @@ CREATE TABLE [empleado] (
     [cel] VARCHAR(12),
     [correo] VARCHAR(250) NOT NULL,
     [password] VARCHAR(255) NOT NULL,
-    [created_at] DATE NOT NULL DEFAULT GETDATE(),
+    [created_at] DATETIME NOT NULL DEFAULT GETDATE(),
     CONSTRAINT [PK_empleado] PRIMARY KEY CLUSTERED ([empleado_rut] ASC),
     CONSTRAINT [FK_empleado_taller] FOREIGN KEY ([taller_id]) REFERENCES [taller]([taller_id])
         ON UPDATE CASCADE ON DELETE CASCADE,
@@ -108,13 +109,13 @@ CREATE TABLE [ot] (
     [taller_id] INT NOT NULL,
     [vehiculo_patente] VARCHAR(8) NOT NULL,
     [tecnico] VARCHAR(150) NOT NULL,
-    [fecha_entrada] DATE NOT NULL,
-    [fecha_salida] DATE NOT NULL,
-    [descripcion] VARCHAR(250),
+    [fecha_entrada] DATETIME NOT NULL,
+    [fecha_salida] DATETIME NOT NULL,
+    [descripcion] VARCHAR(500),
     [km] VARCHAR(10) NOT NULL,
     [estado_id] INT NOT NULL,
     [precio] INT NOT NULL,
-    [created_at] DATE NOT NULL DEFAULT GETDATE(),
+    [created_at] DATETIME NOT NULL DEFAULT GETDATE(),
     CONSTRAINT [PK_ot] PRIMARY KEY CLUSTERED ([ot_id] ASC),
     CONSTRAINT [FK_ot_cliente] FOREIGN KEY ([cliente_rut]) REFERENCES [cliente]([cliente_rut])
     	ON UPDATE CASCADE ON DELETE NO ACTION,
@@ -131,7 +132,7 @@ CREATE TABLE [cita] (
 	[patente] VARCHAR(8) NOT NULL,
 	[hora] DATETIME NOT NULL,
 	[descripcion] VARCHAR(250),
-    [created_at] DATE NOT NULL DEFAULT GETDATE(),
+    [created_at] DATETIME NOT NULL DEFAULT GETDATE(),
 	CONSTRAINT [PK_cita] PRIMARY KEY CLUSTERED ([cita_id] ASC),
     CONSTRAINT [FK_cita_cliente] FOREIGN KEY ([cliente_rut]) REFERENCES [cliente]([cliente_rut])
         ON UPDATE CASCADE ON DELETE NO ACTION,
@@ -144,8 +145,18 @@ CREATE TABLE [cita] (
 CREATE TABLE [password_reset_tokens] (
 	[usuario_rut] VARCHAR(13) NOT NULL,
 	[token] VARCHAR(255) NOT NULL,
-	[expires_at] DATE NOT NULL,
-	[created_at] DATE NOT NULL DEFAULT GETDATE(),
+	[expires_at] DATETIME NOT NULL,
+	[created_at] DATETIME NOT NULL DEFAULT GETDATE(),
 	CONSTRAINT [PK_token] PRIMARY KEY CLUSTERED ([token] ASC),
 	CONSTRAINT [FK_PRT_usuario_rut] FOREIGN KEY ([usuario_rut]) REFERENCES [usuario]([usuario_rut])
+);
+
+CREATE TABLE alertas (
+    [alerta_id] INT NOT NULL IDENTITY(1,1),
+    [tipo] VARCHAR(50) NOT NULL,
+    [descricion] VARCHAR(500) NOT NULL,
+    [taller_id] INT NOT NULL,
+    [created_at] DATETIME NOT NULL,
+    CONSTRAINT [PK_alerta_id] PRIMARY KEY CLUSTERED ([alerta_id] ASC),
+    FOREIGN KEY ([taller_id]) REFERENCES [taller]([taller_id])
 );

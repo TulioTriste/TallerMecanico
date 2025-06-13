@@ -1,5 +1,5 @@
-import { createContext, useContext } from "react";
-import { getVehiculoNameRequest } from "../api/vehiculo";
+import {createContext, useContext} from "react";
+import {getVehiculoNameRequest} from "../api/vehiculo";
 
 const VehiculoContext = createContext();
 
@@ -9,7 +9,7 @@ export const useVehiculo = () => {
   return context;
 };
 
-export function VehiculoProvider({ children }) {
+export function VehiculoProvider({children}) {
 
   const getVehiculoName = async (patente) => {
     try {

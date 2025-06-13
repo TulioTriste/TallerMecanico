@@ -15,7 +15,7 @@ export function formatCitaFecha(fechaStr) {
     fecha.getMonth() === manana.getMonth() &&
     fecha.getFullYear() === manana.getFullYear();
 
-  const hora = fecha.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const hora = fecha.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
 
   if (esHoy) return `Hoy ${hora}`;
   if (esManana) return `Mañana ${hora}`;

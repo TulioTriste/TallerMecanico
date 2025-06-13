@@ -1,5 +1,5 @@
-import { createContext, useContext } from "react";
-import { getNameRequest } from "../api/cliente";
+import {createContext, useContext} from "react";
+import {getNameRequest} from "../api/cliente";
 
 const ClienteContext = createContext();
 
@@ -9,7 +9,7 @@ export const useCliente = () => {
   return context;
 };
 
-export function ClienteProvider({ children }) {
+export function ClienteProvider({children}) {
 
   const getClienteName = async (cliente_rut) => {
     try {

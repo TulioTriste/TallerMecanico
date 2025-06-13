@@ -9,18 +9,18 @@ import controlpanelRoutes from './routes/controlpanel.routes.js';
 import clienteRoutes from './routes/cliente.routes.js';
 import vehiculoRouter from './routes/vehiculo.routes.js';
 import empleadoRouter from './routes/empleado.routes.js';
-import { FRONTEND_URL } from "./config.js";
+import {FRONTEND_URL} from "./config.js";
 
 const app = express();
 
 app.use(
-    cors({
-      credentials: true,
-      origin: FRONTEND_URL,
-    })
-  );
+  cors({
+    credentials: true,
+    origin: FRONTEND_URL,
+  })
+);
 // La configuracion 'dev' es para ver todas las peticiones en la consola (https://www.npmjs.com/package/morgan)
-app.use(morgan('dev'));  
+app.use(morgan('dev'));
 app.use(express.json()); // Para poder recibir datos en formato JSON
 app.use(cookieParser());
 

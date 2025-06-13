@@ -1,8 +1,8 @@
-import { connectToDatabase } from "../bd.js";
+import {connectToDatabase} from "../bd.js";
 import sql from "mssql";
 
 class ClienteModel {
-  
+
   async getAllClientes() {
     try {
       const pool = await connectToDatabase();

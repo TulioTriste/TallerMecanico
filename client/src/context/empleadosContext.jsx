@@ -1,5 +1,5 @@
-import { createContext, useContext } from "react";
-import { deleteEmpleadoRequest, getEmpleadosByTallerRequest, insertEmpleadoRequest } from "../api/empleado";
+import {createContext, useContext} from "react";
+import {deleteEmpleadoRequest, getEmpleadosByTallerRequest, insertEmpleadoRequest} from "../api/empleado";
 
 const EmpleadoContext = createContext();
 
@@ -9,7 +9,7 @@ export const useEmpleado = () => {
   return context;
 };
 
-export function EmpleadoProvider({ children }) {
+export function EmpleadoProvider({children}) {
 
   const addEmpleado = async (data) => {
     try {
@@ -21,7 +21,6 @@ export function EmpleadoProvider({ children }) {
     }
   };
 
-  
 
   const getEmpleadosByTaller = async (taller_id) => {
     try {

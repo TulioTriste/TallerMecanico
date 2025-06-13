@@ -5,9 +5,9 @@
 body.dark-mode {
     background-color: #111827; /* bg-gray-900 */
     color: white;
-  }
-  
-  body.light-mode {
+}
+
+body.light-mode {
     background-color: #f9fafb; /* bg-gray-50 */
     color: #111827; /* text-gray-900 */
-  }
+}

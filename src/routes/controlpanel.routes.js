@@ -1,13 +1,17 @@
-import { Router } from "express";
-import { authRequired, ownTallerRequired } from "../middlewares/validateToken.js";
-import { getCountRegisteredVehicles, getNextCita, getOrdenesDeTrabajoCount, getOrdenesDeTrabajoCountByEstado,
-    getCountCitasProx7Dias,
-    getRecentOTs,
-    getCountOTMes,
-    getIngresosDelMes,
-    getCitasHoy,
-    getRoles
- } from "../controllers/controlpanel.controller.js";
+import {Router} from "express";
+import {authRequired, ownTallerRequired} from "../middlewares/validateToken.js";
+import {
+  getCitasHoy,
+  getCountCitasProx7Dias,
+  getCountOTMes,
+  getCountRegisteredVehicles,
+  getIngresosDelMes,
+  getNextCita,
+  getOrdenesDeTrabajoCount,
+  getOrdenesDeTrabajoCountByEstado,
+  getRecentOTs,
+  getRoles
+} from "../controllers/controlpanel.controller.js";
 
 const router = Router();
 

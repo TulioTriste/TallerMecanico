@@ -1,4 +1,4 @@
-import { connectToDatabase } from "../bd.js";
+import {connectToDatabase} from "../bd.js";
 import sql from "mssql";
 
 class UserModel {
@@ -124,7 +124,7 @@ class UserModel {
                 FROM 
                     usuario
                 WHERE usuario_rut = @usuario_rut`);
-      
+
       return result.recordset[0].plan_id !== undefined && result.recordset[0].plan_id !== null;
     } catch (error) {
       console.error("Error al verificar si el usuario tiene un plan:", error);
@@ -143,7 +143,7 @@ class UserModel {
                 FROM 
                     usuario
                 WHERE usuario_rut = @usuario_rut`);
-      
+
       return result.recordset[0].plan_id; // Devuelve el ID del plan del usuario
     } catch (error) {
       console.error("Error al obtener el plan del usuario:", error);

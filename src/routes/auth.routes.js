@@ -1,15 +1,16 @@
-import { Router } from "express";
+import {Router} from "express";
 import {
-    login,
-    register,
-    logout,
-    verifyToken,
-    isValidMail,
-    requestResetPassword,
-    getRutByCorreo, resetPassword
+  getRutByCorreo,
+  isValidMail,
+  login,
+  logout,
+  register,
+  requestResetPassword,
+  resetPassword,
+  verifyToken
 } from "../controllers/auth.controller.js";
-import { validateSchema } from "../middlewares/validator.middleware.js";
-import { loginSchema, registerSchema } from "../schemas/auth.schema.js";
+import {validateSchema} from "../middlewares/validator.middleware.js";
+import {loginSchema, registerSchema} from "../schemas/auth.schema.js";
 
 const router = Router();
 

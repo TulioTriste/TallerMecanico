@@ -1,28 +1,21 @@
-import { useState, useEffect } from 'react';
-import {
-  MoreVertical,
-  Clock,
-  Search,
-  Filter,
-  ChevronLeft,
-  ChevronRight
-} from 'lucide-react';
-import { useWorkshop } from '../../context/workshopContext.jsx';
-import { useParams } from 'react-router-dom';
-import { useDarkMode } from '../../context/darkModeContext.jsx';
-import { useControlPanel } from '../../context/controlPanelContext.jsx';
-import { useCliente } from '../../context/clienteContext.jsx';
-import { formatFechaDDMMYYYY } from '../../utilities/stringFormatter.js';
-import { useVehiculo } from '../../context/vehiculoContext.jsx';
+import {useEffect, useState} from 'react';
+import {ChevronLeft, ChevronRight, Clock, Filter, MoreVertical, Search} from 'lucide-react';
+import {useWorkshop} from '../../context/workshopContext.jsx';
+import {useParams} from 'react-router-dom';
+import {useDarkMode} from '../../context/darkModeContext.jsx';
+import {useControlPanel} from '../../context/controlPanelContext.jsx';
+import {useCliente} from '../../context/clienteContext.jsx';
+import {formatFechaDDMMYYYY} from '../../utilities/stringFormatter.js';
+import {useVehiculo} from '../../context/vehiculoContext.jsx';
 
 export default function WorkOrders() {
-  const { darkMode } = useDarkMode();
-  const { id } = useParams();
+  const {darkMode} = useDarkMode();
+  const {id} = useParams();
   const [taller, setTaller] = useState(null);
-  const { getTaller } = useWorkshop();
-  const { getOrdenesDeTrabajoByEstado } = useControlPanel();
-  const { getClienteName } = useCliente();
-  const { getVehiculoName } = useVehiculo();
+  const {getTaller} = useWorkshop();
+  const {getOrdenesDeTrabajoByEstado} = useControlPanel();
+  const {getClienteName} = useCliente();
+  const {getVehiculoName} = useVehiculo();
   const [ordenes, setOrdenes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -54,7 +47,7 @@ export default function WorkOrders() {
         ordenesData.map(async (orden) => {
           const clienteName = await getClienteName(orden.cliente_rut);
           const vehiculoName = await getVehiculoName(orden.vehiculo_patente);
-          return { ...orden, cliente: clienteName, vehiculo: vehiculoName };
+          return {...orden, cliente: clienteName, vehiculo: vehiculoName};
         })
       );
 
@@ -82,10 +75,14 @@ export default function WorkOrders() {
 
   const getEstadoTexto = (estado) => {
     switch (estado) {
-      case 3: return 'Completado';
-      case 2: return 'En Proceso';
-      case 1: return 'Pendiente';
-      default: return 'Desconocido';
+      case 3:
+        return 'Completado';
+      case 2:
+        return 'En Proceso';
+      case 1:
+        return 'Pendiente';
+      default:
+        return 'Desconocido';
     }
   };
 
@@ -115,7 +112,7 @@ export default function WorkOrders() {
               <div className={`flex items-center px-4 py-2 rounded-lg ${
                 darkMode ? 'bg-gray-800' : 'bg-white'
               }`}>
-                <Search className="w-5 h-5 text-gray-400" />
+                <Search className="w-5 h-5 text-gray-400"/>
                 <input
                   type="text"
                   placeholder="Buscar por cliente, vehículo o descripción..."
@@ -128,7 +125,7 @@ export default function WorkOrders() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5" />
+              <Filter className="w-5 h-5"/>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -166,7 +163,7 @@ export default function WorkOrders() {
                     <span className="text-sm font-medium">ORD-{orden.ot_id}</span>
                   </div>
                   <button className={`p-2 rounded-full hover:${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                    <MoreVertical className="w-5 h-5" />
+                    <MoreVertical className="w-5 h-5"/>
                   </button>
                 </div>
 
@@ -179,13 +176,14 @@ export default function WorkOrders() {
                   <div>
                     <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Servicio</p>
                     <p className="font-medium mt-1">{orden.descripcion}</p>
-                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Técnico: {orden.tecnico}</p>
+                    <p
+                      className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Técnico: {orden.tecnico}</p>
                   </div>
                   <div>
                     <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Fechas</p>
                     <p className="font-medium mt-1">{formatFechaDDMMYYYY(orden.fecha_entrada)}</p>
                     <div className="flex items-center mt-1">
-                      <Clock className="w-4 h-4 text-blue-500 mr-1" />
+                      <Clock className="w-4 h-4 text-blue-500 mr-1"/>
                       <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                         Est. {formatFechaDDMMYYYY(orden.fecha_salida)}
                       </span>
@@ -211,7 +209,7 @@ export default function WorkOrders() {
                     : 'hover:bg-gray-100'
               }`}
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-5 h-5"/>
             </button>
             <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
               Página {currentPage} de {totalPages}
@@ -227,7 +225,7 @@ export default function WorkOrders() {
                     : 'hover:bg-gray-100'
               }`}
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-5 h-5"/>
             </button>
           </div>
         )}
