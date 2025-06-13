@@ -1,30 +1,33 @@
-import {useEffect, useState} from "react";
+import { useState, useEffect } from "react";
 import {
-  AlertCircle,
+  Users,
   Calendar,
   Clipboard,
-  Clock,
   DollarSign,
-  MoreVertical,
-  Phone,
   Plus,
-  Users,
+  MoreVertical,
+  Clock,
+  Phone,
+  AlertCircle,
   Zap,
 } from "lucide-react";
-import {Link, useParams} from "react-router-dom";
-import {useWorkshop} from "../../context/workshopContext.jsx";
-import {useDarkMode} from "../../context/darkModeContext.jsx";
-import {useControlPanel} from "../../context/controlPanelContext.jsx";
-import {useCliente} from "../../context/clienteContext.jsx";
-import {formatFechaDDMMYYYY, formatFechaHHMM,} from "../../utilities/stringFormatter.js";
-import {useVehiculo} from "../../context/vehiculoContext.jsx";
+import { Link, useParams } from "react-router-dom";
+import { useWorkshop } from "../context/workshopContext";
+import { useDarkMode } from "../context/darkModeContext";
+import { useControlPanel } from "../context/controlPanelContext";
+import { useCliente } from "../context/clienteContext";
+import {
+  formatFechaDDMMYYYY,
+  formatFechaHHMM,
+} from "../utilities/stringformatter";
+import { useVehiculo } from "../context/vehiculoContext";
 
 const WorkshopDash = () => {
-  const {darkMode} = useDarkMode();
+  const { darkMode } = useDarkMode();
 
-  const {id} = useParams();
+  const { id } = useParams();
   const [taller, setTaller] = useState(null);
-  const {getTaller} = useWorkshop();
+  const { getTaller } = useWorkshop();
   const {
     getOrdenesDeTrabajoCountByEstado,
     getOtsRecientes,
@@ -32,8 +35,8 @@ const WorkshopDash = () => {
     getIngresosDelMes,
     getCitasHoy,
   } = useControlPanel();
-  const {getClienteName} = useCliente();
-  const {getVehiculoName} = useVehiculo();
+  const { getClienteName } = useCliente();
+  const { getVehiculoName } = useVehiculo();
   const [otCount, setOtCount] = useState(0);
   const [otMesCount, setOtMesCount] = useState(0);
   const [otRecents, setOtRecents] = useState([]);
@@ -72,7 +75,7 @@ const WorkshopDash = () => {
         recentOTs.map(async (orden) => {
           const nombre = await getClienteName(orden.cliente_rut);
           const vehiculoName = await getVehiculoName(orden.vehiculo_patente);
-          return {...orden, cliente: nombre, vehiculo: vehiculoName};
+          return { ...orden, cliente: nombre, vehiculo: vehiculoName };
         }),
       );
       setOtRecents(recentOTsWithChanges);
@@ -136,26 +139,20 @@ const WorkshopDash = () => {
 
   if (!taller) {
     return (
-      <div
-        className={`min-h-screen pt-16 flex items-center justify-center ${
-          darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
-        }`}
-      >
-        <div className="flex flex-col items-center space-y-4">
-          <div
-            className={`w-12 h-12 border-4 border-t-blue-500 ${
-              darkMode ? "border-gray-700" : "border-gray-200"
-            } rounded-full animate-spin`}
-          ></div>
-          <span
-            className={`text-lg font-medium ${
-              darkMode ? "text-gray-300" : "text-gray-600"
-            }`}
-          >
-            Cargando taller...
-          </span>
-        </div>
-      </div>
+      <div className={`min-h-screen pt-16 flex items-center justify-center ${
+              darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'
+            }`}>
+              <div className="flex flex-col items-center space-y-4">
+                <div className={`w-12 h-12 border-4 border-t-blue-500 ${
+                  darkMode ? 'border-gray-700' : 'border-gray-200'
+                } rounded-full animate-spin`}></div>
+                <span className={`text-lg font-medium ${
+                  darkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}>
+                  Cargando taller...
+                </span>
+              </div>
+            </div>
     );
   }
 
@@ -177,7 +174,7 @@ const WorkshopDash = () => {
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             } transition-colors`}
           >
-            <Clipboard className="w-4 h-4"/>
+            <Clipboard className="w-4 h-4" />
             Todas las Órdenes
           </Link>
 
@@ -189,7 +186,7 @@ const WorkshopDash = () => {
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             } transition-colors`}
           >
-            <Users className="w-4 h-4"/>
+            <Users className="w-4 h-4" />
             Gestionar Empleados
           </Link>
           <Link
@@ -200,7 +197,7 @@ const WorkshopDash = () => {
                 : "bg-blue-600 hover:bg-blue-700 text-white"
             } transition-colors`}
           >
-            <Plus className="w-4 h-4"/>
+            <Plus className="w-4 h-4" />
             Nueva Orden
           </Link>
         </div>
@@ -337,7 +334,7 @@ const WorkshopDash = () => {
                         <button
                           className={`p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600`}
                         >
-                          <MoreVertical className="w-4 h-4"/>
+                          <MoreVertical className="w-4 h-4" />
                         </button>
                       </div>
 
@@ -390,7 +387,7 @@ const WorkshopDash = () => {
                             {formatFechaDDMMYYYY(orden.fecha_entrada)}
                           </p>
                           <div className="flex items-center space-x-1 mt-1">
-                            <Clock className="w-3 h-3 text-blue-500"/>
+                            <Clock className="w-3 h-3 text-blue-500" />
                             <span
                               className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-600"}`}
                             >
@@ -441,7 +438,7 @@ const WorkshopDash = () => {
                         <button
                           className={`p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600`}
                         >
-                          <Phone className="w-4 h-4"/>
+                          <Phone className="w-4 h-4" />
                         </button>
                       </div>
 
@@ -495,7 +492,7 @@ const WorkshopDash = () => {
                     className={`p-3 rounded-lg ${darkMode ? "bg-yellow-900/20 border border-yellow-800" : "bg-yellow-50 border border-yellow-200"}`}
                   >
                     <div className="flex items-center space-x-2">
-                      <AlertCircle className="w-4 h-4 text-yellow-600"/>
+                      <AlertCircle className="w-4 h-4 text-yellow-600" />
                       <span
                         className={`text-sm ${darkMode ? "text-yellow-300" : "text-yellow-800"}`}
                       >
@@ -508,7 +505,7 @@ const WorkshopDash = () => {
                     className={`p-3 rounded-lg ${darkMode ? "bg-blue-900/20 border border-blue-800" : "bg-blue-50 border border-blue-200"}`}
                   >
                     <div className="flex items-center space-x-2">
-                      <Zap className="w-4 h-4 text-blue-600"/>
+                      <Zap className="w-4 h-4 text-blue-600" />
                       <span
                         className={`text-sm ${darkMode ? "text-blue-300" : "text-blue-800"}`}
                       >
