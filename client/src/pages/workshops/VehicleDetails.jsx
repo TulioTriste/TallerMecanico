@@ -1,5 +1,20 @@
-import {Building2, Car, CheckCircle2, FileImage, Mail, MapPin, Phone, User, Wrench,} from "lucide-react";
-import {useDarkMode} from "../../context/darkModeContext.jsx";
+import { useState } from "react";
+import {
+  Building2,
+  Phone,
+  Mail,
+  Car,
+  Clock,
+  CheckCircle2,
+  MapPin,
+  User,
+  FileImage,
+  Calendar,
+  Wrench,
+  MessageCircle,
+  RefreshCcw,
+} from "lucide-react";
+import { useDarkMode } from "../../context/darkModeContext.jsx";
 
 export default function VehicleDetails() {
   const {darkMode} = useDarkMode();
@@ -14,9 +29,8 @@ export default function VehicleDetails() {
     orden: {
       numero: "1999",
       estado: "Mantención Finalizada",
-      prioridad: "Normal",
-      area: "Salida",
       fechaCreacion: "16/04/2025 11:50 hs",
+      fechaTermino: "20/04/2025 15:30 hs",
       trabajo: "Registro para envío de moto",
     },
     cliente: {
@@ -29,11 +43,25 @@ export default function VehicleDetails() {
       modelo: "GSXR1000RR",
       patente: "JVP041",
     },
-    imagenes: [
-      "https://picsum.photos/400/300",
-      "https://picsum.photos/400/300",
-      "https://picsum.photos/400/300",
-      "https://picsum.photos/400/300",
+    tareas: [
+      {
+        nombre: "Cambio de aceite",
+        descripcion:
+          "Se realizó el cambio de aceite utilizando aceite sintético 10W-40 y se reemplazó el filtro de aceite.",
+        imagenes: [
+          "https://picsum.photos/400/300",
+          "https://picsum.photos/400/300",
+        ],
+      },
+      {
+        nombre: "Revisión de frenos",
+        descripcion:
+          "Se inspeccionaron las pastillas de freno y se ajustó el sistema de frenado. Se recomendó cambio de pastillas en próxima mantención.",
+        imagenes: [
+          "https://picsum.photos/400/300",
+          "https://picsum.photos/400/300",
+        ],
+      },
     ],
   };
 
@@ -43,57 +71,6 @@ export default function VehicleDetails() {
         darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
       }`}
     >
-      {/* Banner superior con estado */}
-      <div
-        className={`w-full ${
-          mockData.orden.estado === "Mantención Finalizada"
-            ? darkMode
-              ? "bg-green-900/30"
-              : "bg-green-50"
-            : darkMode
-              ? "bg-yellow-900/30"
-              : "bg-yellow-50"
-        } mb-8`}
-      >
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <CheckCircle2
-                className={`w-6 h-6 ${
-                  mockData.orden.estado === "Mantención Finalizada"
-                    ? darkMode
-                      ? "text-green-400"
-                      : "text-green-600"
-                    : darkMode
-                      ? "text-yellow-400"
-                      : "text-yellow-600"
-                }`}
-              />
-              <div>
-                <div
-                  className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
-                >
-                  Estado actual
-                </div>
-                <div className="font-medium text-lg">
-                  Esta orden se encuentra lista para ser entregada
-                </div>
-              </div>
-            </div>
-            <div className="text-right">
-              <div
-                className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
-              >
-                Orden de trabajo
-              </div>
-              <div className="font-medium text-lg">
-                #{mockData.orden.numero}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 pb-8">
         {/* Información Principal */}
         <div
@@ -103,27 +80,42 @@ export default function VehicleDetails() {
         >
           {/* Card del Vehículo */}
           <div className={`p-6 ${darkMode ? "bg-gray-700" : "bg-gray-50"}`}>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div
+                  className={`p-3 rounded-xl ${
+                    darkMode ? "bg-gray-600" : "bg-white"
+                  }`}
+                >
+                  <Car
+                    className={`w-6 h-6 ${
+                      darkMode ? "text-blue-400" : "text-blue-600"
+                    }`}
+                  />
+                </div>
+                <div>
+                  <h1 className="text-lg font-semibold">
+                    {mockData.vehiculo.marca} {mockData.vehiculo.modelo}
+                  </h1>
+                  <div
+                    className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+                  >
+                    Patente: {mockData.vehiculo.patente}
+                  </div>
+                </div>
+              </div>
               <div
-                className={`p-3 rounded-xl ${
-                  darkMode ? "bg-gray-600" : "bg-white"
+                className={`px-4 py-2 rounded-lg ${
+                  mockData.orden.estado === "Mantención Finalizada"
+                    ? darkMode
+                      ? "bg-green-900/30 text-green-400"
+                      : "bg-green-100 text-green-700"
+                    : darkMode
+                      ? "bg-yellow-900/30 text-yellow-400"
+                      : "bg-yellow-100 text-yellow-700"
                 }`}
               >
-                <Car
-                  className={`w-6 h-6 ${
-                    darkMode ? "text-blue-400" : "text-blue-600"
-                  }`}
-                />
-              </div>
-              <div>
-                <h1 className="text-lg font-semibold">
-                  {mockData.vehiculo.marca} {mockData.vehiculo.modelo}
-                </h1>
-                <div
-                  className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
-                >
-                  Patente: {mockData.vehiculo.patente}
-                </div>
+                {mockData.orden.estado}
               </div>
             </div>
           </div>
@@ -203,36 +195,40 @@ export default function VehicleDetails() {
 
               {/* Detalles del Servicio */}
               <div className="md:col-span-2">
-                <h3 className="text-lg font-semibold mb-4 flex items-center">
-                  <Wrench className="w-5 h-5 mr-2"/>
-                  Detalles del Servicio
-                </h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold flex items-center">
+                    <Wrench className="w-5 h-5 mr-2" />
+                    Detalles del Servicio
+                  </h3>
+                  <div className="flex gap-4">
+                    <button
+                      className={`flex items-center px-4 py-2 rounded-lg ${
+                        darkMode
+                          ? "bg-green-600 hover:bg-green-700"
+                          : "bg-green-500 hover:bg-green-600"
+                      } text-white transition-colors`}
+                    >
+                      <MessageCircle className="w-5 h-5 mr-2" />
+                      Enviar WhatsApp
+                    </button>
+                    <button
+                      className={`flex items-center px-4 py-2 rounded-lg ${
+                        darkMode
+                          ? "bg-blue-600 hover:bg-blue-700"
+                          : "bg-blue-500 hover:bg-blue-600"
+                      } text-white transition-colors`}
+                    >
+                      <RefreshCcw className="w-5 h-5 mr-2" />
+                      Cambiar Estado
+                    </button>
+                  </div>
+                </div>
                 <div
                   className={`rounded-xl p-4 shadow-lg ${
                     darkMode ? "bg-gray-700" : "bg-gray-50"
                   }`}
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                      <dt
-                        className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}
-                      >
-                        Prioridad
-                      </dt>
-                      <dd className="font-medium mt-1">
-                        {mockData.orden.prioridad}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt
-                        className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}
-                      >
-                        Área
-                      </dt>
-                      <dd className="font-medium mt-1">
-                        {mockData.orden.area}
-                      </dd>
-                    </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <dt
                         className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}
@@ -243,7 +239,17 @@ export default function VehicleDetails() {
                         {mockData.orden.fechaCreacion}
                       </dd>
                     </div>
-                    <div className="md:col-span-3">
+                    <div>
+                      <dt
+                        className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}
+                      >
+                        Fecha Término Estimada
+                      </dt>
+                      <dd className="font-medium mt-1">
+                        {mockData.orden.fechaTermino}
+                      </dd>
+                    </div>
+                    <div className="md:col-span-2">
                       <dt
                         className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}
                       >
@@ -260,28 +266,42 @@ export default function VehicleDetails() {
           </div>
         </div>
 
-        {/* Galería de Imágenes */}
+        {/* Tareas y Registro Fotográfico */}
         <div
           className={`rounded-2xl shadow-xl overflow-hidden ${
             darkMode ? "bg-gray-800" : "bg-white"
           }`}
         >
           <div className="p-6">
-            <h2 className="text-lg font-semibold mb-4 flex items-center">
-              <FileImage className="w-5 h-5 mr-2"/>
-              Registro Fotográfico
+            <h2 className="text-lg font-semibold mb-6 flex items-center">
+              <FileImage className="w-5 h-5 mr-2" />
+              Tareas y Registro Fotográfico
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {mockData.imagenes.map((url, index) => (
-                <div
-                  key={index}
-                  className="aspect-square rounded-xl overflow-hidden shadow-md"
-                >
-                  <img
-                    src={url}
-                    alt={`Imagen ${index + 1}`}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                  />
+            <div className="space-y-8">
+              {mockData.tareas.map((tarea, index) => (
+                <div key={index} className="space-y-4">
+                  <h3 className="text-lg font-medium">{tarea.nombre}</h3>
+                  <p
+                    className={`text-sm ${
+                      darkMode ? "text-gray-400" : "text-gray-600"
+                    }`}
+                  >
+                    {tarea.descripcion}
+                  </p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {tarea.imagenes.map((url, imgIndex) => (
+                      <div
+                        key={imgIndex}
+                        className="aspect-square rounded-xl overflow-hidden shadow-md"
+                      >
+                        <img
+                          src={url}
+                          alt={`${tarea.nombre} - Imagen ${imgIndex + 1}`}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
