@@ -13,12 +13,12 @@ class TallerModel {
     }
   }
 
-  async addTaller(rut_dueño, nombre, telefono, correo, direccion, inicio_jornada, termino_jornada) {
+  async addTaller(usuario_rut, nombre, telefono, correo, direccion, inicio_jornada, termino_jornada) {
     try {
       const pool = await connectToDatabase();
       const result = await pool
         .request()
-        .input("usuario_rut", sql.VarChar, rut_dueño)
+        .input("usuario_rut", sql.VarChar, usuario_rut)
         .input("nombre", sql.VarChar, nombre)
         .input("telefono", sql.VarChar, telefono)
         .input("direccion", sql.VarChar, direccion)
@@ -26,20 +26,11 @@ class TallerModel {
         .input("inicio_jornada", sql.Int, inicio_jornada)
         .input("termino_jornada", sql.Int, termino_jornada)
         .query(
-          "INSERT INTO taller (usuario_rut, nombre, telefono, direccion, correo, inicio_jornada, termino jornada)" +
+          "INSERT INTO taller (usuario_rut, nombre, telefono, direccion, correo, inicio_jornada, termino_jornada)" +
           " VALUES (@usuario_rut, @nombre, @telefono, @direccion, @correo, @inicio_jornada, @termino_jornada)"
         );
       // Devuelve los valores ingresados
-      const taller = {
-        usuario_rut: rut_dueño,
-        nombre: nombre,
-        telefono: telefono,
-        direccion: direccion,
-        correo: correo,
-        inicio_jornada: inicio_jornada,
-        termino_jornada: termino_jornada,
-      };
-      return taller;
+      return result.rowsAffected[0] > 0;
     } catch (error) {
       console.error("Error al agregar el taller:", error);
       throw error;

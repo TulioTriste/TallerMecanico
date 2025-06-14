@@ -199,14 +199,17 @@ class ControlPanelModel {
         .input("days", sql.Int, days)
         .query(`
                     SELECT 
-                        *
+                        ot.*,
+                        e.nombre + ' ' + e.apellido AS tecnico
                     FROM 
                         ot
+                    JOIN empleado e ON ot.empleado_rut = e.empleado_rut
                     WHERE 
-                        taller_id = @tallerId
+                        ot.taller_id = @tallerId
                         AND fecha_entrada >= DATEADD(DAY, -@days, CAST(GETDATE() AS DATE))
                         AND fecha_entrada < DATEADD(DAY, (@days + 1), CAST(GETDATE() AS DATE))
-                    ORDER BY fecha_entrada DESC
+                    ORDER BY 
+                        fecha_entrada DESC
                 `);
       return result.recordset;
     } catch (error) {

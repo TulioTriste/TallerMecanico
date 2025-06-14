@@ -1,15 +1,16 @@
 /* Query Completa de creación de tablas */
+DROP TABLE IF EXISTS [password_reset_tokens];
 DROP TABLE IF EXISTS [ot];
 DROP TABLE IF EXISTS [cita];
 DROP TABLE IF EXISTS [empleado];
 DROP TABLE IF EXISTS [vehiculo];
+DROP TABLE IF EXISTS [alertas];
 DROP TABLE IF EXISTS [taller];
 DROP TABLE IF EXISTS [usuario];
 DROP TABLE IF EXISTS [roles];
 DROP TABLE IF EXISTS [plan];
 DROP TABLE IF EXISTS [estado];
 DROP TABLE IF EXISTS [cliente];
-DROP TABLE IF EXISTS [alertas];
 
 CREATE TABLE [estado] (
     [estado_id] INT NOT NULL IDENTITY(1,1),
@@ -108,8 +109,8 @@ CREATE TABLE [ot] (
     [cliente_rut] VARCHAR(12) NOT NULL,
     [taller_id] INT NOT NULL,
     [vehiculo_patente] VARCHAR(8) NOT NULL,
-    [tecnico] VARCHAR(150) NOT NULL,
-    [fecha_entrada] DATETIME NOT NULL,
+    [empleado_rut] VARCHAR(12) NOT NULL,
+    [fecha_entrada] DATETIME NOT NULL DEFAULT GETDATE(),
     [fecha_salida] DATETIME NOT NULL,
     [descripcion] VARCHAR(500),
     [km] VARCHAR(10) NOT NULL,
@@ -122,7 +123,8 @@ CREATE TABLE [ot] (
     CONSTRAINT [FK_ot_vehiculo] FOREIGN KEY ([vehiculo_patente]) REFERENCES [vehiculo]([patente])
         ON UPDATE CASCADE ON DELETE NO ACTION,
     CONSTRAINT [FK_ot_estado] FOREIGN KEY ([estado_id]) REFERENCES [estado]([estado_id])
-        ON UPDATE CASCADE ON DELETE NO ACTION
+        ON UPDATE CASCADE ON DELETE NO ACTION,
+    CONSTRAINT [FK_ot_empleado] FOREIGN KEY ([empleado_rut]) REFERENCES [empleado]([empleado_rut])
 );
 
 CREATE TABLE [cita] (
@@ -151,7 +153,7 @@ CREATE TABLE [password_reset_tokens] (
 	CONSTRAINT [FK_PRT_usuario_rut] FOREIGN KEY ([usuario_rut]) REFERENCES [usuario]([usuario_rut])
 );
 
-CREATE TABLE alertas (
+CREATE TABLE [alertas] (
     [alerta_id] INT NOT NULL IDENTITY(1,1),
     [tipo] VARCHAR(50) NOT NULL,
     [descricion] VARCHAR(500) NOT NULL,

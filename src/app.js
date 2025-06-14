@@ -7,9 +7,10 @@ import authRoutes from './routes/auth.routes.js';
 import workshopRoutes from './routes/workshop.routes.js';
 import controlpanelRoutes from './routes/controlpanel.routes.js';
 import clienteRoutes from './routes/cliente.routes.js';
-import vehiculoRouter from './routes/vehiculo.routes.js';
-import empleadoRouter from './routes/empleado.routes.js';
+import vehiculoRoutes from './routes/vehiculo.routes.js';
+import empleadoRoutes from './routes/empleado.routes.js';
 import {FRONTEND_URL} from "./config.js";
+import tallerRoutes from "./routes/taller.routes.js";
 
 const app = express();
 
@@ -28,7 +29,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api", workshopRoutes);
 app.use("/api/cp", controlpanelRoutes);
 app.use("/api/cliente", clienteRoutes);
-app.use("/api/veh", vehiculoRouter);
-app.use("/api/empleados", empleadoRouter);
+app.use("/api/veh", vehiculoRoutes);
+app.use("/api/empleados", empleadoRoutes);
+app.use("/api/taller", tallerRoutes);
 
 export default app;
