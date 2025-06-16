@@ -139,20 +139,26 @@ const WorkshopDash = () => {
 
   if (!taller) {
     return (
-      <div className={`min-h-screen pt-16 flex items-center justify-center ${
-              darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'
-            }`}>
-              <div className="flex flex-col items-center space-y-4">
-                <div className={`w-12 h-12 border-4 border-t-blue-500 ${
-                  darkMode ? 'border-gray-700' : 'border-gray-200'
-                } rounded-full animate-spin`}></div>
-                <span className={`text-lg font-medium ${
-                  darkMode ? 'text-gray-300' : 'text-gray-600'
-                }`}>
-                  Cargando taller...
-                </span>
-              </div>
-            </div>
+      <div
+        className={`min-h-screen pt-16 flex items-center justify-center ${
+          darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
+        }`}
+      >
+        <div className="flex flex-col items-center space-y-4">
+          <div
+            className={`w-12 h-12 border-4 border-t-blue-500 ${
+              darkMode ? "border-gray-700" : "border-gray-200"
+            } rounded-full animate-spin`}
+          ></div>
+          <span
+            className={`text-lg font-medium ${
+              darkMode ? "text-gray-300" : "text-gray-600"
+            }`}
+          >
+            Cargando taller...
+          </span>
+        </div>
+      </div>
     );
   }
 

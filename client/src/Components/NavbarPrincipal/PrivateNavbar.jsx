@@ -5,11 +5,11 @@ import {
   Building2,
   User,
   LogOut,
-  Bell,
   Menu,
   X,
   ChevronDown,
   Settings,
+  ChevronUp,
 } from "lucide-react";
 import { useAuth } from "../../context/authContext";
 import { useDarkMode } from "../../context/darkModeContext";
@@ -22,6 +22,16 @@ export default function DashboardNavbar() {
   const { darkMode } = useDarkMode();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showMobileWorkshops, setShowMobileWorkshops] = useState(false);
+  const [showMobileProfile, setShowMobileProfile] = useState(false);
+
+  // Talleres de prueba
+  const workshopsList = [
+    { id: 1, name: "Taller Mecánico Central" },
+    { id: 2, name: "AutoService Express" },
+    { id: 3, name: "Taller San Miguel" },
+    { id: 4, name: "Mecánica Rápida" },
+  ];
 
   // Cerrar menú al hacer clic fuera o cambiar de ruta
   useEffect(() => {
@@ -32,7 +42,7 @@ export default function DashboardNavbar() {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    setShowProfileMenu(false); // Cerrar al cambiar de ruta
+    setShowProfileMenu(false);
 
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [location.pathname]);
@@ -62,11 +72,15 @@ export default function DashboardNavbar() {
             <div className="flex-shrink-0 flex items-center">
               <Link
                 to="/dashboard"
-                className={`flex items-center ${darkMode ? "text-blue-400" : "text-blue-600"}`}
+                className={`flex items-center ${
+                  darkMode ? "text-blue-400" : "text-blue-600"
+                }`}
               >
                 <Wrench className="h-8 w-8 mr-2" />
                 <span
-                  className={`font-bold text-xl ${darkMode ? "text-white" : "text-gray-900"}`}
+                  className={`font-bold text-xl ${
+                    darkMode ? "text-white" : "text-gray-900"
+                  }`}
                 >
                   TallerApp
                 </span>
@@ -86,16 +100,6 @@ export default function DashboardNavbar() {
                 <Building2 className="w-4 h-4 mr-1.5" />
                 Mis Talleres
               </Link>
-              {/* <button
-                className={`px-3 py-2 rounded-md text-sm font-medium flex items-center ${
-                  darkMode
-                    ? 'text-white hover:bg-gray-800'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <Bell className="w-4 h-4 mr-1.5" />
-                Notificaciones
-              </button> */}
             </div>
           </div>
 
@@ -199,45 +203,100 @@ export default function DashboardNavbar() {
             darkMode ? "bg-gray-900" : "bg-white"
           }`}
         >
-          <Link
-            to="/workshops"
-            className={`block px-3 py-2 rounded-md text-base font-medium ${
-              darkMode
-                ? "text-white hover:bg-gray-800"
-                : "text-gray-700 hover:bg-gray-100"
-            }`}
-          >
-            <span className="flex items-center">
-              <Building2 className="w-5 h-5 mr-2" />
-              Mis Talleres
-            </span>
-          </Link>
-          <Link
-            to="/profile"
-            className={`block px-3 py-2 rounded-md text-base font-medium ${
-              darkMode
-                ? "text-white hover:bg-gray-800"
-                : "text-gray-700 hover:bg-gray-100"
-            }`}
-          >
-            <span className="flex items-center">
-              <User className="w-5 h-5 mr-2" />
-              Mi Perfil
-            </span>
-          </Link>
-          <button
-            onClick={handleLogout}
-            className={`w-full text-left px-3 py-2 rounded-md text-base font-medium ${
-              darkMode
-                ? "text-white hover:bg-gray-800"
-                : "text-gray-700 hover:bg-gray-100"
-            }`}
-          >
-            <span className="flex items-center">
-              <LogOut className="w-5 h-5 mr-2" />
-              Cerrar Sesión
-            </span>
-          </button>
+          {/* Sección Mis Talleres */}
+          <div className="border-b border-gray-700 pb-2">
+            <button
+              onClick={() => setShowMobileWorkshops(!showMobileWorkshops)}
+              className={`w-full flex justify-between items-center px-3 py-2 rounded-md text-base font-medium ${
+                darkMode
+                  ? "text-white hover:bg-gray-800"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              <span className="flex items-center">
+                <Building2 className="w-5 h-5 mr-2" />
+                Mis Talleres
+              </span>
+              {showMobileWorkshops ? (
+                <ChevronUp className="w-5 h-5" />
+              ) : (
+                <ChevronDown className="w-5 h-5" />
+              )}
+            </button>
+            {showMobileWorkshops && (
+              <div className="ml-7 mt-2 space-y-1">
+                {workshopsList.map((workshop) => (
+                  <Link
+                    key={workshop.id}
+                    to={`/workshop/${workshop.id}`}
+                    className={`block px-3 py-2 rounded-md text-sm ${
+                      darkMode
+                        ? "text-gray-300 hover:bg-gray-800"
+                        : "text-gray-600 hover:bg-gray-100"
+                    }`}
+                  >
+                    {workshop.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Sección Perfil */}
+          <div className="pt-2">
+            <button
+              onClick={() => setShowMobileProfile(!showMobileProfile)}
+              className={`w-full flex justify-between items-center px-3 py-2 rounded-md text-base font-medium ${
+                darkMode
+                  ? "text-white hover:bg-gray-800"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              <span className="flex items-center">
+                <User className="w-5 h-5 mr-2" />
+                {user?.nombre || "Usuario"}
+              </span>
+              {showMobileProfile ? (
+                <ChevronUp className="w-5 h-5" />
+              ) : (
+                <ChevronDown className="w-5 h-5" />
+              )}
+            </button>
+            {showMobileProfile && (
+              <div className="ml-7 mt-2 space-y-1">
+                <Link
+                  to="/profile"
+                  className={`block px-3 py-2 rounded-md text-sm ${
+                    darkMode
+                      ? "text-gray-300 hover:bg-gray-800"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  Mi Perfil
+                </Link>
+                <Link
+                  to="/settings"
+                  className={`block px-3 py-2 rounded-md text-sm ${
+                    darkMode
+                      ? "text-gray-300 hover:bg-gray-800"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  Configuración
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className={`w-full text-left px-3 py-2 rounded-md text-sm ${
+                    darkMode
+                      ? "text-gray-300 hover:bg-gray-800"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  Cerrar Sesión
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </nav>

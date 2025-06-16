@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, Phone, Mail, MapPin } from "lucide-react";
+import { Home, Phone, Mail, MapPin, Clock } from "lucide-react";
 import { useDarkMode } from "../../context/darkModeContext.jsx";
 import { useAuth } from "../../context/authContext.jsx";
 import axios from "../../api/axios.js";
@@ -15,6 +15,8 @@ const CreateWorkshop = () => {
     telefono: "",
     correo: "",
     direccion: "",
+    inicio_jornada: "",
+    termino_jornada: "",
   });
 
   const [error, setError] = useState("");
@@ -22,6 +24,7 @@ const CreateWorkshop = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    console.log(`Campo ${name} actualizado:`, value);
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
@@ -34,10 +37,16 @@ const CreateWorkshop = () => {
     setSuccess("");
 
     try {
+      // Convertir horarios a formato numérico (de "HH:mm" a HHMM)
+      const inicio_jornada = formData.inicio_jornada.replace(":", "");
+      const termino_jornada = formData.termino_jornada.replace(":", "");
+
       // Crear el objeto con los datos del taller
       const tallerData = {
-        usuario_rut: auth.rut, // Tomar el RUT del usuario autenticado
+        usuario_rut: auth.rut,
         ...formData,
+        inicio_jornada: parseInt(inicio_jornada),
+        termino_jornada: parseInt(termino_jornada),
       };
 
       // Realizar la petición POST al backend
@@ -226,6 +235,69 @@ const CreateWorkshop = () => {
                   } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   required
                 />
+              </div>
+            </div>
+
+            {/* Horarios */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              {/* Inicio Jornada */}
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-2 ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  Inicio Jornada
+                </label>
+                <div className="relative">
+                  <Clock
+                    className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                      darkMode ? "text-gray-400" : "text-gray-500"
+                    }`}
+                  />
+                  <input
+                    type="time"
+                    name="inicio_jornada"
+                    value={formData.inicio_jornada}
+                    onChange={handleInputChange}
+                    className={`w-full pl-10 pr-4 py-2 rounded-lg border ${
+                      darkMode
+                        ? "bg-gray-700 border-gray-600 text-white"
+                        : "bg-white border-gray-300 text-gray-900"
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Término Jornada */}
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-2 ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  Término Jornada
+                </label>
+                <div className="relative">
+                  <Clock
+                    className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                      darkMode ? "text-gray-400" : "text-gray-500"
+                    }`}
+                  />
+                  <input
+                    type="time"
+                    name="termino_jornada"
+                    value={formData.termino_jornada}
+                    onChange={handleInputChange}
+                    className={`w-full pl-10 pr-4 py-2 rounded-lg border ${
+                      darkMode
+                        ? "bg-gray-700 border-gray-600 text-white"
+                        : "bg-white border-gray-300 text-gray-900"
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    required
+                  />
+                </div>
               </div>
             </div>
 

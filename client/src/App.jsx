@@ -27,6 +27,8 @@ import { ThemeWrapper } from "./Components/ThemeWrapper";
 import WorkOrders from "./pages/workshops/WorkOrders.jsx";
 import RecoverPasswordApprovePage from "./pages/auth/RecoverPasswordApproved.jsx";
 import ErrorPage from "./pages/error/ErrorPage.jsx";
+import PlanCheckout from "./pages/checkout/PlanCheckout.jsx";
+import MechanicOrderDetails from "./pages/mechanic/OrderDetails";
 
 function App() {
   return (
@@ -51,8 +53,8 @@ function App() {
                             element={<RecoverPasswordPage />}
                           />
                           <Route
-                              path="/newpassword"
-                              element={<RecoverPasswordApprovePage />}
+                            path="/newpassword"
+                            element={<RecoverPasswordApprovePage />}
                           />
                           <Route path="/plans" element={<PlansPage />} />
 
@@ -94,8 +96,16 @@ function App() {
                               path="/workshop/orders/:id"
                               element={<WorkOrders />}
                             />
+                            <Route
+                              path="/checkout"
+                              element={<PlanCheckout />}
+                            />
+                            <Route
+                              path="/mechanic/order/:orderId"
+                              element={<MechanicOrderDetails />}
+                            />
                           </Route>
-                          <Route path="*" element={<ErrorPage/>} />
+                          <Route path="*" element={<ErrorPage />} />
                         </Routes>
                       </div>
                     </EmpleadoProvider>
