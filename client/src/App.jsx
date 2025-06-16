@@ -28,7 +28,7 @@ import WorkOrders from "./pages/workshops/WorkOrders.jsx";
 import RecoverPasswordApprovePage from "./pages/auth/RecoverPasswordApproved.jsx";
 import ErrorPage from "./pages/error/ErrorPage.jsx";
 import PlanCheckout from "./pages/checkout/PlanCheckout.jsx";
-import MechanicOrderDetails from "./pages/mechanic/OrderDetails";
+import ClientVehicleDetails from "./pages/client/ClientVehicleDetails.jsx";
 
 function App() {
   return (
@@ -87,7 +87,7 @@ function App() {
                               path="/workshop/create"
                               element={<CreateWorkshop />}
                             />
-                            <Route
+                            <Route /*VISTA ORDEN LADO MECANICO */
                               path="/vehicle/:orderId"
                               element={<VehicleDetails />}
                             />
@@ -100,9 +100,9 @@ function App() {
                               path="/checkout"
                               element={<PlanCheckout />}
                             />
-                            <Route
-                              path="/mechanic/order/:orderId"
-                              element={<MechanicOrderDetails />}
+                            <Route /*VISTA ORDEN LADO CLIENTE */
+                              path="/order/OrderDetails"
+                              element={<ClientVehicleDetails />}
                             />
                           </Route>
                           <Route path="*" element={<ErrorPage />} />
