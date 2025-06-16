@@ -27,6 +27,8 @@ import {ThemeWrapper} from "./Components/ThemeWrapper";
 import WorkOrders from "./pages/workshops/WorkOrders.jsx";
 import RecoverPasswordApprovePage from "./pages/auth/RecoverPasswordApproved.jsx";
 import ErrorPage from "./pages/error/ErrorPage.jsx";
+import PlanCheckout from "./pages/checkout/PlanCheckout.jsx";
+import ClientVehicleDetails from "./pages/client/ClientVehicleDetails.jsx";
 
 function App() {
   return (
@@ -52,7 +54,7 @@ function App() {
                           />
                           <Route
                             path="/newpassword"
-                            element={<RecoverPasswordApprovePage/>}
+                            element={<RecoverPasswordApprovePage />}
                           />
                           <Route path="/plans" element={<PlansPage/>}/>
 
@@ -85,7 +87,7 @@ function App() {
                               path="/workshop/create"
                               element={<CreateWorkshop/>}
                             />
-                            <Route
+                            <Route /*VISTA ORDEN LADO MECANICO */
                               path="/vehicle/:orderId"
                               element={<VehicleDetails/>}
                             />
@@ -94,8 +96,16 @@ function App() {
                               path="/workshop/orders/:id"
                               element={<WorkOrders/>}
                             />
+                            <Route
+                              path="/checkout"
+                              element={<PlanCheckout />}
+                            />
+                            <Route /*VISTA ORDEN LADO CLIENTE */
+                              path="/order/OrderDetails"
+                              element={<ClientVehicleDetails />}
+                            />
                           </Route>
-                          <Route path="*" element={<ErrorPage/>}/>
+                          <Route path="*" element={<ErrorPage />} />
                         </Routes>
                       </div>
                     </EmpleadoProvider>
