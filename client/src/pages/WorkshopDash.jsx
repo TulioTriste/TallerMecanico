@@ -16,11 +16,8 @@ import { useWorkshop } from "../context/workshopContext";
 import { useDarkMode } from "../context/darkModeContext";
 import { useControlPanel } from "../context/controlPanelContext";
 import { useCliente } from "../context/clienteContext";
-import {
-  formatFechaDDMMYYYY,
-  formatFechaHHMM,
-} from "../utilities/stringformatter";
 import { useVehiculo } from "../context/vehiculoContext";
+import StringFormatter from "../utilities/stringFormatter.js";
 
 const WorkshopDash = () => {
   const { darkMode } = useDarkMode();
@@ -390,14 +387,14 @@ const WorkshopDash = () => {
                           <p
                             className={`font-medium ${darkMode ? "text-white" : "text-gray-900"}`}
                           >
-                            {formatFechaDDMMYYYY(orden.fecha_entrada)}
+                            {StringFormatter.formatFechaDDMMYYYY(orden.fecha_entrada)}
                           </p>
                           <div className="flex items-center space-x-1 mt-1">
                             <Clock className="w-3 h-3 text-blue-500" />
                             <span
                               className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-600"}`}
                             >
-                              Est. {formatFechaDDMMYYYY(orden.fecha_salida)}
+                              Est. {StringFormatter.formatFechaDDMMYYYY(orden.fecha_salida)}
                             </span>
                           </div>
                         </div>
@@ -439,7 +436,7 @@ const WorkshopDash = () => {
                         <span
                           className={`text-sm font-medium ${darkMode ? "text-blue-400" : "text-blue-600"}`}
                         >
-                          {formatFechaHHMM(cita.hora)}
+                          {StringFormatter.formatFechaHHMM(cita.hora)}
                         </span>
                         <button
                           className={`p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600`}

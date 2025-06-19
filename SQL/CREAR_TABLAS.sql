@@ -1,5 +1,7 @@
 /* Query Completa de creación de tablas */
 DROP TABLE IF EXISTS [password_reset_tokens];
+DROP TABLE IF EXISTS [ot_estado_historial];
+DROP TABLE IF EXISTS [ot_tareas];
 DROP TABLE IF EXISTS [ot];
 DROP TABLE IF EXISTS [cita];
 DROP TABLE IF EXISTS [empleado];
@@ -126,6 +128,36 @@ CREATE TABLE [ot] (
         ON UPDATE CASCADE ON DELETE NO ACTION,
     CONSTRAINT [FK_ot_empleado] FOREIGN KEY ([empleado_rut]) REFERENCES [empleado]([empleado_rut])
 );
+
+CREATE TABLE [ot_tareas] (
+    [tarea_id] INT NOT NULL IDENTITY(1,1),
+    [ot_id] INT NOT NULL,
+    [titulo] VARCHAR(50) NOT NULL,
+    [descripcion] VARCHAR(500) NOT NULL,
+    [ruta_imagenes] NVARCHAR(MAX),
+    [created_at] DATETIME NOT NULL DEFAULT GETDATE(),
+    CONSTRAINT [PK_ot_tareas] PRIMARY KEY CLUSTERED ([tarea_id] ASC),
+    CONSTRAINT [FK_ot_tareas_ot] FOREIGN KEY ([ot_id]) REFERENCES [ot]([ot_id])
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE [ot_estado_historial] (
+    [historial_id] INT NOT NULL IDENTITY(1,1),
+    [ot_id] INT NOT NULL,
+    [estado_anterior_id] INT,
+    [estado_nuevo_id] INT NOT NULL,
+    [empleado_rut] VARCHAR(12) NOT NULL,
+    [fecha_cambio] DATETIME NOT NULL DEFAULT GETDATE(),
+    [comentario] VARCHAR(500),
+    CONSTRAINT [PK_ot_estado_historial] PRIMARY KEY CLUSTERED ([historial_id] ASC),
+    CONSTRAINT [FK_historial_ot] FOREIGN KEY ([ot_id]) REFERENCES [ot]([ot_id])
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT [FK_historial_estado_anterior] FOREIGN KEY ([estado_anterior_id]) REFERENCES [estado]([estado_id]),
+    CONSTRAINT [FK_historial_estado_nuevo] FOREIGN KEY ([estado_nuevo_id]) REFERENCES [estado]([estado_id]),
+    CONSTRAINT [FK_historial_empleado] FOREIGN KEY ([empleado_rut]) REFERENCES [empleado]([empleado_rut])
+        ON UPDATE CASCADE ON DELETE NO ACTION
+);
+
 
 CREATE TABLE [cita] (
 	[cita_id] INT NOT NULL IDENTITY(1, 1),

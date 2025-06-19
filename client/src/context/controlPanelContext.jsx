@@ -1,17 +1,19 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {
+  addTaskRequest,
   getCitasHoyRequest,
   getCountCitasProx7DiasRequest,
   getCountOTMesRequest,
-  getCountRegisteredVehiclesRequest,
+  getCountRegisteredVehiclesRequest, getEstadosRequest,
   getIngresosDelMesRequest,
   getNextCitaRequest,
   getOrdenesDeTrabajoCountByEstadoRequest,
-  getOrdenesDeTrabajoCountRequest,
+  getOrdenesDeTrabajoCountRequest, getOtRequest,
   getRecentOTsRequest,
-  getRolesRequest
+  getRolesRequest, getTasksRequest, updateOrCreateTasksRequest, updateOtRequest, uploadImagesRequest
 } from "../api/controlpanel";
 import {useLocation} from "react-router-dom";
+import StringFormatter from "../utilities/stringFormatter.js";
 
 const ControlPanelContext = createContext();
 
@@ -24,8 +26,28 @@ export const useControlPanel = () => {
 export function ControlPanelProvider({children}) {
   const [registeredVehicles, setRegisteredVehicles] = useState(false);
   const [roles, setRoles] = useState([]);
+  const [estados, setEstados] = useState([]);
   const location = useLocation();
 
+  const fetchEstados = async () => {
+    try {
+      const response = await getEstadosRequest();
+      if (response.data && Array.isArray(response.data)) {
+        setEstados(response.data);
+        console.log("Estados cargados.")
+      } else {
+        console.error("Formato de datos inesperado para estados:", response.data);
+        setEstados([]);
+      }
+    } catch (error) {
+      console.error("Error al obtener los estados:", error);
+      setEstados([]); // En caso de error, se puede establecer a un array vacío
+    }
+  }
+
+  useEffect(() => {
+    fetchEstados();
+  }, []);
 
   const updateRegisteredVehicles = async () => {
     try {
@@ -148,11 +170,73 @@ export function ControlPanelProvider({children}) {
     }
   }
 
+  const getOt = async (taller_id, ot_id) => {
+    try {
+      const res = await getOtRequest(taller_id, ot_id);
+
+      return res.data;
+    } catch (error) {
+      console.error("Error al obtener la orden de trabajo:", error);
+      return null;
+    }
+  }
+
+  const getTasks = async (taller_id, ot_id) => {
+    try {
+      const res = await getTasksRequest(taller_id, ot_id);
+      return res.data || [];
+    } catch (error) {
+      console.error("Error al obtener las tareas de la orden de trabajo:", error);
+      return [];
+    }
+  }
+
+  const addTask = async (taller_id, ot_id, task) => {
+    try {
+      const res = await addTaskRequest(taller_id, ot_id, {"task": task});
+      return res.data;
+    } catch (error) {
+      console.error("Error al agregar tarea a la orden de trabajo:", error);
+      return null;
+    }
+  }
+
+  const updateOrCreateTasks = async (taller_id, ot_id, tasks) => {
+    try {
+      const res = await updateOrCreateTasksRequest(taller_id, ot_id, tasks);
+      return res.data;
+    } catch (error) {
+      console.error("Error al actualizar o crear tareas:", error);
+      return null;
+    }
+  }
+
+  const uploadImages = async (formData) => {
+    try {
+      const res = await uploadImagesRequest(formData);
+      return res.data;
+    } catch (error) {
+      console.error("Error al subir imágenes:", error);
+      return null;
+    }
+  }
+
+  const updateOt = async (taller_id, ot_id, orden) => {
+    try {
+      const response = await updateOtRequest(taller_id, ot_id, orden);
+      return response.data;
+    } catch (error) {
+      console.error("Error al actualizar la orden de trabajo:", error);
+      return null;
+    }
+  }
+
   return (
     <ControlPanelContext.Provider
       value={{
         registeredVehicles,
         roles,
+        estados,
         updateRegisteredVehicles,
         getNextCitaTaller,
         getOrdenesDeTrabajoCount,
@@ -161,7 +245,13 @@ export function ControlPanelProvider({children}) {
         getCountOTMes,
         getOtsRecientes,
         getIngresosDelMes,
-        getCitasHoy
+        getCitasHoy,
+        getOt,
+        getTasks,
+        addTask,
+        updateOrCreateTasks,
+        uploadImages,
+        updateOt,
       }}
     >
       {children}

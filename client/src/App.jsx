@@ -7,7 +7,7 @@ import PlansPage from "./pages/main/PlansPage.jsx";
 import {AuthProvider} from "./context/authContext";
 import Workshops from "./pages/workshops/Workshops.jsx";
 import WorkshopDash from "./pages/workshops/WorkshopDash.jsx";
-import {ProtectedRoute} from "./routes";
+import {ProtectedRoute} from "./pages/protected/ProtectedRoute.jsx";
 import {WorkshopProvider} from "./context/workshopContext";
 import WorkOrderForm from "./pages/workshops/FormNewOt.jsx";
 import ListaEmpleados from "./pages/workshops/Employees.jsx";
@@ -88,7 +88,7 @@ function App() {
                               element={<CreateWorkshop/>}
                             />
                             <Route /*VISTA ORDEN LADO MECANICO */
-                              path="/vehicle/:orderId"
+                              path="/workshop/:tallerId/vehicle/:orderId"
                               element={<VehicleDetails/>}
                             />
                             <Route path="/settings" element={<Settings/>}/>

@@ -4,7 +4,7 @@ import {ChevronRight, Clock, Home, MapPin, Plus, Wrench} from "lucide-react";
 import {useWorkshop} from "../../context/workshopContext.jsx";
 import {useDarkMode} from "../../context/darkModeContext.jsx";
 import {useControlPanel} from "../../context/controlPanelContext.jsx";
-import {formatCitaFecha} from "../../utilities/stringFormatter.js";
+import StringFormatter from "../../utilities/stringFormatter.js";
 
 const Workshops = () => {
   const {darkMode} = useDarkMode();
@@ -258,7 +258,7 @@ const Workshops = () => {
                     >
                       Próxima cita:{" "}
                       {nextCitas[taller.taller_id]?.hora
-                        ? formatCitaFecha(nextCitas[taller.taller_id].hora)
+                        ? StringFormatter.formatCitaFecha(nextCitas[taller.taller_id].hora)
                         : "Sin citas"}
                     </span>
                   </div>

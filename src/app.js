@@ -23,7 +23,9 @@ app.use(
 // La configuracion 'dev' es para ver todas las peticiones en la consola (https://www.npmjs.com/package/morgan)
 app.use(morgan('dev'));
 app.use(express.json()); // Para poder recibir datos en formato JSON
-app.use(cookieParser());
+app.use(cookieParser()); // Para poder leer las cookies de las peticiones
+
+app.use("/api/uploads", express.static("uploads")); // Para servir archivos estáticos desde la carpeta 'uploads'
 
 app.use("/api/auth", authRoutes);
 app.use("/api", workshopRoutes);

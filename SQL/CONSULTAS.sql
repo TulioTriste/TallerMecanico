@@ -79,7 +79,8 @@ SELECT * FROM usuario u;
 SELECT * FROM cotizacion c ;
 
 SELECT * FROM estado;
-SELECT * FROM ot;	
+SELECT * FROM ot;
+SELECT * FROM ot_tareas ot ;
 SELECT * FROM roles r ;
 SELECT * FROM empleado e ;
 

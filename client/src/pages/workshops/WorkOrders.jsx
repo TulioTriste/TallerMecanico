@@ -12,8 +12,8 @@ import { useParams } from "react-router-dom";
 import { useDarkMode } from "../../context/darkModeContext.jsx";
 import { useControlPanel } from "../../context/controlPanelContext.jsx";
 import { useCliente } from "../../context/clienteContext.jsx";
-import { formatFechaDDMMYYYY } from "../../utilities/stringFormatter.js";
 import { useVehiculo } from "../../context/vehiculoContext.jsx";
+import StringFormatter from "../../utilities/stringFormatter.js";
 
 export default function WorkOrders() {
   const {darkMode} = useDarkMode();
@@ -329,14 +329,14 @@ export default function WorkOrders() {
                       Fechas
                     </p>
                     <p className="font-medium mt-1">
-                      {formatFechaDDMMYYYY(orden.fecha_entrada)}
+                      {StringFormatter.formatFechaDDMMYYYY(orden.fecha_entrada)}
                     </p>
                     <div className="flex items-center mt-1">
                       <Clock className="w-4 h-4 text-blue-500 mr-1" />
                       <span
                         className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}
                       >
-                        Est. {formatFechaDDMMYYYY(orden.fecha_salida)}
+                        Est. {StringFormatter.formatFechaDDMMYYYY(orden.fecha_salida)}
                       </span>
                     </div>
                   </div>

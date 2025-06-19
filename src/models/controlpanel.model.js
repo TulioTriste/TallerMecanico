@@ -288,6 +288,17 @@ class ControlPanelModel {
       throw error;
     }
   }
+
+  async getEstados() {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool.request().query("SELECT * FROM estado");
+      return result.recordset;
+    } catch (error) {
+      console.error("Error al obtener los estados:", error);
+      throw error;
+    }
+  }
 }
 
 export default new ControlPanelModel();

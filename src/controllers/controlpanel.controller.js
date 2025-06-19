@@ -146,4 +146,14 @@ export const getRoles = async (req, res) => {
     console.error("Error al obtener los roles:", error);
     res.status(500).json({message: "Error al obtener los roles"});
   }
+};
+
+export const getEstados = async (req, res) => {
+  try {
+    const estados = await controlpanelModel.getEstados();
+    res.json(estados);
+  } catch (error) {
+    console.error("Error al obtener los estados:", error);
+    res.status(500).json({message: "Error al obtener los estados"});
+  }
 }
