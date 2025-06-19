@@ -1,31 +1,46 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
-  Users,
-  Calendar,
-  Clipboard,
-  DollarSign,
-  Plus,
-  MoreVertical,
   Clock,
+  Search,
+  Plus,
+  Check,
+  X,
+  Calendar,
   Phone,
+  Clipboard,
+  Users,
+  DollarSign,
   AlertCircle,
+  MoreVertical,
   Zap,
 } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
-import { useWorkshop } from "../../context/workshopContext.jsx";
-import { useDarkMode } from "../../context/darkModeContext.jsx";
-import { useControlPanel } from "../../context/controlPanelContext.jsx";
-import { useCliente } from "../../context/clienteContext.jsx";
+import { useDarkMode } from "../../context/darkModeContext";
+import { useWorkshop } from "../../context/workshopContext";
+import { useControlPanel } from "../../context/controlPanelContext";
+import { useCliente } from "../../context/clienteContext";
+import { useVehiculo } from "../../context/vehiculoContext";
 import {
   formatFechaDDMMYYYY,
   formatFechaHHMM,
-} from "../../utilities/stringFormatter.js";
-import { useVehiculo } from "../../context/vehiculoContext.jsx";
+} from "../../utilities/stringFormatter";
 
-const WorkshopDash = () => {
+export default function WorkshopDash() {
   const { darkMode } = useDarkMode();
-
   const { id } = useParams();
+
+  // Estados para el modal de citas
+  const [showNewAppointmentModal, setShowNewAppointmentModal] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [newAppointment, setNewAppointment] = useState({
+    cliente_rut: "",
+    patente: "",
+    hora: "",
+    descripcion: "",
+  });
+
+  // Estados existentes
   const [taller, setTaller] = useState(null);
   const { getTaller } = useWorkshop();
   const {
@@ -43,6 +58,7 @@ const WorkshopDash = () => {
   const [citasHoy, setCitasHoy] = useState([]);
   const [ingresosMes, setIngresosMes] = useState(0);
 
+  // Funciones existentes
   const loadTaller = async () => {
     try {
       const taller = await getTaller(id);
@@ -55,7 +71,7 @@ const WorkshopDash = () => {
 
   const loadStats = async () => {
     try {
-      const ordenesCount = await getOrdenesDeTrabajoCountByEstado(id, 2); // Estado 2 es "en_proceso"
+      const ordenesCount = await getOrdenesDeTrabajoCountByEstado(id, 2);
       setOtCount(ordenesCount);
 
       const otMesCount = await getCountOTMes(id);
@@ -70,7 +86,7 @@ const WorkshopDash = () => {
 
   const loadRecentOTs = async () => {
     try {
-      const recentOTs = await getOtsRecientes(id, 7); // El numero es la cantidad de días
+      const recentOTs = await getOtsRecientes(id, 7);
       const recentOTsWithChanges = await Promise.all(
         recentOTs.map(async (orden) => {
           const nombre = await getClienteName(orden.cliente_rut);
@@ -88,11 +104,35 @@ const WorkshopDash = () => {
   const loadCitasHoy = async () => {
     try {
       const citasCargadas = await getCitasHoy(id);
-
       setCitasHoy(citasCargadas);
     } catch (error) {
       console.error("Error al cargar las citas de hoy:", error);
       setCitasHoy([]);
+    }
+  };
+
+  // Nueva función para manejar el envío de citas
+  const handleSubmitAppointment = async (e) => {
+    e.preventDefault();
+    try {
+      // Aquí iría la lógica para enviar la cita a la API
+      setShowNewAppointmentModal(false);
+      setShowSuccess(true);
+      await loadCitasHoy(); // Recargar las citas después de añadir una nueva
+
+      // Limpiar el formulario
+      setNewAppointment({
+        cliente_rut: "",
+        patente: "",
+        hora: "",
+        descripcion: "",
+      });
+
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
+    } catch (error) {
+      console.error("Error al crear la cita:", error);
     }
   };
 
@@ -208,6 +248,174 @@ const WorkshopDash = () => {
           </Link>
         </div>
       </div>
+
+      {/* Modal de Nueva Cita */}
+      {showNewAppointmentModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className={`rounded-xl p-6 max-w-md w-full ${
+              darkMode ? "bg-gray-800" : "bg-white"
+            }`}
+          >
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-semibold">Añadir Cita</h3>
+              <button
+                onClick={() => setShowNewAppointmentModal(false)}
+                className="p-2 hover:bg-gray-200 rounded-full dark:hover:bg-gray-700"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmitAppointment} className="space-y-4">
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-2 ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  RUT Cliente
+                </label>
+                <input
+                  type="text"
+                  value={newAppointment.cliente_rut}
+                  onChange={(e) =>
+                    setNewAppointment({
+                      ...newAppointment,
+                      cliente_rut: e.target.value,
+                    })
+                  }
+                  className={`w-full p-3 rounded-lg border ${
+                    darkMode
+                      ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500"
+                      : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                  placeholder="12.345.678-9"
+                  required
+                />
+              </div>
+
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-2 ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  Patente
+                </label>
+                <input
+                  type="text"
+                  value={newAppointment.patente}
+                  onChange={(e) =>
+                    setNewAppointment({
+                      ...newAppointment,
+                      patente: e.target.value.toUpperCase(),
+                    })
+                  }
+                  className={`w-full p-3 rounded-lg border ${
+                    darkMode
+                      ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500"
+                      : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                  placeholder="ABCD12"
+                  required
+                />
+              </div>
+
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-2 ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  Hora
+                </label>
+                <input
+                  type="datetime-local"
+                  value={newAppointment.hora}
+                  onChange={(e) =>
+                    setNewAppointment({
+                      ...newAppointment,
+                      hora: e.target.value,
+                    })
+                  }
+                  className={`w-full p-3 rounded-lg border ${
+                    darkMode
+                      ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500"
+                      : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                  required
+                />
+              </div>
+
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-2 ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  Descripción
+                </label>
+                <textarea
+                  value={newAppointment.descripcion}
+                  onChange={(e) =>
+                    setNewAppointment({
+                      ...newAppointment,
+                      descripcion: e.target.value,
+                    })
+                  }
+                  className={`w-full p-3 rounded-lg border min-h-[100px] resize-none ${
+                    darkMode
+                      ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500"
+                      : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                  placeholder="Descripción del servicio requerido"
+                  required
+                />
+              </div>
+
+              <div className="flex justify-end gap-4 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowNewAppointmentModal(false)}
+                  className={`px-6 py-2 rounded-lg transition-colors ${
+                    darkMode
+                      ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
+                      : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                  }`}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className={`px-6 py-2 rounded-lg transition-colors ${
+                    darkMode
+                      ? "bg-blue-600 hover:bg-blue-700"
+                      : "bg-blue-500 hover:bg-blue-600"
+                  } text-white font-medium`}
+                >
+                  Añadir Cita
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Notificación de éxito */}
+      {showSuccess && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 20 }}
+          exit={{ opacity: 0, y: -50 }}
+          className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center z-50"
+        >
+          <Check className="w-5 h-5 mr-2" />
+          Cita añadida correctamente
+        </motion.div>
+      )}
 
       {/* Fondo decorativo */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
@@ -467,10 +675,17 @@ const WorkshopDash = () => {
                   ))}
                 </div>
 
+                {/* Botón integrado para agendar nueva cita */}
                 <button
-                  className={`w-full mt-4 py-2 px-4 rounded-lg border-2 border-dashed ${darkMode ? "border-gray-600 text-gray-400 hover:border-gray-500" : "border-gray-300 text-gray-600 hover:border-gray-400"} transition-colors`}
+                  onClick={() => setShowNewAppointmentModal(true)}
+                  className={`w-full mt-4 py-3 px-4 rounded-lg border-2 border-dashed ${
+                    darkMode
+                      ? "border-gray-600 text-gray-400 hover:border-gray-500 hover:text-gray-300 hover:bg-gray-800/50"
+                      : "border-gray-300 text-gray-600 hover:border-gray-400 hover:text-gray-700 hover:bg-gray-50"
+                  } transition-all duration-200 flex items-center justify-center gap-2 group`}
                 >
-                  + Agendar nueva cita
+                  <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                  Agendar nueva cita
                 </button>
               </div>
             </div>
@@ -527,6 +742,4 @@ const WorkshopDash = () => {
       </div>
     </div>
   );
-};
-
-export default WorkshopDash;
+}
