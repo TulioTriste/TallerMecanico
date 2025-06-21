@@ -83,4 +83,30 @@ export const deleteEmpleado = async (req, res) => {
       error: error.message
     });
   }
+};
+
+export const isEmpleadoExists = async (req, res) => {
+  const {empleado_rut} = req.params;
+
+  try {
+    const empleado = await empleadoModel.isEmpleadoExist(empleado_rut);
+
+    if (empleado) {
+      return res.status(200).json({
+        exists: true,
+        empleado
+      });
+    } else {
+      return res.status(404).json({
+        exists: false,
+        message: "Empleado no encontrado"
+      });
+    }
+  } catch (error) {
+    console.error("Error al verificar existencia de empleado:", error);
+    return res.status(500).json({
+      message: "Error interno del servidor",
+      error: error.message
+    });
+  }
 }

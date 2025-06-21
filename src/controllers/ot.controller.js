@@ -102,4 +102,25 @@ export const updateOt = async (req, res) => {
     console.error("Error al actualizar la orden de trabajo:", error);
     res.status(500).json({message: "Error interno del servidor"});
   }
+};
+
+export const addOt = async (req, res) => {
+  const {taller_id} = req.params;
+  const ot = req.body;
+
+  ot.taller_id = parseInt(taller_id);
+
+  try {
+    const result = await OtModel.addOt(ot);
+    if (result) {
+      res.status(201).json({
+        message: "Orden de trabajo creada correctamente",
+        ot_id: result.ot_id});
+    } else {
+      res.status(400).json({message: "Error al crear la orden de trabajo"});
+    }
+  } catch (error) {
+    console.error("Error al crear la orden de trabajo:", error);
+    res.status(500).json({message: "Error interno del servidor"});
+  }
 }

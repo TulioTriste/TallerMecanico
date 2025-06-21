@@ -35,3 +35,5 @@ export const uploadImagesRequest = async (formData) => axios.post(`/cp/uploadima
 export const getEstadosRequest = async () => axios.get("/cp/getestados");
 
 export const updateOtRequest = async (taller_id, ot_id, orden) => axios.post(`/cp/updateot/${taller_id}/${ot_id}`, orden);
+
+export const addOtRequest = async (taller_id, orden) => axios.post(`/cp/addot/${taller_id}`, orden);

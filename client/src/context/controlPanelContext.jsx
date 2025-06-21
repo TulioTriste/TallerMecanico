@@ -1,5 +1,6 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {
+  addOtRequest,
   addTaskRequest,
   getCitasHoyRequest,
   getCountCitasProx7DiasRequest,
@@ -231,6 +232,16 @@ export function ControlPanelProvider({children}) {
     }
   }
 
+  const addOt = async (taller_id, orden) => {
+    try {
+      const response = await addOtRequest(taller_id, orden);
+      return response.data;
+    } catch (error) {
+      console.error("Error al agregar la orden de trabajo:", error);
+      return null;
+    }
+  }
+
   return (
     <ControlPanelContext.Provider
       value={{
@@ -252,6 +263,7 @@ export function ControlPanelProvider({children}) {
         updateOrCreateTasks,
         uploadImages,
         updateOt,
+        addOt,
       }}
     >
       {children}

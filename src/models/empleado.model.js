@@ -79,6 +79,23 @@ class EmpleadoModel {
       throw error;
     }
   }
+
+  async isEmpleadoExist(empleado_rut) {
+    try {
+      const pool = await connectToDatabase();
+      const request = pool.request();
+      request.input("empleado_rut", sql.VarChar, empleado_rut);
+
+      const result = await request.query(`
+        SELECT COUNT(*) AS count FROM empleado WHERE empleado_rut = @empleado_rut
+      `);
+
+      return result.recordset[0].count > 0;
+    } catch (error) {
+      console.error("Error checking if empleado exists:", error);
+      throw error;
+    }
+  }
 }
 
 export default new EmpleadoModel();

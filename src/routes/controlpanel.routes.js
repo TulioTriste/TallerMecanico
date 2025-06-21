@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {authRequired, ownTallerRequired} from "../middlewares/validateToken.js";
+import {authRequired, ownTallerRequired, planRequired} from "../middlewares/validateToken.js";
 import {
   getCitasHoy,
   getCountCitasProx7Dias,
@@ -13,6 +13,7 @@ import {
   getRoles
 } from "../controllers/controlpanel.controller.js";
 import {
+  addOt,
   addTaskToOt,
   getOt,
   getTasksByOtId,
@@ -41,6 +42,7 @@ router.get("/gettasksbyotid/:taller_id/:ot_id", authRequired, ownTallerRequired,
 router.post("/updorcretasks/:taller_id/:ot_id", authRequired, ownTallerRequired, updateOrCreateTasks);
 router.get("/getestados", authRequired, getEstados);
 router.post("/updateot/:taller_id/:ot_id", authRequired, ownTallerRequired, updateOt);
+router.post("/addot/:taller_id", authRequired, planRequired, ownTallerRequired, addOt);
 
 const storage = multer.diskStorage({
   destination: 'uploads/',

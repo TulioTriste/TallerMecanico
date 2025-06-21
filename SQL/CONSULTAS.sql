@@ -83,6 +83,8 @@ SELECT * FROM ot;
 SELECT * FROM ot_tareas ot ;
 SELECT * FROM roles r ;
 SELECT * FROM empleado e ;
+SELECT * FROM cliente;
+SELECT * FROM vehiculo;
 
 SELECT 
     e.empleado_rut,

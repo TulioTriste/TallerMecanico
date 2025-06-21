@@ -10,19 +10,24 @@ import {
   Mail,
   Phone,
   Calendar,
-  Wrench,
   Gauge,
   DollarSign,
 } from "lucide-react";
 import { useDarkMode } from "../../context/darkModeContext";
-import { useAuth } from "../../context/authContext";
-import axios from "../../api/axios";
+import {useCliente} from "../../context/clienteContext.jsx";
+import {useVehiculo} from "../../context/vehiculoContext.jsx";
+import {useEmpleado} from "../../context/empleadosContext.jsx";
+import {useControlPanel} from "../../context/controlPanelContext.jsx";
 
 export default function CreateWorkshop() {
-  const { darkMode } = useDarkMode();
-  const { auth } = useAuth();
-  const navigate = useNavigate();
   const { id } = useParams();
+  const { darkMode } = useDarkMode();
+  const {getClienteByRut} = useCliente();
+  const {getVehiculoByPatente} = useVehiculo();
+  const {isEmpleadoExists} = useEmpleado();
+  const {addOt} = useControlPanel();
+
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -31,43 +36,36 @@ export default function CreateWorkshop() {
   const [formData, setFormData] = useState({
     // Paso 1: Datos del cliente
     cliente_rut: "",
-    nombre: "",
-    correo: "",
-    telefono: "",
+    cliente_nombre: "",
+    cliente_correo: "",
+    cliente_telefono: "",
 
     // Paso 2: Datos del vehículo
-    patente: "",
-    marca: "",
-    modelo: "",
-    anio: "",
-    color: "",
+    vehiculo_patente: "",
+    vehiculo_marca: "",
+    vehiculo_modelo: "",
+    vehiculo_anio: "",
+    vehiculo_color: "",
 
     // Paso 3: Datos de la orden
-    tecnico: "",
+    empleado_rut: "",
     fecha_salida: "",
     descripcion: "",
-    km_actual: "",
-    precio_estimado: "",
+    km: "",
+    precio: "",
     taller_id: id,
   });
 
-  // Formatear RUT mientras se escribe
   const formatRut = (rut) => {
-    // Eliminar puntos y guión
     let valor = rut.replace(/\./g, "").replace("-", "");
 
-    // Eliminar caracteres no válidos
     valor = valor.replace(/[^0-9kK]/g, "");
 
-    // Obtener dígito verificador
     let dv = valor.slice(-1);
-    // Obtener cuerpo del RUT
     let numero = valor.slice(0, -1);
 
     if (numero.length > 0) {
-      // Formatear con puntos
       numero = numero.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      // Agregar guión y dígito verificador
       return numero + "-" + dv;
     }
 
@@ -76,12 +74,12 @@ export default function CreateWorkshop() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === "cliente_rut") {
+    if (name.endsWith("_rut")) {
       setFormData((prev) => ({
         ...prev,
         [name]: formatRut(value),
       }));
-    } else if (name === "patente") {
+    } else if (name === "vehiculo_patente") {
       // Convertir a mayúsculas la patente
       setFormData((prev) => ({
         ...prev,
@@ -97,37 +95,13 @@ export default function CreateWorkshop() {
 
   // Función para validar RUT chileno
   const validateRut = (rut) => {
-    // Limpiar el RUT de puntos y guión
-    const cleanRut = rut.replace(/\./g, "").replace("-", "");
-
-    // Verificar longitud mínima
-    if (cleanRut.length < 2) return false;
-
-    // Separar cuerpo y dígito verificador
-    const body = cleanRut.slice(0, -1);
-    const dv = cleanRut.slice(-1).toUpperCase();
-
-    // Calcular dígito verificador esperado
-    let sum = 0;
-    let multiplier = 2;
-
-    // Sumar productos
-    for (let i = body.length - 1; i >= 0; i--) {
-      sum += parseInt(body[i]) * multiplier;
-      multiplier = multiplier === 7 ? 2 : multiplier + 1;
-    }
-
-    // Calcular dígito verificador
-    const expectedDV = 11 - (sum % 11);
-    const expectedDVStr =
-      expectedDV === 11 ? "0" : expectedDV === 10 ? "K" : expectedDV.toString();
-
-    // Comparar con el dígito verificador proporcionado
-    return dv === expectedDVStr;
+    // Expresión regular para validar el formato XX.XXX.XXX-X
+    const rutRegex = /^\d{1,2}\.\d{3}\.\d{3}-[\dkK]$/;
+    return rutRegex.test(rut);
   };
 
   // Función para validar paso
-  const validateStep = (step) => {
+  const validateStep = async (step) => {
     setError("");
 
     // Solo validar si el usuario está intentando avanzar al siguiente paso
@@ -143,25 +117,25 @@ export default function CreateWorkshop() {
             setError("El RUT ingresado no es válido");
             return false;
           }
-          if (!formData.nombre.trim()) {
+          if (!formData.cliente_nombre.trim()) {
             setError("El nombre es obligatorio");
             return false;
           }
-          if (!formData.correo.trim()) {
+          if (!formData.cliente_correo.trim()) {
             setError("El correo es obligatorio");
             return false;
           }
-          if (!formData.telefono.trim()) {
+          if (!formData.cliente_telefono.trim()) {
             setError("El teléfono es obligatorio");
             return false;
           }
           // Validar formato de correo
-          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.correo)) {
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.cliente_correo)) {
             setError("El formato del correo electrónico no es válido");
             return false;
           }
           // Validar formato de teléfono (opcional)
-          if (!/^\+?56?[0-9]{9}$/.test(formData.telefono.replace(/\s/g, ""))) {
+          if (!/^\+?56?[0-9]{9}$/.test(formData.cliente_telefono.replace(/\s/g, ""))) {
             setError(
               "El formato del teléfono no es válido (debe ser número chileno)",
             );
@@ -170,43 +144,50 @@ export default function CreateWorkshop() {
           break;
 
         case 2:
-          if (!formData.patente.trim()) {
+          {
+          if (!formData.vehiculo_patente.trim()) {
             setError("La patente es obligatoria");
             return false;
           }
           // Validar formato de patente chilena (BBBB99 o BB9999)
           const patenteRegex = /^[A-Z]{2,4}\d{2,4}$/;
-          if (!patenteRegex.test(formData.patente)) {
+          if (!patenteRegex.test(formData.vehiculo_patente)) {
             setError("El formato de la patente no es válido");
             return false;
           }
-          if (!formData.marca.trim()) {
+          if (!formData.vehiculo_marca.trim()) {
             setError("La marca es obligatoria");
             return false;
           }
-          if (!formData.modelo.trim()) {
+          if (!formData.vehiculo_modelo.trim()) {
             setError("El modelo es obligatorio");
             return false;
           }
-          if (!formData.anio) {
+          if (!formData.vehiculo_anio) {
             setError("El año es obligatorio");
             return false;
           }
-          if (!formData.color.trim()) {
+          if (!formData.vehiculo_color.trim()) {
             setError("El color es obligatorio");
             return false;
           }
           // Validar año
           const currentYear = new Date().getFullYear();
-          if (formData.anio < 1900 || formData.anio > currentYear) {
+          if (formData.vehiculo_anio < 1900 || formData.vehiculo_anio > currentYear) {
             setError(`El año debe estar entre 1900 y ${currentYear}`);
             return false;
           }
-          break;
+          break; }
 
         case 3:
-          if (!formData.tecnico.trim()) {
+          {
+          if (!formData.empleado_rut.trim()) {
             setError("El técnico es obligatorio");
+            return false;
+          }
+          const exists = await isEmpleadoExists(formData.empleado_rut);
+          if (!exists) {
+            setError("El técnico ingresado no existe");
             return false;
           }
           if (!formData.fecha_salida) {
@@ -224,23 +205,23 @@ export default function CreateWorkshop() {
             setError("La descripción es obligatoria");
             return false;
           }
-          if (!formData.km_actual) {
+          if (!formData.km) {
             setError("El kilometraje actual es obligatorio");
             return false;
           }
-          if (formData.km_actual <= 0) {
+          if (formData.km <= 0) {
             setError("El kilometraje debe ser mayor a 0");
             return false;
           }
-          if (!formData.precio_estimado) {
+          if (!formData.precio) {
             setError("El precio estimado es obligatorio");
             return false;
           }
-          if (formData.precio_estimado <= 0) {
+          if (formData.precio <= 0) {
             setError("El precio estimado debe ser mayor a 0");
             return false;
           }
-          break;
+          break; }
 
         default:
           return true;
@@ -254,31 +235,30 @@ export default function CreateWorkshop() {
     e.preventDefault();
 
     // Validar todos los campos antes de enviar
-    if (!validateStep(3)) return;
+    if (!await validateStep(3)) return;
 
     try {
       const formattedData = {
         ...formData,
-        km_actual: Number(formData.km_actual),
-        precio_estimado: Number(formData.precio_estimado),
-        anio: Number(formData.anio),
+        km: parseInt(formData.km),
+        precio: parseInt(formData.precio),
+        vehiculo_anio: parseInt(formData.vehiculo_anio),
         fecha_entrada: new Date().toISOString(),
         estado_id: 1, // 1 = pendiente
       };
 
-      const response = await axios.post("/api/ordenes-trabajo", formattedData);
+      const response = await addOt(id, formattedData);
 
-      setSuccess("Orden de trabajo creada exitosamente");
-
-      // Redireccionar después de mostrar el mensaje de éxito
-      setTimeout(() => {
-        navigate("/workshops");
-      }, 2000);
+      setSuccess("Orden de trabajo creada exitosamente con la ID " + response.ot_id);
     } catch (err) {
       const errorMessage =
         err.response?.data?.message || "Error al crear la orden de trabajo";
       setError(errorMessage);
       console.error("Error al crear la orden:", err);
+    } finally {
+      setTimeout(() => {
+        navigate("/workshops");
+      }, 1000);
     }
   };
 
@@ -289,12 +269,43 @@ export default function CreateWorkshop() {
   };
 
   // Función para avanzar
-  const handleNext = () => {
-    if (validateStep(currentStep)) {
+  const handleNext = async () => {
+    if (await validateStep(currentStep)) {
       setCurrentStep((prev) => Math.min(3, prev + 1));
       setError(""); // Limpiar errores al avanzar exitosamente
     }
   };
+
+  const handleBlur = async (e) => {
+    if (e.target.name.startsWith("cliente_")) {
+      const response = await getClienteByRut(e.target.value);
+      if (response) {
+        setFormData((prev) => ({
+          ...prev,
+          cliente_nombre: response.nombre,
+          cliente_correo: response.correo,
+          cliente_telefono: response.telefono,
+        }));
+
+        alert("El cliente ha sido encontrado y sus datos han sido cargados automáticamente.");
+      }
+    }
+    else if (e.target.name.startsWith("vehiculo_")) {
+      const response = await getVehiculoByPatente(e.target.value);
+      if (response) {
+        setFormData((prev) => ({
+          ...prev,
+          vehiculo_marca: response.marca,
+          vehiculo_modelo: response.modelo,
+          vehiculo_anio: response.anio,
+          vehiculo_color: response.color,
+        }));
+
+        alert("El vehículo ha sido encontrado y sus datos han sido cargados automáticamente.");
+      }
+    }
+  };
+
 
   return (
     <div
@@ -405,6 +416,7 @@ export default function CreateWorkshop() {
                       name="cliente_rut"
                       value={formData.cliente_rut}
                       onChange={handleInputChange}
+                      onBlur={handleBlur}
                       className={`w-full p-2 rounded-lg border ${
                         darkMode
                           ? "bg-gray-700 border-gray-600 text-white"
@@ -420,8 +432,8 @@ export default function CreateWorkshop() {
                     </label>
                     <input
                       type="text"
-                      name="nombre"
-                      value={formData.nombre}
+                      name="cliente_nombre"
+                      value={formData.cliente_nombre}
                       onChange={handleInputChange}
                       className={`w-full p-2 rounded-lg border ${
                         darkMode
@@ -440,8 +452,8 @@ export default function CreateWorkshop() {
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                       <input
                         type="email"
-                        name="correo"
-                        value={formData.correo}
+                        name="cliente_correo"
+                        value={formData.cliente_correo}
                         onChange={handleInputChange}
                         className={`w-full pl-10 p-2 rounded-lg border ${
                           darkMode
@@ -461,8 +473,8 @@ export default function CreateWorkshop() {
                       <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                       <input
                         type="tel"
-                        name="telefono"
-                        value={formData.telefono}
+                        name="cliente_telefono"
+                        value={formData.cliente_telefono}
                         onChange={handleInputChange}
                         className={`w-full pl-10 p-2 rounded-lg border ${
                           darkMode
@@ -492,9 +504,10 @@ export default function CreateWorkshop() {
                     </label>
                     <input
                       type="text"
-                      name="patente"
-                      value={formData.patente}
+                      name="vehiculo_patente"
+                      value={formData.vehiculo_patente}
                       onChange={handleInputChange}
+                      onBlur={handleBlur}
                       className={`w-full p-2 rounded-lg border ${
                         darkMode
                           ? "bg-gray-700 border-gray-600 text-white"
@@ -510,8 +523,8 @@ export default function CreateWorkshop() {
                     </label>
                     <input
                       type="text"
-                      name="marca"
-                      value={formData.marca}
+                      name="vehiculo_marca"
+                      value={formData.vehiculo_marca}
                       onChange={handleInputChange}
                       className={`w-full p-2 rounded-lg border ${
                         darkMode
@@ -528,8 +541,8 @@ export default function CreateWorkshop() {
                     </label>
                     <input
                       type="text"
-                      name="modelo"
-                      value={formData.modelo}
+                      name="vehiculo_modelo"
+                      value={formData.vehiculo_modelo}
                       onChange={handleInputChange}
                       className={`w-full p-2 rounded-lg border ${
                         darkMode
@@ -546,8 +559,8 @@ export default function CreateWorkshop() {
                     </label>
                     <input
                       type="number"
-                      name="anio"
-                      value={formData.anio}
+                      name="vehiculo_anio"
+                      value={formData.vehiculo_anio}
                       onChange={handleInputChange}
                       className={`w-full p-2 rounded-lg border ${
                         darkMode
@@ -564,8 +577,8 @@ export default function CreateWorkshop() {
                     </label>
                     <input
                       type="text"
-                      name="color"
-                      value={formData.color}
+                      name="vehiculo_color"
+                      value={formData.vehiculo_color}
                       onChange={handleInputChange}
                       className={`w-full p-2 rounded-lg border ${
                         darkMode
@@ -596,8 +609,8 @@ export default function CreateWorkshop() {
                       <wrench className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                       <input
                         type="text"
-                        name="tecnico"
-                        value={formData.tecnico}
+                        name="empleado_rut"
+                        value={formData.empleado_rut}
                         onChange={handleInputChange}
                         className={`w-full pl-10 p-2 rounded-lg border ${
                           darkMode
@@ -655,8 +668,8 @@ export default function CreateWorkshop() {
                       <Gauge className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                       <input
                         type="number"
-                        name="km_actual"
-                        value={formData.km_actual}
+                        name="km"
+                        value={formData.km}
                         onChange={handleInputChange}
                         className={`w-full pl-10 p-2 rounded-lg border ${
                           darkMode
@@ -676,8 +689,8 @@ export default function CreateWorkshop() {
                       <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                       <input
                         type="number"
-                        name="precio_estimado"
-                        value={formData.precio_estimado}
+                        name="precio"
+                        value={formData.precio}
                         onChange={handleInputChange}
                         className={`w-full pl-10 p-2 rounded-lg border ${
                           darkMode

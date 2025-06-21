@@ -2,25 +2,31 @@ import {connectToDatabase} from "../bd.js";
 import sql from "mssql";
 
 class OtModel {
-  async addOt(cliente_rut, taller_id, vehiculo_patente, empleado_rut, fecha_salida, descripcion, km, estado_id, precio) {
+  async addOt(ot) {
     try {
       const pool = await connectToDatabase();
       const result = await pool
         .request()
-        .input("cliente_rut", sql.VarChar, cliente_rut)
-        .input("taller_id", sql.Int, taller_id)
-        .input("vehiculo_patente", sql.VarChar, vehiculo_patente)
-        .input("empleado_rut", sql.VarChar, empleado_rut)
-        .input("fecha_salida", sql.DateTime, fecha_salida)
-        .input("descripcion", sql.VarChar, descripcion)
-        .input("km", sql.Int, km)
-        .input("estado_id", sql.Int, estado_id)
-        .input("precio", sql.Decimal(18, 2), precio)
+        .input("cliente_rut", sql.VarChar, ot.cliente_rut)
+        .input("taller_id", sql.Int, ot.taller_id)
+        .input("vehiculo_patente", sql.VarChar, ot.vehiculo_patente)
+        .input("empleado_rut", sql.VarChar, ot.empleado_rut)
+        .input("fecha_salida", sql.DateTime, ot.fecha_salida)
+        .input("descripcion", sql.VarChar, ot.descripcion)
+        .input("km", sql.Int, ot.km)
+        .input("estado_id", sql.Int, ot.estado_id)
+        .input("precio", sql.Int, ot.precio)
         .query(
           `INSERT INTO ot (cliente_rut, taller_id, vehiculo_patente, empleado_rut, fecha_salida, descripcion, km, estado_id, precio)
-          VALUES (@cliente_rut, @taller_id, @vehiculo_patente, @empleado_rut, @fecha_salida, @descripcion, @km, @estado_id, @precio)`
+          VALUES (@cliente_rut, @taller_id, @vehiculo_patente, @empleado_rut, @fecha_salida, @descripcion, @km, @estado_id, @precio);
+          SELECT SCOPE_IDENTITY() AS ot_id;`
         );
-      return result.rowsAffected[0] > 0; // Devuelve true si se insertó correctamente
+
+      const insertedId = result.recordset[0].ot_id;
+      return {
+        success: result.rowsAffected[0] > 0,
+        ot_id: insertedId
+      };
     } catch (error) {
       console.error("Error al agregar la OT:", error);
       throw error;
