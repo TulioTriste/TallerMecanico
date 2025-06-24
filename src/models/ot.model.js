@@ -16,9 +16,10 @@ class OtModel {
         .input("km", sql.Int, ot.km)
         .input("estado_id", sql.Int, ot.estado_id)
         .input("precio", sql.Int, ot.precio)
+        .input("uniqueId", sql.VarChar, ot.uniqueId)
         .query(
-          `INSERT INTO ot (cliente_rut, taller_id, vehiculo_patente, empleado_rut, fecha_salida, descripcion, km, estado_id, precio)
-          VALUES (@cliente_rut, @taller_id, @vehiculo_patente, @empleado_rut, @fecha_salida, @descripcion, @km, @estado_id, @precio);
+          `INSERT INTO ot (cliente_rut, taller_id, vehiculo_patente, empleado_rut, fecha_salida, descripcion, km, estado_id, precio, uniqueId)
+          VALUES (@cliente_rut, @taller_id, @vehiculo_patente, @empleado_rut, @fecha_salida, @descripcion, @km, @estado_id, @precio, @uniqueId);
           SELECT SCOPE_IDENTITY() AS ot_id;`
         );
 
@@ -73,6 +74,49 @@ class OtModel {
       return result.recordset[0];
     } catch (error) {
       console.error("Error al obtener la OT por ID:", error);
+      throw error;
+    }
+  }
+
+  async getOtByUniqueId(uniqueId) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+        .request()
+        .input("uniqueId", sql.VarChar, uniqueId)
+        .query(`SELECT 
+                    ot.*,
+
+                    e.nombre AS estado_nombre,
+
+                    v.marca AS vehiculo_marca,
+                            v.modelo AS vehiculo_modelo,
+                            v.anio AS vehiculo_anio,
+                            v.color AS vehiculo_color,
+                            v.created_at AS vehiculo_created_at,
+
+                            t.nombre AS taller_nombre,
+                            t.direccion AS taller_direccion,
+                            t.telefono AS taller_telefono,
+                            t.correo AS taller_correo,
+
+                            c.nombre AS cliente_nombre,
+                            c.telefono AS cliente_telefono,
+                            c.correo AS cliente_correo
+                FROM
+                    ot
+                        LEFT JOIN
+                    vehiculo v ON ot.vehiculo_patente = v.patente
+                        LEFT JOIN
+                    taller t ON ot.taller_id = t.taller_id
+                        LEFT JOIN
+                    cliente c ON v.cliente_rut = c.cliente_rut
+                        LEFT JOIN
+                    estado e ON ot.estado_id = e.estado_id
+                WHERE uniqueId = @uniqueId`);
+      return result.recordset[0];
+    } catch (error) {
+      console.error("Error al obtener la OT por uniqueId:", error);
       throw error;
     }
   }

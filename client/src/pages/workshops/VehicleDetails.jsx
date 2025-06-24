@@ -104,10 +104,7 @@ export default function VehicleDetails() {
         imagePaths = response.urls;
       }
 
-      setNewTask(prev => ({
-        ...prev,
-        ruta_imagenes: imagePaths.map(url => API_URL + url)
-      }));
+      newTask.ruta_imagenes = imagePaths.map(url => API_URL + url);
 
       const resNewTask = await addTask(tallerId, orderId, newTask);
       if (!resNewTask) {

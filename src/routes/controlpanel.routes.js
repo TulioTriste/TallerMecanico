@@ -15,7 +15,7 @@ import {
 import {
   addOt,
   addTaskToOt,
-  getOt,
+  getOt, getOtByUniqueId,
   getTasksByOtId,
   updateOrCreateTasks,
   updateOt,
@@ -43,6 +43,7 @@ router.post("/updorcretasks/:taller_id/:ot_id", authRequired, ownTallerRequired,
 router.get("/getestados", authRequired, getEstados);
 router.post("/updateot/:taller_id/:ot_id", authRequired, ownTallerRequired, updateOt);
 router.post("/addot/:taller_id", authRequired, planRequired, ownTallerRequired, addOt);
+router.get("/getotbyuniqueid/:uniqueId", getOtByUniqueId);
 
 const storage = multer.diskStorage({
   destination: 'uploads/',

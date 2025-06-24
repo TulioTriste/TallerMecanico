@@ -101,7 +101,7 @@ function App() {
                               element={<PlanCheckout />}
                             />
                             <Route /*VISTA ORDEN LADO CLIENTE */
-                              path="/order/OrderDetails"
+                              path="/order/:uniqueId"
                               element={<ClientVehicleDetails />}
                             />
                           </Route>

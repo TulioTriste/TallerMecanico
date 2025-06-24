@@ -9,7 +9,7 @@ import {
   getIngresosDelMesRequest,
   getNextCitaRequest,
   getOrdenesDeTrabajoCountByEstadoRequest,
-  getOrdenesDeTrabajoCountRequest, getOtRequest,
+  getOrdenesDeTrabajoCountRequest, getOtByUniqueIdRequest, getOtRequest,
   getRecentOTsRequest,
   getRolesRequest, getTasksRequest, updateOrCreateTasksRequest, updateOtRequest, uploadImagesRequest
 } from "../api/controlpanel";
@@ -215,6 +215,7 @@ export function ControlPanelProvider({children}) {
   const uploadImages = async (formData) => {
     try {
       const res = await uploadImagesRequest(formData);
+      console.log(res.data);
       return res.data;
     } catch (error) {
       console.error("Error al subir imágenes:", error);
@@ -242,6 +243,16 @@ export function ControlPanelProvider({children}) {
     }
   }
 
+  const getOtByUniqueId = async (unique_id) => {
+    try {
+      const response = await getOtByUniqueIdRequest(unique_id);
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener la orden de trabajo por ID único:", error);
+      return null;
+    }
+  }
+
   return (
     <ControlPanelContext.Provider
       value={{
@@ -264,6 +275,7 @@ export function ControlPanelProvider({children}) {
         uploadImages,
         updateOt,
         addOt,
+        getOtByUniqueId,
       }}
     >
       {children}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import {
   Building2,
   Phone,
@@ -10,55 +10,57 @@ import {
   Wrench,
 } from "lucide-react";
 import { useDarkMode } from "../../context/darkModeContext.jsx";
+import {useParams} from "react-router-dom";
+import {useControlPanel} from "../../context/controlPanelContext.jsx";
+import StringFormatter from "../../utilities/stringFormatter.js";
 
 export default function ClientVehicleDetails() {
+  const { uniqueId } = useParams();
+
+  const {getOtByUniqueId, getTasks} = useControlPanel();
   const { darkMode } = useDarkMode();
 
-  const [data] = useState({
-    sucursal: {
-      nombre: "DYNORACING MACUL",
-      rut: "77.241.978-3",
-      direccion: "AV. MACUL 4394",
-      telefono: "56936671117",
-    },
-    orden: {
-      numero: "1999",
-      estado: "Mantención Finalizada",
-      fechaCreacion: "16/04/2025 11:50 hs",
-      fechaTermino: "20/04/2025 15:30 hs",
-      trabajo: "Registro para envío de moto",
-    },
-    cliente: {
-      nombre: "Bastian Ampuero",
-      telefono: "+56976688986",
-      email: "ampuerobastian05@prueba.com",
-    },
-    vehiculo: {
-      marca: "Suzuki",
-      modelo: "GSXR1000RR",
-      patente: "JVP041",
-    },
-    tareas: [
-      {
-        nombre: "Cambio de aceite",
-        descripcion:
-          "Se realizó el cambio de aceite utilizando aceite sintético 10W-40 y se reemplazó el filtro de aceite.",
-        imagenes: [
-          "https://picsum.photos/400/300",
-          "https://picsum.photos/400/300",
-        ],
-      },
-      {
-        nombre: "Revisión de frenos",
-        descripcion:
-          "Se inspeccionaron las pastillas de freno y se ajustó el sistema de frenado. Se recomendó cambio de pastillas en próxima mantención.",
-        imagenes: [
-          "https://picsum.photos/400/300",
-          "https://picsum.photos/400/300",
-        ],
-      },
-    ],
-  });
+  const [data, setData] = useState(null);
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    const fetchOtDetails = async () => {
+      try {
+        const response = await getOtByUniqueId(uniqueId);
+        if (response) {
+          // Aquí podrías actualizar el estado con los datos obtenidos
+          setData(response);
+          console.log("Detalles de la OT:", response);
+        } else {
+          console.error("No se encontraron detalles para la OT con ID:", uniqueId);
+          return;
+        }
+
+        const taskResponse = await getTasks(response.taller_id, response.ot_id);
+        if (taskResponse) {
+          setTasks(taskResponse);
+          console.log("Tareas de la OT:", taskResponse);
+        } else {
+          console.error("No se encontraron tareas para la OT con ID:", uniqueId);
+        }
+      } catch (error) {
+        console.error("Error al obtener los detalles de la OT:", error);
+      }
+    }
+
+    fetchOtDetails();
+  }, [uniqueId, getOtByUniqueId, getTasks]);
+
+  if (!data) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-semibold mb-4">Cargando detalles...</h1>
+          <p className="text-gray-500">Por favor, espera mientras se cargan los datos.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -90,20 +92,20 @@ export default function ClientVehicleDetails() {
                 </div>
                 <div>
                   <h1 className="text-lg font-semibold">
-                    {data.vehiculo.marca} {data.vehiculo.modelo}
+                    {data.vehiculo_marca} {data.vehiculo_modelo}
                   </h1>
                   <div
                     className={`text-sm ${
                       darkMode ? "text-gray-400" : "text-gray-600"
                     }`}
                   >
-                    Patente: {data.vehiculo.patente}
+                    Patente: {data.vehiculo_patente}
                   </div>
                 </div>
               </div>
               <div
                 className={`px-4 py-2 rounded-lg ${
-                  data.orden.estado === "Mantención Finalizada"
+                  data.estado_nombre === "Terminada"
                     ? darkMode
                       ? "bg-green-900/30 text-green-400"
                       : "bg-green-100 text-green-700"
@@ -112,7 +114,7 @@ export default function ClientVehicleDetails() {
                       : "bg-yellow-100 text-yellow-700"
                 }`}
               >
-                {data.orden.estado}
+                {data.estado_nombre}
               </div>
             </div>
           </div>
@@ -140,16 +142,16 @@ export default function ClientVehicleDetails() {
                         Nombre
                       </dt>
                       <dd className="font-medium mt-1">
-                        {data.cliente.nombre}
+                        {data.cliente_nombre}
                       </dd>
                     </div>
                     <div className="flex items-center">
                       <Phone className="w-5 h-5 mr-2" />
-                      <span>{data.cliente.telefono}</span>
+                      <span>{data.cliente_telefono}</span>
                     </div>
                     <div className="flex items-center">
                       <Mail className="w-5 h-5 mr-2" />
-                      <span>{data.cliente.email}</span>
+                      <span>{data.cliente_correo}</span>
                     </div>
                   </dl>
                 </div>
@@ -176,19 +178,16 @@ export default function ClientVehicleDetails() {
                         Nombre
                       </dt>
                       <dd className="font-medium mt-1">
-                        {data.sucursal.nombre}
-                      </dd>
-                      <dd className="text-sm text-gray-500">
-                        {data.sucursal.rut}
+                        {data.taller_nombre}
                       </dd>
                     </div>
                     <div className="flex items-center">
                       <MapPin className="w-5 h-5 mr-2" />
-                      <span>{data.sucursal.direccion}</span>
+                      <span>{data.taller_direccion}</span>
                     </div>
                     <div className="flex items-center">
                       <Phone className="w-5 h-5 mr-2" />
-                      <span>{data.sucursal.telefono}</span>
+                      <span>{data.taller_telefono}</span>
                     </div>
                   </dl>
                 </div>
@@ -215,7 +214,7 @@ export default function ClientVehicleDetails() {
                         Fecha de Creación
                       </dt>
                       <dd className="font-medium mt-1">
-                        {data.orden.fechaCreacion}
+                        {StringFormatter.formatFechaDDMMYYYY(data.created_at)}
                       </dd>
                     </div>
                     <div>
@@ -227,7 +226,7 @@ export default function ClientVehicleDetails() {
                         Fecha Término Estimada
                       </dt>
                       <dd className="font-medium mt-1">
-                        {data.orden.fechaTermino}
+                        {StringFormatter.formatFechaDDMMYYYY(data.fecha_salida)}
                       </dd>
                     </div>
                     <div className="md:col-span-2">
@@ -238,7 +237,7 @@ export default function ClientVehicleDetails() {
                       >
                         Trabajo a Realizar
                       </dt>
-                      <dd className="font-medium mt-1">{data.orden.trabajo}</dd>
+                      <dd className="font-medium mt-1">{data.descripcion}</dd>
                     </div>
                   </div>
                 </div>
@@ -259,25 +258,25 @@ export default function ClientVehicleDetails() {
               Tareas y Registro Fotográfico
             </h2>
             <div className="space-y-8">
-              {data.tareas.map((tarea, index) => (
+              {tasks.map((task, index) => (
                 <div key={index} className="space-y-4">
-                  <h3 className="text-lg font-medium">{tarea.nombre}</h3>
+                  <h3 className="text-lg font-medium">{task.titulo}</h3>
                   <p
                     className={`text-sm ${
                       darkMode ? "text-gray-400" : "text-gray-600"
                     }`}
                   >
-                    {tarea.descripcion}
+                    {task.descripcion}
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {tarea.imagenes.map((url, imgIndex) => (
+                    {task.ruta_imagenes.map((url, imgIndex) => (
                       <div
                         key={imgIndex}
                         className="aspect-square rounded-xl overflow-hidden shadow-md"
                       >
                         <img
                           src={url}
-                          alt={`${tarea.nombre} - Imagen ${imgIndex + 1}`}
+                          alt={`${task.titulo} - Imagen ${imgIndex + 1}`}
                           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                         />
                       </div>

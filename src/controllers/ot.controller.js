@@ -1,6 +1,5 @@
 import OtModel from "../models/ot.model.js";
-import * as path from "node:path";
-import multer from "multer";
+import { v4 as uuidv4 } from "uuid";
 
 export const getOt = async (req, res) => {
   const {taller_id, ot_id} = req.params;
@@ -106,9 +105,15 @@ export const updateOt = async (req, res) => {
 
 export const addOt = async (req, res) => {
   const {taller_id} = req.params;
-  const ot = req.body;
+  let ot = req.body;
 
   ot.taller_id = parseInt(taller_id);
+
+  const uniqueId = uuidv4();
+  ot = {
+    ...ot,
+    uniqueId: uniqueId,
+  }
 
   try {
     const result = await OtModel.addOt(ot);
@@ -124,3 +129,18 @@ export const addOt = async (req, res) => {
     res.status(500).json({message: "Error interno del servidor"});
   }
 }
+
+export const getOtByUniqueId = async (req, res) => {
+  const {uniqueId} = req.params;
+
+  try {
+    const ot = await OtModel.getOtByUniqueId(uniqueId);
+    if (!ot) {
+      return res.status(404).json({message: "Orden de trabajo no encontrada"});
+    }
+    res.json(ot);
+  } catch (error) {
+    console.error("Error al obtener la orden de trabajo por uniqueId:", error);
+    res.status(500).json({message: "Error interno del servidor"});
+  }
+};
