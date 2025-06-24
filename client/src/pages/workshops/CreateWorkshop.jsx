@@ -6,8 +6,8 @@ import { useAuth } from "../../context/authContext.jsx";
 import axios from "../../api/axios.js";
 
 const CreateWorkshop = () => {
-  const { darkMode } = useDarkMode();
-  const { auth } = useAuth();
+  const {darkMode} = useDarkMode();
+  const {auth} = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({

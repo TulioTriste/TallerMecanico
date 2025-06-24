@@ -1,5 +1,5 @@
-import { createContext, useContext } from "react";
-import { getNameRequest } from "../api/cliente";
+import {createContext, useContext} from "react";
+import {getClienteByRutRequest, getNameRequest} from "../api/cliente";
 
 const ClienteContext = createContext();
 
@@ -9,7 +9,7 @@ export const useCliente = () => {
   return context;
 };
 
-export function ClienteProvider({ children }) {
+export function ClienteProvider({children}) {
 
   const getClienteName = async (cliente_rut) => {
     try {
@@ -17,14 +17,25 @@ export function ClienteProvider({ children }) {
       return response.data.userName;
     } catch (error) {
       console.error("Error al obtener el nombre del cliente:", error);
-      return null; // Retornar null o un valor predeterminado en caso de error
+      return null;
     }
   };
+
+  const getClienteByRut = async (cliente_rut) => {
+    try {
+      const response = await getClienteByRutRequest(cliente_rut);
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener el cliente por RUT:", error);
+      return null;
+    }
+  }
 
   return (
     <ClienteContext.Provider
       value={{
-        getClienteName
+        getClienteName,
+        getClienteByRut,
       }}
     >
       {children}

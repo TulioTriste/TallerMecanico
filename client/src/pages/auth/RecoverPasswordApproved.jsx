@@ -1,14 +1,6 @@
-import { useState, useEffect } from "react";
-import {
-  Lock,
-  ArrowLeft,
-  Moon,
-  Sun,
-  Check,
-  Eye,
-  EyeOff,
-} from "lucide-react";
-import { useDarkMode } from "../../context/darkModeContext.jsx";
+import {useState} from "react";
+import {ArrowLeft, Check, Eye, EyeOff, Lock,} from "lucide-react";
+import {useDarkMode} from "../../context/darkModeContext.jsx";
 import {useSearchParams} from "react-router-dom";
 import {resetPasswordSchema} from "../../schemas/authSchema.js";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -24,8 +16,8 @@ export default function RecoverPasswordApprovePage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { resetPassword } = useAuth();
-  const { darkMode, toggleDarkMode } = useDarkMode();
+  const {resetPassword} = useAuth();
+  const {darkMode, toggleDarkMode} = useDarkMode();
 
   const {
     register,
@@ -66,23 +58,23 @@ export default function RecoverPasswordApprovePage() {
 
   if (!token) {
     return (
-        <div className="w-full min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-          <div className="text-center text-red-600 dark:text-red-400">
-            <h1 className="text-2xl font-bold">Error</h1>
-            <p>Token no proporcionado. Por favor, verifica el enlace.</p>
-          </div>
+      <div className="w-full min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+        <div className="text-center text-red-600 dark:text-red-400">
+          <h1 className="text-2xl font-bold">Error</h1>
+          <p>Token no proporcionado. Por favor, verifica el enlace.</p>
         </div>
+      </div>
     );
   }
 
   if (!email) {
     return (
-        <div className="w-full min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-          <div className="text-center text-red-600 dark:text-red-400">
-            <h1 className="text-2xl font-bold">Error</h1>
-            <p>Correo electrónico no proporcionado. Por favor, verifica el enlace.</p>
-          </div>
+      <div className="w-full min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+        <div className="text-center text-red-600 dark:text-red-400">
+          <h1 className="text-2xl font-bold">Error</h1>
+          <p>Correo electrónico no proporcionado. Por favor, verifica el enlace.</p>
         </div>
+      </div>
     );
   }
 
@@ -308,7 +300,7 @@ export default function RecoverPasswordApprovePage() {
                   : "text-blue-600 hover:text-blue-800"
               }`}
             >
-              <ArrowLeft className="w-4 h-4 mr-1" />
+              <ArrowLeft className="w-4 h-4 mr-1"/>
               Volver al inicio de sesión
             </a>
           </div>

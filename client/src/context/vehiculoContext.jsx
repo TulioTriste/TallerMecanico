@@ -1,5 +1,5 @@
-import { createContext, useContext } from "react";
-import { getVehiculoNameRequest } from "../api/vehiculo";
+import {createContext, useContext} from "react";
+import {getVehiculoByPatenteRequest, getVehiculoNameRequest} from "../api/vehiculo";
 
 const VehiculoContext = createContext();
 
@@ -9,7 +9,7 @@ export const useVehiculo = () => {
   return context;
 };
 
-export function VehiculoProvider({ children }) {
+export function VehiculoProvider({children}) {
 
   const getVehiculoName = async (patente) => {
     try {
@@ -21,10 +21,21 @@ export function VehiculoProvider({ children }) {
     }
   };
 
+  const getVehiculoByPatente = async (patente) => {
+    try {
+      const response = await getVehiculoByPatenteRequest(patente);
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener el vehículo por patente:", error);
+      return null;
+    }
+  }
+
   return (
     <VehiculoContext.Provider
       value={{
-        getVehiculoName
+        getVehiculoName,
+        getVehiculoByPatente,
       }}
     >
       {children}

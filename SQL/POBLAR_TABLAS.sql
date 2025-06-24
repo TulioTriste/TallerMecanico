@@ -1,3 +1,36 @@
+DROP TRIGGER [trg_registrar_cambio_estado];
+
+CREATE TRIGGER [trg_registrar_cambio_estado]
+ON [ot]
+AFTER UPDATE
+AS
+BEGIN
+    -- Solo proceder si el estado ha cambiado
+    IF UPDATE(estado_id)
+    BEGIN
+        INSERT INTO [ot_estado_historial] (
+            [ot_id],
+            [estado_anterior_id],
+            [estado_nuevo_id],
+            [empleado_rut],
+            [fecha_cambio],
+            [comentario]
+        )
+        SELECT
+            i.ot_id,
+            d.estado_id,  -- Estado anterior
+            i.estado_id,  -- Estado nuevo
+            i.empleado_rut, -- Asumiendo que el empleado que actualiza la OT es quien realiza el cambio
+            GETDATE(),
+            'Cambio de estado automático'
+        FROM
+            inserted i
+            INNER JOIN deleted d ON i.ot_id = d.ot_id
+        WHERE
+            i.estado_id <> d.estado_id;
+    END
+END;
+
 --DELETE FROM [plan];
 INSERT INTO [plan] (nombre, precio, talleres) VALUES 
 	('Basico', 30000, 1),
@@ -57,11 +90,11 @@ INSERT INTO cita (taller_id, cliente_rut, patente, hora, descripcion) VALUES
 	(1, '12.345.678-9', 'BBSJ21', DATEADD(DAY, 7, DATEADD(HOUR, 12, GETDATE())), 'Revisión de sistema eléctrico'); -- Proxima Semana
 	
 --DELETE FROM [ot];
-INSERT INTO ot (taller_id, cliente_rut, vehiculo_patente, tecnico, fecha_entrada, fecha_salida, descripcion, km, estado_id, precio) VALUES 
-	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', GETDATE(), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 1, 100000),
-	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', GETDATE(), DATEADD(MONTH, 2, GETDATE()), 'Pruebaaaa', '170.000', 2, 50000),
-	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', DATEADD(DAY, 2, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 2, 150000),
-	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', DATEADD(DAY, 3, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 2, 200000),
-	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', DATEADD(DAY, 5, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 2, 250000),
-	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', DATEADD(DAY, 8, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 3, 300000),
-	(1, '12.345.678-9', 'BBSJ21', 'Sebastián Morales', DATEADD(DAY, 16, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 3, 500000);
+INSERT INTO ot (taller_id, cliente_rut, vehiculo_patente, empleado_rut, fecha_entrada, fecha_salida, descripcion, km, estado_id, precio) VALUES 
+	(1, '12.345.678-9', 'BBSJ21', '55.555.555-K', GETDATE(), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 1, 100000),
+	(1, '12.345.678-9', 'BBSJ21', '55.555.555-K', GETDATE(), DATEADD(MONTH, 2, GETDATE()), 'Pruebaaaa', '170.000', 2, 50000),
+	(1, '12.345.678-9', 'BBSJ21', '55.555.555-K', DATEADD(DAY, 2, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 2, 150000),
+	(1, '12.345.678-9', 'BBSJ21', '55.555.555-K', DATEADD(DAY, 3, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 2, 200000),
+	(1, '12.345.678-9', 'BBSJ21', '55.555.555-K', DATEADD(DAY, 5, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 2, 250000),
+	(1, '12.345.678-9', 'BBSJ21', '55.555.555-K', DATEADD(DAY, 8, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 3, 300000),
+	(1, '12.345.678-9', 'BBSJ21', '55.555.555-K', DATEADD(DAY, 16, GETDATE()), DATEADD(MONTH, 2, GETDATE()), 'Descripcion de Orden de Trabajo', '160.000', 3, 500000);

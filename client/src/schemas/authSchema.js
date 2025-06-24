@@ -1,4 +1,4 @@
-import { z } from "zod";
+import {z} from "zod";
 
 export const loginSchema = z.object({
   correo: z.string().email({
@@ -8,8 +8,7 @@ export const loginSchema = z.object({
     message: "Password must be at least 6 characters",
   }),
   rememberMe: z.boolean().optional(),
-  }).refine((data) => data.rememberMe === true || data.rememberMe === false, {
-});
+}).refine((data) => data.rememberMe === true || data.rememberMe === false, {});
 
 export const registerSchema = z
   .object({
@@ -43,12 +42,12 @@ export const registerSchema = z
     path: ["confirmPassword"],
   });
 export const resetPasswordSchema = z.object({
-    newPassword: z.string().min(6, {
-        message: "Password must be at least 6 characters",
-    }),
-    confirmNewPassword: z.string().min(6, {
-        message: "Password must be at least 6 characters",
-    }),
-    }).refine((data) => data.newPassword === data.confirmNewPassword, {
-    message: "Passwords do not match",
+  newPassword: z.string().min(6, {
+    message: "Password must be at least 6 characters",
+  }),
+  confirmNewPassword: z.string().min(6, {
+    message: "Password must be at least 6 characters",
+  }),
+}).refine((data) => data.newPassword === data.confirmNewPassword, {
+  message: "Passwords do not match",
 });

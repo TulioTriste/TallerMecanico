@@ -18,8 +18,8 @@ export default function DashboardNavbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const menuRef = useRef(null);
-  const { logout, user } = useAuth();
-  const { darkMode } = useDarkMode();
+  const {logout, user} = useAuth();
+  const {darkMode} = useDarkMode();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showMobileWorkshops, setShowMobileWorkshops] = useState(false);
@@ -76,7 +76,7 @@ export default function DashboardNavbar() {
                   darkMode ? "text-blue-400" : "text-blue-600"
                 }`}
               >
-                <Wrench className="h-8 w-8 mr-2" />
+                <Wrench className="h-8 w-8 mr-2"/>
                 <span
                   className={`font-bold text-xl ${
                     darkMode ? "text-white" : "text-gray-900"
@@ -97,7 +97,7 @@ export default function DashboardNavbar() {
                     : "text-gray-700 hover:bg-gray-100"
                 }`}
               >
-                <Building2 className="w-4 h-4 mr-1.5" />
+                <Building2 className="w-4 h-4 mr-1.5"/>
                 Mis Talleres
               </Link>
             </div>
@@ -116,13 +116,14 @@ export default function DashboardNavbar() {
                       : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
-                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
+                  <div
+                    className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
                     {user?.nombre?.[0] || "U"}
                   </div>
                   <span className="ml-2 text-sm font-medium">
                     {user?.nombre || "Usuario"}
                   </span>
-                  <ChevronDown className="w-4 h-4 ml-2" />
+                  <ChevronDown className="w-4 h-4 ml-2"/>
                 </button>
 
                 {showProfileMenu && (
@@ -139,7 +140,7 @@ export default function DashboardNavbar() {
                           : "text-gray-700 hover:bg-gray-100"
                       }`}
                     >
-                      <User className="w-4 h-4 inline mr-2" />
+                      <User className="w-4 h-4 inline mr-2"/>
                       Mi Perfil
                     </Link>
                     <Link
@@ -150,7 +151,7 @@ export default function DashboardNavbar() {
                           : "text-gray-700 hover:bg-gray-100"
                       }`}
                     >
-                      <Settings className="w-4 h-4 inline mr-2" />
+                      <Settings className="w-4 h-4 inline mr-2"/>
                       Configuración
                     </Link>
                     <div
@@ -166,7 +167,7 @@ export default function DashboardNavbar() {
                           : "text-gray-700 hover:bg-gray-100"
                       }`}
                     >
-                      <LogOut className="w-4 h-4 inline mr-2" />
+                      <LogOut className="w-4 h-4 inline mr-2"/>
                       Cerrar Sesión
                     </button>
                   </div>
@@ -186,9 +187,9 @@ export default function DashboardNavbar() {
               >
                 <span className="sr-only">Abrir menú principal</span>
                 {isMenuOpen ? (
-                  <X className="block h-6 w-6" />
+                  <X className="block h-6 w-6"/>
                 ) : (
-                  <Menu className="block h-6 w-6" />
+                  <Menu className="block h-6 w-6"/>
                 )}
               </button>
             </div>

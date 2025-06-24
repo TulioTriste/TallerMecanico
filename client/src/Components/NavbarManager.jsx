@@ -1,10 +1,10 @@
-import { useAuth } from "../context/authContext";
+import {useAuth} from "../context/authContext";
 import PublicNavbar from "./NavbarPrincipal/PublicNavbar";
 import PrivateNavbar from "./NavbarPrincipal/PrivateNavbar";
 
 export default function NavbarManager() {
-  const { isAuthenticated } = useAuth();
+  const {isAuthenticated} = useAuth();
   //console.log('Estado de autenticación:', isAuthenticated);
 
-  return isAuthenticated ? <PrivateNavbar /> : <PublicNavbar />;
+  return isAuthenticated ? <PrivateNavbar/> : <PublicNavbar/>;
 }

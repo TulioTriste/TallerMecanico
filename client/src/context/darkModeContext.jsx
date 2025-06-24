@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 
 const DarkModeContext = createContext();
 
@@ -9,7 +9,7 @@ export const useDarkMode = () => {
   return context;
 };
 
-export function DarkModeProvider({ children }) {
+export function DarkModeProvider({children}) {
   // Inicializar el estado desde localStorage o preferencia del sistema
   const [darkMode, setDarkMode] = useState(() => {
     // Primero intentar obtener de localStorage

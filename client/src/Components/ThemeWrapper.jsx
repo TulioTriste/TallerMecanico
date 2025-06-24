@@ -1,8 +1,8 @@
-import { useEffect } from "react";
-import { useDarkMode } from "../context/darkModeContext";
+import {useEffect} from "react";
+import {useDarkMode} from "../context/darkModeContext";
 
-export function ThemeWrapper({ children }) {
-  const { darkMode } = useDarkMode();
+export function ThemeWrapper({children}) {
+  const {darkMode} = useDarkMode();
 
   useEffect(() => {
     if (darkMode) {

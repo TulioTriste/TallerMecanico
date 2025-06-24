@@ -1,4 +1,4 @@
-import { connectToDatabase } from "../bd.js";
+import {connectToDatabase} from "../bd.js";
 import sql from "mssql";
 
 class EmpleadoModel {
@@ -9,14 +9,14 @@ class EmpleadoModel {
       const request = pool.request();
 
       request
-            .input("empleado_rut", sql.VarChar, data.empleado_rut)
-            .input("taller_id", sql.Int, data.taller_id)
-            .input("roles_id", sql.Int, data.roles_id)
-            .input("nombre", sql.VarChar, data.nombre)
-            .input("apellido", sql.VarChar, data.apellido)
-            .input("cel", sql.VarChar, data.telefono)
-            .input("correo", sql.VarChar, data.correo)
-            .input("password", sql.VarChar, data.password);
+        .input("empleado_rut", sql.VarChar, data.empleado_rut)
+        .input("taller_id", sql.Int, data.taller_id)
+        .input("roles_id", sql.Int, data.roles_id)
+        .input("nombre", sql.VarChar, data.nombre)
+        .input("apellido", sql.VarChar, data.apellido)
+        .input("cel", sql.VarChar, data.telefono)
+        .input("correo", sql.VarChar, data.correo)
+        .input("password", sql.VarChar, data.password);
 
       const result = await request.query(`
         INSERT INTO empleado (empleado_rut, taller_id, roles_id, nombre, apellido, cel, correo, password)
@@ -76,6 +76,23 @@ class EmpleadoModel {
       return result.rowsAffected[0] > 0;
     } catch (error) {
       console.error("Error deleting empleado:", error);
+      throw error;
+    }
+  }
+
+  async isEmpleadoExist(empleado_rut) {
+    try {
+      const pool = await connectToDatabase();
+      const request = pool.request();
+      request.input("empleado_rut", sql.VarChar, empleado_rut);
+
+      const result = await request.query(`
+        SELECT COUNT(*) AS count FROM empleado WHERE empleado_rut = @empleado_rut
+      `);
+
+      return result.recordset[0].count > 0;
+    } catch (error) {
+      console.error("Error checking if empleado exists:", error);
       throw error;
     }
   }

@@ -1,20 +1,20 @@
-import { useState, useEffect } from 'react';
-import { Mail, Lock, UserPlus, Wrench, Moon, Sun, User, FileText } from 'lucide-react';
-import { useAuth } from '../../context/authContext.jsx';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema } from '../../schemas/authSchema.js';
-import { useDarkMode } from '../../context/darkModeContext.jsx';
+import {useEffect, useState} from 'react';
+import {FileText, Lock, Mail, User, UserPlus, Wrench} from 'lucide-react';
+import {useAuth} from '../../context/authContext.jsx';
+import {useNavigate} from 'react-router-dom';
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {registerSchema} from '../../schemas/authSchema.js';
+import {useDarkMode} from '../../context/darkModeContext.jsx';
 
 export default function RegisterForm() {
   const [loading, setLoading] = useState(false);
-  const { signup, errors: registerErrors, isAuthenticated } = useAuth();
-  const { darkMode, toggleDarkMode } = useDarkMode();
+  const {signup, errors: registerErrors, isAuthenticated} = useAuth();
+  const {darkMode, toggleDarkMode} = useDarkMode();
   const {
     register,
     handleSubmit,
-    formState: { errors: formErrors },
+    formState: {errors: formErrors},
   } = useForm({
     resolver: zodResolver(registerSchema),
   });
@@ -38,13 +38,13 @@ export default function RegisterForm() {
   const formatRut = (value) => {
     // Eliminar cualquier caracter que no sea número o K/k
     let cleaned = value.replace(/[^0-9kK]/g, '');
-    
+
     // Formatear el RUT
     if (cleaned.length > 1) {
       // Separar el dígito verificador
       const body = cleaned.slice(0, -1);
       const dv = cleaned.slice(-1).toUpperCase();
-      
+
       // Formatear el cuerpo del RUT
       let formatted = '';
       for (let i = body.length - 1; i >= 0; i--) {
@@ -53,26 +53,28 @@ export default function RegisterForm() {
           formatted = '.' + formatted;
         }
       }
-      
+
       return `${formatted}-${dv}`;
     }
-    
+
     return cleaned;
   };
 
   return (
     <>
-      <div className={`w-full min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-gray-100'
+      <div
+        className={`w-full min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-gray-100'
         }`}>
         <div className="w-full max-w-md mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className={`inline-flex items-center justify-center p-3 rounded-full mb-4 ${darkMode ? 'bg-blue-900' : 'bg-blue-100'
+            <div
+              className={`inline-flex items-center justify-center p-3 rounded-full mb-4 ${darkMode ? 'bg-blue-900' : 'bg-blue-100'
               }`}>
-              <Wrench className={`w-8 h-8 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+              <Wrench className={`w-8 h-8 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}/>
             </div>
             <h2 className={`text-3xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'
-              }`}>Crear una cuenta</h2>
+            }`}>Crear una cuenta</h2>
             <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               Regístrate para acceder a tu taller mecánico
             </p>
@@ -80,9 +82,9 @@ export default function RegisterForm() {
 
           {/* Registration Form */}
           <div className={`rounded-xl shadow-md p-6 border ${darkMode
-              ? 'bg-gray-800 border-gray-700'
-              : 'bg-white border-gray-200'
-            }`}>
+            ? 'bg-gray-800 border-gray-700'
+            : 'bg-white border-gray-200'
+          }`}>
 
             {/*{registerErrors?.length > 0 && registerErrors.map((error, index) => (
               <Message key={index} type="error" message={error} className="mb-4" />
@@ -98,29 +100,29 @@ export default function RegisterForm() {
                 <label
                   htmlFor="rut"
                   className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}
+                  }`}
                 >
                   RUT *
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FileText className={`h-5 w-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                    <FileText className={`h-5 w-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}/>
                   </div>
                   <input
                     id="rut"
                     name="rut"
                     type="text"
-                    {...register("rut", { 
+                    {...register("rut", {
                       required: true,
                       onChange: (e) => {
                         e.target.value = formatRut(e.target.value);
-                      } 
+                      }
                     })}
                     required
                     className={`block w-full pl-10 pr-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${darkMode
-                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
-                        : 'border-gray-300 text-gray-900 placeholder-gray-500 border'
-                      }`}
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
+                      : 'border-gray-300 text-gray-900 placeholder-gray-500 border'
+                    }`}
                     placeholder="12.345.678-9"
                   />
                 </div>
@@ -131,24 +133,24 @@ export default function RegisterForm() {
                 <label
                   htmlFor="nombre"
                   className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}
+                  }`}
                 >
                   Nombre *
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User className={`h-5 w-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                    <User className={`h-5 w-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}/>
                   </div>
                   <input
                     id="nombre"
                     name="nombre"
                     type="text"
-                    {...register("nombre", { required: true })}
+                    {...register("nombre", {required: true})}
                     required
                     className={`block w-full pl-10 pr-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${darkMode
-                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
-                        : 'border-gray-300 text-gray-900 placeholder-gray-500 border'
-                      }`}
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
+                      : 'border-gray-300 text-gray-900 placeholder-gray-500 border'
+                    }`}
                     placeholder="Juan"
                   />
                 </div>
@@ -159,24 +161,24 @@ export default function RegisterForm() {
                 <label
                   htmlFor="apellidoPaterno"
                   className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}
+                  }`}
                 >
                   Apellido Paterno *
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User className={`h-5 w-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                    <User className={`h-5 w-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}/>
                   </div>
                   <input
                     id="apellidoPaterno"
                     name="apellidoPaterno"
                     type="text"
-                    {...register("apellido", { required: true })}
+                    {...register("apellido", {required: true})}
                     required
                     className={`block w-full pl-10 pr-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${darkMode
-                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
-                        : 'border-gray-300 text-gray-900 placeholder-gray-500 border'
-                      }`}
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
+                      : 'border-gray-300 text-gray-900 placeholder-gray-500 border'
+                    }`}
                     placeholder="Pérez"
                   />
                 </div>
@@ -187,23 +189,23 @@ export default function RegisterForm() {
                 <label
                   htmlFor="apellidoMaterno"
                   className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}
+                  }`}
                 >
                   Apellido Materno
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User className={`h-5 w-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                    <User className={`h-5 w-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}/>
                   </div>
                   <input
                     id="apellidoMaterno"
                     name="apellidoMaterno"
                     type="text"
-                    {...register("apellidoMaterno", { required: true })}
+                    {...register("apellidoMaterno", {required: true})}
                     className={`block w-full pl-10 pr-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${darkMode
-                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
-                        : 'border-gray-300 text-gray-900 placeholder-gray-500 border'
-                      }`}
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
+                      : 'border-gray-300 text-gray-900 placeholder-gray-500 border'
+                    }`}
                     placeholder="Gómez"
                   />
                 </div>
@@ -214,24 +216,24 @@ export default function RegisterForm() {
                 <label
                   htmlFor="email"
                   className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}
+                  }`}
                 >
                   Correo electrónico *
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className={`h-5 w-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                    <Mail className={`h-5 w-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}/>
                   </div>
                   <input
                     id="email"
                     name="email"
                     type="email"
-                    {...register("correo", { required: true })}
+                    {...register("correo", {required: true})}
                     required
                     className={`block w-full pl-10 pr-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${darkMode
-                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
-                        : 'border-gray-300 text-gray-900 placeholder-gray-500 border'
-                      }`}
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
+                      : 'border-gray-300 text-gray-900 placeholder-gray-500 border'
+                    }`}
                     placeholder="ejemplo@taller.com"
                   />
                 </div>
@@ -242,24 +244,24 @@ export default function RegisterForm() {
                 <label
                   htmlFor="direccion"
                   className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}
+                  }`}
                 >
                   Dirección *
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FileText className={`h-5 w-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                    <FileText className={`h-5 w-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}/>
                   </div>
                   <input
                     id="direccion"
                     name="direccion"
                     type="text"
-                    {...register("direccion", { required: true })}
+                    {...register("direccion", {required: true})}
                     required
                     className={`block w-full pl-10 pr-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${darkMode
-                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
-                        : 'border-gray-300 text-gray-900 placeholder-gray-500 border'
-                      }`}
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
+                      : 'border-gray-300 text-gray-900 placeholder-gray-500 border'
+                    }`}
                     placeholder="Av. Libertador Bernardo O'Higgins 1234"
                   />
                 </div>
@@ -270,25 +272,25 @@ export default function RegisterForm() {
                 <label
                   htmlFor="numerotel"
                   className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}
+                  }`}
                 >
                   Numero Telefonico *
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FileText className={`h-5 w-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                    <FileText className={`h-5 w-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}/>
                   </div>
                   <input
                     id="numerotel"
                     name="numerotel"
                     type="number"
-                    {...register("telefono", { required: true })}
+                    {...register("telefono", {required: true})}
                     required
                     className={`block w-full pl-10 pr-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${darkMode
-                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
-                        : 'border-gray-300 text-gray-900 placeholder-gray-500 border'
-                      }`}
-                      placeholder='+56912345678'
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
+                      : 'border-gray-300 text-gray-900 placeholder-gray-500 border'
+                    }`}
+                    placeholder='+56912345678'
                   />
                 </div>
               </div>
@@ -298,24 +300,24 @@ export default function RegisterForm() {
                 <label
                   htmlFor="password"
                   className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}
+                  }`}
                 >
                   Contraseña *
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className={`h-5 w-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                    <Lock className={`h-5 w-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}/>
                   </div>
                   <input
                     id="password"
                     name="password"
                     type="password"
-                    {...register("password", { required: true })}
+                    {...register("password", {required: true})}
                     required
                     className={`block w-full pl-10 pr-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${darkMode
-                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
-                        : 'border-gray-300 text-gray-900 placeholder-gray-500 border'
-                      }`}
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border'
+                      : 'border-gray-300 text-gray-900 placeholder-gray-500 border'
+                    }`}
                     placeholder="••••••••"
                   />
                 </div>
@@ -329,29 +331,29 @@ export default function RegisterForm() {
                 <label
                   htmlFor="confirmPassword"
                   className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}
+                  }`}
                 >
                   Confirmar Contraseña *
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className={`h-5 w-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                    <Lock className={`h-5 w-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}/>
                   </div>
                   <input
                     id="confirmPassword"
                     name="confirmPassword"
                     type="password"
-                    {...register("confirmPassword", { required: true })}
+                    {...register("confirmPassword", {required: true})}
                     required
                     className={`block w-full pl-10 pr-3 py-2 rounded-lg focus:outline-none focus:ring-2 ${'focus:ring-blue-500'
-                      } ${darkMode
-                        ? `bg-gray-700 border ${'border-gray-600'} text-white placeholder-gray-400`
-                        : `border ${'border-gray-300'} text-gray-900 placeholder-gray-500`
-                      }`}
+                    } ${darkMode
+                      ? `bg-gray-700 border ${'border-gray-600'} text-white placeholder-gray-400`
+                      : `border ${'border-gray-300'} text-gray-900 placeholder-gray-500`
+                    }`}
                     placeholder="••••••••"
                   />
                 </div>
-                {registerErrors?.length > 0 && registerErrors.confirmPassword?.message (
+                {registerErrors?.length > 0 && registerErrors.confirmPassword?.message(
                   <p className="text-red-500">{registerErrors.confirmPassword?.message}</p>
                 )}
                 {/*Object.values(formErrors).map((error, i) => (
@@ -370,13 +372,13 @@ export default function RegisterForm() {
                 <label
                   htmlFor="terms"
                   className={`ml-2 block text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}
+                  }`}
                 >
                   Acepto los{' '}
                   <a
                     href="#"
                     className={`${darkMode ? 'text-blue-400 hover:underline' : 'text-blue-600 hover:underline'
-                      }`}
+                    }`}
                   >
                     términos y condiciones
                   </a>
@@ -387,22 +389,25 @@ export default function RegisterForm() {
                 type="submit"
                 disabled={loading}
                 className={`w-full flex items-center justify-center py-3 px-4 rounded-lg text-white font-medium transition-all mt-6 ${darkMode
-                    ? 'bg-gradient-to-r from-blue-700 to-indigo-800 hover:from-blue-800 hover:to-indigo-900'
-                    : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
-                  } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${(loading) ? 'opacity-70 cursor-not-allowed' : ''
-                  }`}
+                  ? 'bg-gradient-to-r from-blue-700 to-indigo-800 hover:from-blue-800 hover:to-indigo-900'
+                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
+                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${(loading) ? 'opacity-70 cursor-not-allowed' : ''
+                }`}
               >
                 {loading ? (
                   <span className="inline-flex items-center">
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg"
+                         fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                              strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
                     Procesando...
                   </span>
                 ) : (
                   <span className="inline-flex items-center">
-                    <UserPlus className="w-5 h-5 mr-2" />
+                    <UserPlus className="w-5 h-5 mr-2"/>
                     Crear cuenta
                   </span>
                 )}
@@ -415,7 +420,7 @@ export default function RegisterForm() {
                 <a
                   href="/login"
                   className={`font-medium ${darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'
-                    }`}
+                  }`}
                 >
                   Inicia sesión
                 </a>
@@ -430,7 +435,7 @@ export default function RegisterForm() {
               <a
                 href="#"
                 className={`${darkMode ? 'text-blue-400 hover:underline' : 'text-blue-600 hover:underline'
-                  }`}
+                }`}
               >
                 Términos de servicio
               </a>{' '}
@@ -438,7 +443,7 @@ export default function RegisterForm() {
               <a
                 href="#"
                 className={`${darkMode ? 'text-blue-400 hover:underline' : 'text-blue-600 hover:underline'
-                  }`}
+                }`}
               >
                 Política de privacidad
               </a>

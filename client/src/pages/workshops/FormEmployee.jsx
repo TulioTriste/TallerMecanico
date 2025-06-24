@@ -1,27 +1,16 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
-import {
-  UserPlus,
-  Moon,
-  Sun,
-  Mail,
-  Phone,
-  Building2,
-  UserCog,
-  Eye,
-  EyeOff,
-  CreditCard,
-} from "lucide-react";
-import { useDarkMode } from "../../context/darkModeContext.jsx";
-import { useForm } from "react-hook-form";
-import { useEmpleado } from "../../context/empleadosContext.jsx";
-import { useControlPanel } from "../../context/controlPanelContext.jsx";
+import {useNavigate, useParams} from "react-router-dom";
+import {useState} from "react";
+import {CreditCard, Eye, EyeOff, Mail, Phone, UserCog, UserPlus,} from "lucide-react";
+import {useDarkMode} from "../../context/darkModeContext.jsx";
+import {useForm} from "react-hook-form";
+import {useEmpleado} from "../../context/empleadosContext.jsx";
+import {useControlPanel} from "../../context/controlPanelContext.jsx";
 
 export default function FormularioEmpleado() {
   const navigate = useNavigate();
-  const { id: tallerId } = useParams(); // Obtener el ID del taller de la URL
-  const { darkMode } = useDarkMode();
-  const { addEmpleado } = useEmpleado();
+  const {id: tallerId} = useParams(); // Obtener el ID del taller de la URL
+  const {darkMode} = useDarkMode();
+  const {addEmpleado} = useEmpleado();
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -34,8 +23,10 @@ export default function FormularioEmpleado() {
 
   const onSubmit = async (data) => {
     //e.preventDefault();
-    data = {taller_id: tallerId,
-      ...data};
+    data = {
+      taller_id: tallerId,
+      ...data
+    };
 
     setLoading(true);
     try {

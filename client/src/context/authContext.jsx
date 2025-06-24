@@ -1,10 +1,10 @@
-import { useEffect } from "react";
-import { createContext, useContext, useState } from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import {
   getRutByCorreoRequest,
   isValidEmailRequest,
   loginRequest,
-  registerRequest, resetPasswordRequest,
+  registerRequest,
+  resetPasswordRequest,
   sendResetPasswordRequest,
   verifyTokenRequest
 } from "../api/auth";
@@ -19,7 +19,7 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({children}) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [errors, setErrors] = useState([]);
@@ -80,12 +80,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await getRutByCorreoRequest(email);
 
-        if (res.status === 200) {
-          return res.data.usuario_rut;
-        } else {
-          setErrors([res.data.message || "Error al obtener el RUT."]);
-          return null;
-        }
+      if (res.status === 200) {
+        return res.data.usuario_rut;
+      } else {
+        setErrors([res.data.message || "Error al obtener el RUT."]);
+        return null;
+      }
     } catch (error) {
       console.error("Error al obtener el RUT:", error);
       return null;
@@ -153,7 +153,7 @@ export const AuthProvider = ({ children }) => {
         }
         setIsAuthenticated(true);
         setUser(res.data);
-      // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line no-unused-vars
       } catch (error) {
         setIsAuthenticated(false);
         setUser(null);

@@ -1,109 +1,237 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import {
   Building2,
-  Phone,
-  Mail,
   Car,
-  Clock,
-  CheckCircle2,
-  MapPin,
-  User,
-  FileImage,
-  Calendar,
-  Wrench,
-  MessageCircle,
-  RefreshCcw,
-  Plus,
-  Edit,
-  Upload,
   Check,
+  Edit,
+  FileImage,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Phone,
+  Plus,
+  RefreshCcw,
+  Upload,
+  User,
+  Wrench,
   X,
 } from "lucide-react";
-import { useDarkMode } from "../../context/darkModeContext.jsx";
+import {useDarkMode} from "../../context/darkModeContext.jsx";
+import {useParams} from "react-router-dom";
+import {useControlPanel} from "../../context/controlPanelContext.jsx";
+import {API_URL, FRONTEND_URL} from "../../config.js";
+import {sendUpdateWhatsapp} from "../../utilities/whatsapp.js";
+import StringFormatter from "../../utilities/stringFormatter.js";
 
 export default function VehicleDetails() {
+  const { tallerId, orderId } = useParams();
+  const { estados, getOt, getTasks, uploadImages, addTask, updateOt } = useControlPanel();
+
+  const [ot, setOt] = useState(null);
+  const [tasks, setTasks] = useState([]);
+
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [previewImages, setPreviewImages] = useState([]);
+
   const { darkMode } = useDarkMode();
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
 
+  const fetchTasks = async () => {
+    try {
+      const taskResponse = await getTasks(tallerId, orderId);
+      setTasks(taskResponse);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      alert("Error al cargar las tareas. Por favor, inténtalo de nuevo.");
+    }
+  }
+
+  useEffect(() => {
+    const fetchOtData = async () => {
+      try {
+        const response = await getOt(tallerId, orderId);
+        setOt(response);
+      } catch (error) {
+        console.error("Error fetching order details:", error);
+      }
+    };
+
+    fetchOtData();
+    fetchTasks();
+  }, [getOt, tallerId, orderId]);
+
   const [newTask, setNewTask] = useState({
-    nombre: "",
+    titulo: "",
     descripcion: "",
-    imagenes: [],
+    ruta_imagenes: [],
   });
 
-  const [editData, setEditData] = useState({
-    sucursal: {
-      nombre: "DYNORACING MACUL",
-      rut: "77.241.978-3",
-      direccion: "AV. MACUL 4394",
-      telefono: "56936671117",
-    },
-    orden: {
-      numero: "1999",
-      estado: "Mantención Finalizada",
-      fechaCreacion: "16/04/2025 11:50 hs",
-      fechaTermino: "20/04/2025 15:30 hs",
-      trabajo: "Registro para envío de moto",
-    },
-    cliente: {
-      nombre: "Bastian Ampuero",
-      telefono: "+56976688986",
-      email: "ampuerobastian05@prueba.com",
-    },
-    vehiculo: {
-      marca: "Suzuki",
-      modelo: "GSXR1000RR",
-      patente: "JVP041",
-    },
-    tareas: [
-      {
-        nombre: "Cambio de aceite",
-        descripcion:
-          "Se realizó el cambio de aceite utilizando aceite sintético 10W-40 y se reemplazó el filtro de aceite.",
-        imagenes: [
-          "https://picsum.photos/400/300",
-          "https://picsum.photos/400/300",
-        ],
-      },
-      {
-        nombre: "Revisión de frenos",
-        descripcion:
-          "Se inspeccionaron las pastillas de freno y se ajustó el sistema de frenado. Se recomendó cambio de pastillas en próxima mantención.",
-        imagenes: [
-          "https://picsum.photos/400/300",
-          "https://picsum.photos/400/300",
-        ],
-      },
-    ],
-  });
-
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async (updOt) => {
     setShowAlert(true);
+
+    let response;
+    if (updOt) {
+      response = await updateOt(tallerId, orderId, updOt);
+    } else {
+      response = await updateOt(tallerId, orderId, ot);
+    }
+    if (response) {
+      alert("Cambios guardados correctamente.");
+      setShowAlert(false);
+      setShowEditModal(false);
+    }
   };
 
-  const handleWhatsApp = () => {
-    const message = encodeURIComponent(
-      "Hola! Como estás?\nEstamos avanzando en tu vehiculo!",
-    );
-    window.open(`https://wa.me/56972196207?text=${message}`, "_blank");
+  const handleAddImageToTask = async () => {
+    try {
+      let imagePaths = [];
+
+      if (selectedImages.length > 0) {
+        const formData = new FormData();
+
+        selectedImages.forEach(image => {
+          formData.append("files", image);
+        })
+
+        const response = await uploadImages(formData);
+        if (!response.success) {
+          throw new Error("Error al subir las imágenes");
+        }
+
+        imagePaths = response.urls;
+      }
+
+      newTask.ruta_imagenes = imagePaths.map(url => API_URL + url);
+
+      const resNewTask = await addTask(tallerId, orderId, newTask);
+      if (!resNewTask) {
+        throw new Error("Error al agregar la tarea");
+      }
+
+      await fetchTasks();
+
+      setNewTask({
+        titulo: "",
+        descripcion: "",
+        ruta_imagenes: [],
+      });
+      setPreviewImages([]);
+      setSelectedImages([]);
+      setShowTaskModal(false);
+    } catch (error) {
+      console.error("Error al agregar la tarea:", error);
+      alert("Error al agregar la tarea. Por favor, inténtalo de nuevo.");
+    }
+
   };
 
-  const handleAddTask = () => {
-    setEditData((prev) => ({
-      ...prev,
-      tareas: [...prev.tareas, newTask],
-    }));
-    setNewTask({
-      nombre: "",
-      descripcion: "",
-      imagenes: [],
+  const handleImageChange = async (e) => {
+    const files = Array.from(e.target.files);
+
+    // Validar tipos de archivo y tamaño
+    const validFiles = files.filter(file => {
+      const isValid = file.type.startsWith('image/');
+      const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB máximo
+      return isValid && isValidSize;
     });
-    setShowTaskModal(false);
-    handleSaveChanges();
+
+    // Crear previsualizaciones
+    const imagePreviews = validFiles.map(file => URL.createObjectURL(file));
+    setPreviewImages(prev => [...prev, ...imagePreviews]);
+    setSelectedImages(prev => [...prev, ...validFiles]);
+
+    setNewTask(prev => {
+      if (!Array.isArray(prev.ruta_imagenes)) {
+        throw new Error('ruta_imagenes debe ser un array');
+      }
+
+      const newFileNames = validFiles.map(file => ({
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: file.lastModified
+      }));
+
+      const uniqueFiles = [...new Set([
+        ...prev.ruta_imagenes,
+        ...newFileNames
+      ])];
+
+      return {
+        ...prev,
+        ruta_imagenes: uniqueFiles
+      }
+    });
   };
+
+  // Función para eliminar imágenes
+  const handleRemoveImage = (index) => {
+    setSelectedImages(prev => prev.filter((_, i) => i !== index));
+    setPreviewImages(prev => prev.filter((_, i) => i !== index));
+
+    setTasks(prevTasks => {
+      return prevTasks.map(task => {
+        return {
+          ...task,
+          ruta_imagenes: task.ruta_imagenes.filter((_, i) => i !== index)
+        };
+      });
+    })
+  };
+
+  const handleStatusChange = async (e) => {
+    const updatedOt = {
+      ...ot,
+      estado_id: e.estado_id,
+      estado_nombre: e.nombre
+    }
+
+    setOt(updatedOt);
+
+    setShowStatusModal(false);
+    handleSaveChanges(updatedOt);
+  }
+
+  const handleWhatsAppUpdate = (e) => {
+    e.preventDefault();
+    if (!ot || !ot.cliente_telefono) {
+      alert("No se puede enviar el mensaje. Verifica que la orden de trabajo y el número de teléfono del cliente estén disponibles.");
+      return;
+    }
+
+    const message = `Hola ${ot.cliente_nombre},\n
+                \n
+                Tu solicitud de servicio para el vehículo ${ot.vehiculo_marca} ${ot.vehiculo_modelo} 
+                con patente ${ot.vehiculo_patente} ha sido actualizada a "${ot.estado_nombre}".\n
+                \n
+                Descripción del servicio: ${ot.descripcion}\n
+                \n
+                Link: ${FRONTEND_URL}/order/${ot.uniqueId}\n
+                \n
+                Gracias por confiar en nosotros.`;
+
+    sendUpdateWhatsapp(ot.cliente_telefono, message)
+      .then(() => {
+        alert("Mensaje enviado correctamente.");
+      })
+      .catch((error) => {
+        console.error("Error al enviar el mensaje:", error);
+        alert("Error al enviar el mensaje. Por favor, inténtalo de nuevo.");
+      });
+  }
+
+  if (!ot) {
+    return (
+      <div className={`min-h-screen transition-colors duration-300 pt-24 ${darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
+        <div className="max-w-7xl mx-auto px-4 pb-8">
+          <h1 className="text-xl font-semibold mb-4">Cargando detalles de la orden...</h1>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -150,20 +278,20 @@ export default function VehicleDetails() {
                 </div>
                 <div>
                   <h1 className="text-lg font-semibold">
-                    {editData.vehiculo.marca} {editData.vehiculo.modelo}
+                    {ot.vehiculo_marca} {ot.vehiculo_modelo}
                   </h1>
                   <div
                     className={`text-sm ${
                       darkMode ? "text-gray-400" : "text-gray-600"
                     }`}
                   >
-                    Patente: {editData.vehiculo.patente}
+                    Patente: {ot.vehiculo_patente}
                   </div>
                 </div>
               </div>
               <div
                 className={`px-4 py-2 rounded-lg ${
-                  editData.orden.estado === "Mantención Finalizada"
+                  ot.estado_nombre === "Terminada"
                     ? darkMode
                       ? "bg-green-900/30 text-green-400"
                       : "bg-green-100 text-green-700"
@@ -172,7 +300,7 @@ export default function VehicleDetails() {
                       : "bg-yellow-100 text-yellow-700"
                 }`}
               >
-                {editData.orden.estado}
+                {ot.estado_nombre}
               </div>
             </div>
           </div>
@@ -182,7 +310,7 @@ export default function VehicleDetails() {
               {/* Información del Cliente */}
               <div className="h-full">
                 <h3 className="text-lg font-semibold mb-4 flex items-center">
-                  <User className="w-5 h-5 mr-2" />
+                  <User className="w-5 h-5 mr-2"/>
                   Información del Cliente
                 </h3>
                 <div
@@ -200,16 +328,16 @@ export default function VehicleDetails() {
                         Nombre
                       </dt>
                       <dd className="font-medium mt-1">
-                        {editData.cliente.nombre}
+                        {ot.cliente_nombre}
                       </dd>
                     </div>
                     <div className="flex items-center">
                       <Phone className="w-5 h-5 mr-2" />
-                      <span>{editData.cliente.telefono}</span>
+                      <span>{ot.cliente_telefono}</span>
                     </div>
                     <div className="flex items-center">
                       <Mail className="w-5 h-5 mr-2" />
-                      <span>{editData.cliente.email}</span>
+                      <span>{ot.cliente_correo}</span>
                     </div>
                   </dl>
                 </div>
@@ -218,7 +346,7 @@ export default function VehicleDetails() {
               {/* Información de la Sucursal */}
               <div className="h-full">
                 <h3 className="text-lg font-semibold mb-4 flex items-center">
-                  <Building2 className="w-5 h-5 mr-2" />
+                  <Building2 className="w-5 h-5 mr-2"/>
                   Sucursal Asignada
                 </h3>
                 <div
@@ -236,19 +364,16 @@ export default function VehicleDetails() {
                         Nombre
                       </dt>
                       <dd className="font-medium mt-1">
-                        {editData.sucursal.nombre}
-                      </dd>
-                      <dd className="text-sm text-gray-500">
-                        {editData.sucursal.rut}
+                        {ot.taller_nombre}
                       </dd>
                     </div>
                     <div className="flex items-center">
                       <MapPin className="w-5 h-5 mr-2" />
-                      <span>{editData.sucursal.direccion}</span>
+                      <span>{ot.taller_direccion}</span>
                     </div>
                     <div className="flex items-center">
                       <Phone className="w-5 h-5 mr-2" />
-                      <span>{editData.sucursal.telefono}</span>
+                      <span>{ot.taller_telefono}</span>
                     </div>
                   </dl>
                 </div>
@@ -263,7 +388,7 @@ export default function VehicleDetails() {
                   </h3>
                   <div className="flex gap-4">
                     <button
-                      onClick={handleWhatsApp}
+                      onClick={handleWhatsAppUpdate}
                       className={`flex items-center px-4 py-2 rounded-lg ${
                         darkMode
                           ? "bg-green-600 hover:bg-green-700"
@@ -274,7 +399,9 @@ export default function VehicleDetails() {
                       Enviar WhatsApp
                     </button>
                     <button
-                      onClick={() => setShowStatusModal(true)}
+                      onClick={() => {
+                        setShowStatusModal(true);
+                      }}
                       className={`flex items-center px-4 py-2 rounded-lg ${
                         darkMode
                           ? "bg-blue-600 hover:bg-blue-700"
@@ -301,7 +428,7 @@ export default function VehicleDetails() {
                         Fecha de Creación
                       </dt>
                       <dd className="font-medium mt-1">
-                        {editData.orden.fechaCreacion}
+                        {StringFormatter.formatFechaDDMMYYYY(ot.created_at)}
                       </dd>
                     </div>
                     <div>
@@ -313,7 +440,7 @@ export default function VehicleDetails() {
                         Fecha Término Estimada
                       </dt>
                       <dd className="font-medium mt-1">
-                        {editData.orden.fechaTermino}
+                        {StringFormatter.formatFechaDDMMYYYY(ot.fecha_salida)}
                       </dd>
                     </div>
                     <div className="md:col-span-2">
@@ -325,7 +452,7 @@ export default function VehicleDetails() {
                         Trabajo a Realizar
                       </dt>
                       <dd className="font-medium mt-1">
-                        {editData.orden.trabajo}
+                        {ot.descripcion}
                       </dd>
                     </div>
                   </div>
@@ -360,26 +487,28 @@ export default function VehicleDetails() {
               </button>
             </div>
             <div className="space-y-8">
-              {editData.tareas.map((tarea, index) => (
+              {tasks.map((task, index) => (
                 <div key={index} className="space-y-4">
-                  <h3 className="text-lg font-medium">{tarea.nombre}</h3>
+                  <h3 className="text-lg font-medium">{task.titulo}</h3>
                   <p
                     className={`text-sm ${
                       darkMode ? "text-gray-400" : "text-gray-600"
                     }`}
                   >
-                    {tarea.descripcion}
+                    {task.descripcion}
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {tarea.imagenes.map((url, imgIndex) => (
+                    {task.ruta_imagenes.map((url, imgIndex) => (
                       <div
                         key={imgIndex}
                         className="aspect-square rounded-xl overflow-hidden shadow-md"
                       >
                         <img
                           src={url}
-                          alt={`${tarea.nombre} - Imagen ${imgIndex + 1}`}
+                          alt={`${task.titulo} - Imagen ${imgIndex + 1}`}
                           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                          decoding="async"
                         />
                       </div>
                     ))}
@@ -411,9 +540,9 @@ export default function VehicleDetails() {
                 className={`w-full p-2 rounded-lg mb-4 ${
                   darkMode ? "bg-gray-700" : "bg-gray-100"
                 }`}
-                value={newTask.nombre}
+                value={newTask.titulo}
                 onChange={(e) =>
-                  setNewTask({ ...newTask, nombre: e.target.value })
+                  setNewTask({ ...newTask, titulo: e.target.value })
                 }
               />
               <textarea
@@ -426,16 +555,46 @@ export default function VehicleDetails() {
                   setNewTask({ ...newTask, descripcion: e.target.value })
                 }
               />
-              <button
-                className={`flex items-center px-4 py-2 rounded-lg mb-4 ${
+
+              <div className="flex items-center justify-left">
+                <label className={`flex items-center px-4 py-2 rounded-lg mb-4 ${
                   darkMode
                     ? "bg-blue-600 hover:bg-blue-700"
                     : "bg-blue-500 hover:bg-blue-600"
-                } text-white`}
-              >
-                <Upload className="w-5 h-5 mr-2" />
-                Adjuntar Fotos
-              </button>
+                } text-white`}>
+                  <input
+                    type="file"
+                    name="images"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageChange}
+                  />
+                  <Upload className="w-5 h-5 mr-2 inline"/>
+                  Subir Imágenes
+                </label>
+              </div>
+              {previewImages.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                  {previewImages.map((preview, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={preview}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full h-32 object-cover rounded-lg"
+                      />
+                      <button
+                        onClick={() => handleRemoveImage(index)}
+                        className="absolute top-2 right-2 p-1 rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="w-4 h-4"/>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+
               <div className="flex justify-end gap-4">
                 <button
                   onClick={() => setShowTaskModal(false)}
@@ -444,7 +603,7 @@ export default function VehicleDetails() {
                   Cancelar
                 </button>
                 <button
-                  onClick={handleAddTask}
+                  onClick={handleAddImageToTask}
                   className={`px-4 py-2 rounded-lg ${
                     darkMode
                       ? "bg-green-600 hover:bg-green-700"
@@ -474,16 +633,11 @@ export default function VehicleDetails() {
                 </button>
               </div>
               <div className="space-y-4">
-                {["Pendiente", "Ingresada", "Terminada"].map((estado) => (
+                {estados.map((estado) => (
                   <button
-                    key={estado}
+                    key={estado.estado_id}
                     onClick={() => {
-                      setEditData((prev) => ({
-                        ...prev,
-                        orden: { ...prev.orden, estado },
-                      }));
-                      setShowStatusModal(false);
-                      handleSaveChanges();
+                      handleStatusChange(estado);
                     }}
                     className={`w-full p-3 rounded-lg flex items-center justify-between ${
                       darkMode
@@ -491,8 +645,8 @@ export default function VehicleDetails() {
                         : "bg-gray-100 hover:bg-gray-200"
                     }`}
                   >
-                    {estado}
-                    {editData.orden.estado === estado && (
+                    {estado.nombre}
+                    {ot.estado_id === estado.estado_id && (
                       <Check className="w-5 h-5 text-green-500" />
                     )}
                   </button>
@@ -530,14 +684,11 @@ export default function VehicleDetails() {
                       <input
                         type="text"
                         placeholder="Marca"
-                        value={editData.vehiculo.marca}
+                        value={ot.vehiculo_marca}
                         onChange={(e) =>
-                          setEditData({
-                            ...editData,
-                            vehiculo: {
-                              ...editData.vehiculo,
-                              marca: e.target.value,
-                            },
+                          setOt({
+                            ...ot,
+                            vehiculo_marca: e.target.value
                           })
                         }
                         className={`w-full p-2 rounded-lg ${
@@ -547,14 +698,11 @@ export default function VehicleDetails() {
                       <input
                         type="text"
                         placeholder="Modelo"
-                        value={editData.vehiculo.modelo}
+                        value={ot.vehiculo_modelo}
                         onChange={(e) =>
-                          setEditData({
-                            ...editData,
-                            vehiculo: {
-                              ...editData.vehiculo,
-                              modelo: e.target.value,
-                            },
+                          setOt({
+                            ...ot,
+                            vehiculo_modelo: e.target.value
                           })
                         }
                         className={`w-full p-2 rounded-lg ${
@@ -564,14 +712,11 @@ export default function VehicleDetails() {
                       <input
                         type="text"
                         placeholder="Patente"
-                        value={editData.vehiculo.patente}
+                        value={ot.vehiculo_patente}
                         onChange={(e) =>
-                          setEditData({
-                            ...editData,
-                            vehiculo: {
-                              ...editData.vehiculo,
-                              patente: e.target.value,
-                            },
+                          setOt({
+                            ...ot,
+                            vehiculo_patente: e.target.value
                           })
                         }
                         className={`w-full p-2 rounded-lg ${
@@ -590,14 +735,11 @@ export default function VehicleDetails() {
                       <input
                         type="text"
                         placeholder="Nombre"
-                        value={editData.cliente.nombre}
+                        value={ot.cliente_nombre}
                         onChange={(e) =>
-                          setEditData({
-                            ...editData,
-                            cliente: {
-                              ...editData.cliente,
-                              nombre: e.target.value,
-                            },
+                          setOt({
+                            ...ot,
+                            cliente_nombre: e.target.value
                           })
                         }
                         className={`w-full p-2 rounded-lg ${
@@ -607,14 +749,11 @@ export default function VehicleDetails() {
                       <input
                         type="text"
                         placeholder="Teléfono"
-                        value={editData.cliente.telefono}
+                        value={ot.cliente_telefono}
                         onChange={(e) =>
-                          setEditData({
-                            ...editData,
-                            cliente: {
-                              ...editData.cliente,
-                              telefono: e.target.value,
-                            },
+                          setOt({
+                            ...ot,
+                            cliente_telefono: e.target.value
                           })
                         }
                         className={`w-full p-2 rounded-lg ${
@@ -624,14 +763,11 @@ export default function VehicleDetails() {
                       <input
                         type="email"
                         placeholder="Email"
-                        value={editData.cliente.email}
+                        value={ot.cliente_correo}
                         onChange={(e) =>
-                          setEditData({
-                            ...editData,
-                            cliente: {
-                              ...editData.cliente,
-                              email: e.target.value,
-                            },
+                          setOt({
+                            ...ot,
+                            cliente_correo: e.target.value
                           })
                         }
                         className={`w-full p-2 rounded-lg ${
@@ -648,11 +784,11 @@ export default function VehicleDetails() {
                   <div className="space-y-4">
                     <textarea
                       placeholder="Trabajo a realizar"
-                      value={editData.orden.trabajo}
+                      value={ot.descripcion}
                       onChange={(e) =>
-                        setEditData({
-                          ...editData,
-                          orden: { ...editData.orden, trabajo: e.target.value },
+                        setOt({
+                          ...ot,
+                          descripcion: e.target.value
                         })
                       }
                       className={`w-full p-2 rounded-lg min-h-[100px] ${
@@ -663,14 +799,11 @@ export default function VehicleDetails() {
                       <input
                         type="text"
                         placeholder="Fecha de creación"
-                        value={editData.orden.fechaCreacion}
+                        value={ot.created_at}
                         onChange={(e) =>
-                          setEditData({
-                            ...editData,
-                            orden: {
-                              ...editData.orden,
-                              fechaCreacion: e.target.value,
-                            },
+                          setOt({
+                            ...ot,
+                            created_at: e.target.value
                           })
                         }
                         className={`w-full p-2 rounded-lg ${
@@ -680,14 +813,11 @@ export default function VehicleDetails() {
                       <input
                         type="text"
                         placeholder="Fecha término estimada"
-                        value={editData.orden.fechaTermino}
+                        value={ot.fecha_salida}
                         onChange={(e) =>
-                          setEditData({
-                            ...editData,
-                            orden: {
-                              ...editData.orden,
-                              fechaTermino: e.target.value,
-                            },
+                          setOt({
+                            ...ot,
+                            fecha_salida: e.target.value
                           })
                         }
                         className={`w-full p-2 rounded-lg ${
@@ -745,7 +875,7 @@ export default function VehicleDetails() {
                 </button>
                 <button
                   onClick={() => {
-                    handleWhatsApp();
+                    handleWhatsAppUpdate();
                     setShowAlert(false);
                   }}
                   className="flex items-center px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600"

@@ -16,15 +16,13 @@ import {
   MoreVertical,
   Zap,
 } from "lucide-react";
-import { useDarkMode } from "../../context/darkModeContext";
-import { useWorkshop } from "../../context/workshopContext";
-import { useControlPanel } from "../../context/controlPanelContext";
-import { useCliente } from "../../context/clienteContext";
-import { useVehiculo } from "../../context/vehiculoContext";
-import {
-  formatFechaDDMMYYYY,
-  formatFechaHHMM,
-} from "../../utilities/stringFormatter";
+import { Link, useParams } from "react-router-dom";
+import { useWorkshop } from "../../context/workshopContext.jsx";
+import { useDarkMode } from "../../context/darkModeContext.jsx";
+import { useControlPanel } from "../../context/controlPanelContext.jsx";
+import { useCliente } from "../../context/clienteContext.jsx";
+import { useVehiculo } from "../../context/vehiculoContext.jsx";
+import StringFormatter from "../../utilities/stringFormatter.js";
 
 export default function WorkshopDash() {
   const { darkMode } = useDarkMode();
@@ -598,14 +596,14 @@ export default function WorkshopDash() {
                           <p
                             className={`font-medium ${darkMode ? "text-white" : "text-gray-900"}`}
                           >
-                            {formatFechaDDMMYYYY(orden.fecha_entrada)}
+                            {StringFormatter.formatFechaDDMMYYYY(orden.fecha_entrada)}
                           </p>
                           <div className="flex items-center space-x-1 mt-1">
                             <Clock className="w-3 h-3 text-blue-500" />
                             <span
                               className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-600"}`}
                             >
-                              Est. {formatFechaDDMMYYYY(orden.fecha_salida)}
+                              Est. {StringFormatter.formatFechaDDMMYYYY(orden.fecha_salida)}
                             </span>
                           </div>
                         </div>
@@ -647,7 +645,7 @@ export default function WorkshopDash() {
                         <span
                           className={`text-sm font-medium ${darkMode ? "text-blue-400" : "text-blue-600"}`}
                         >
-                          {formatFechaHHMM(cita.hora)}
+                          {StringFormatter.formatFechaHHMM(cita.hora)}
                         </span>
                         <button
                           className={`p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600`}

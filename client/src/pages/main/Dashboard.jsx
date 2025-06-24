@@ -1,32 +1,32 @@
-import { useState, useEffect } from "react";
+import {useEffect, useState} from "react";
 import {
-  Car,
-  Clipboard,
-  Bell,
-  Users,
-  FileText,
-  Calendar,
-  Zap,
-  Shield,
-  Wrench,
   ArrowRight,
+  Bell,
+  Calendar,
+  Car,
   Check,
-  X,
   ChevronRight,
+  Clipboard,
+  FileText,
+  Shield,
+  Users,
+  Wrench,
+  X,
+  Zap,
 } from "lucide-react";
-import { useDarkMode } from "../../context/darkModeContext.jsx";
-import { useControlPanel } from "../../context/controlPanelContext.jsx";
+import {useDarkMode} from "../../context/darkModeContext.jsx";
+import {useControlPanel} from "../../context/controlPanelContext.jsx";
 import Footer from "../../Components/Footer.jsx";
 
 export default function Dashboard() {
-  const { darkMode } = useDarkMode();
+  const {darkMode} = useDarkMode();
   const [billingCycle, setBillingCycle] = useState("monthly");
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [tooltipVisible, setTooltipVisible] = useState(false);
   // Agregar estado para controlar la visibilidad antes de que se complete la hidratación
   const [isClient, setIsClient] = useState(false);
 
-  const { registeredVehicles } = useControlPanel();
+  const {registeredVehicles} = useControlPanel();
 
   // Marcar que estamos en el cliente cuando el componente se monta
   useEffect(() => {
@@ -43,37 +43,37 @@ export default function Dashboard() {
   const services = [
     {
       name: "Gestión de órdenes de trabajo",
-      icon: <Clipboard className="w-6 h-6" />,
+      icon: <Clipboard className="w-6 h-6"/>,
       description:
         "Control completo de órdenes de trabajo, desde la creación hasta la facturación.",
     },
     {
       name: "Gestión de vehículos",
-      icon: <Car className="w-6 h-6" />,
+      icon: <Car className="w-6 h-6"/>,
       description:
         "Registro detallado de vehículos con historial completo de servicios.",
     },
     {
       name: "Notificaciones automáticas",
-      icon: <Bell className="w-6 h-6" />,
+      icon: <Bell className="w-6 h-6"/>,
       description:
         "Avisos automáticos a clientes sobre estado de reparaciones y mantenimientos.",
     },
     {
       name: "Historial de reparaciones",
-      icon: <Wrench className="w-6 h-6" />,
+      icon: <Wrench className="w-6 h-6"/>,
       description:
         "Acceso instantáneo al historial completo de reparaciones de cada vehículo.",
     },
     {
       name: "Registro de clientes",
-      icon: <Users className="w-6 h-6" />,
+      icon: <Users className="w-6 h-6"/>,
       description:
         "Base de datos centralizada de clientes con información de contacto y preferencias.",
     },
     {
       name: "Reportes de mantención",
-      icon: <FileText className="w-6 h-6" />,
+      icon: <FileText className="w-6 h-6"/>,
       description:
         "Generación de reportes detallados de mantenimiento para clientes y control interno.",
     },
@@ -83,20 +83,20 @@ export default function Dashboard() {
   const plans = [
     {
       name: "Plan Básico",
-      icon: <Wrench className="w-8 h-8 text-blue-500" />,
+      icon: <Wrench className="w-8 h-8 text-blue-500"/>,
       description: "Ideal para talleres pequeños o mecánicos independientes",
       monthlyPrice: "$29.99",
       yearlyPrice: "$299.90",
       savings: "Save $60",
       features: [
-        { name: "Gestión de clientes", included: true },
-        { name: "Control de inventario básico", included: true },
-        { name: "Facturación simple", included: true },
-        { name: "Agenda de citas", included: true },
-        { name: "Historial de servicios", included: true },
-        { name: "Soporte por email", included: true },
-        { name: "Diagnósticos avanzados", included: false },
-        { name: "Integración con proveedores", included: false },
+        {name: "Gestión de clientes", included: true},
+        {name: "Control de inventario básico", included: true},
+        {name: "Facturación simple", included: true},
+        {name: "Agenda de citas", included: true},
+        {name: "Historial de servicios", included: true},
+        {name: "Soporte por email", included: true},
+        {name: "Diagnósticos avanzados", included: false},
+        {name: "Integración con proveedores", included: false},
       ],
       ctaText: "Iniciar Prueba Gratuita",
       color: "bg-blue-100 border-blue-300",
@@ -105,20 +105,20 @@ export default function Dashboard() {
     },
     {
       name: "Plan Profesional",
-      icon: <Zap className="w-8 h-8 text-indigo-500" />,
+      icon: <Zap className="w-8 h-8 text-indigo-500"/>,
       description: "Perfecto para talleres medianos con múltiples mecánicos",
       monthlyPrice: "$49.99",
       yearlyPrice: "$499.90",
       savings: "Save $100",
       features: [
-        { name: "Gestión de clientes", included: true },
-        { name: "Control de inventario avanzado", included: true },
-        { name: "Facturación completa", included: true },
-        { name: "Agenda de citas", included: true },
-        { name: "Historial de servicios", included: true },
-        { name: "Soporte prioritario", included: true },
-        { name: "Diagnósticos avanzados", included: true },
-        { name: "Integración con proveedores", included: true },
+        {name: "Gestión de clientes", included: true},
+        {name: "Control de inventario avanzado", included: true},
+        {name: "Facturación completa", included: true},
+        {name: "Agenda de citas", included: true},
+        {name: "Historial de servicios", included: true},
+        {name: "Soporte prioritario", included: true},
+        {name: "Diagnósticos avanzados", included: true},
+        {name: "Integración con proveedores", included: true},
       ],
       ctaText: "Elegir Plan Profesional",
       color: "bg-indigo-100 border-indigo-300",
@@ -127,21 +127,21 @@ export default function Dashboard() {
     },
     {
       name: "Plan Premium",
-      icon: <Shield className="w-8 h-8 text-purple-500" />,
+      icon: <Shield className="w-8 h-8 text-purple-500"/>,
       description:
         "Para grandes talleres y concesionarios con múltiples sucursales",
       monthlyPrice: "$79.99",
       yearlyPrice: "$799.90",
       savings: "Save $160",
       features: [
-        { name: "Gestión de clientes", included: true },
-        { name: "Control de inventario premium", included: true },
-        { name: "Facturación completa", included: true },
-        { name: "Agenda de citas inteligente", included: true },
-        { name: "Historial de servicios detallado", included: true },
-        { name: "Soporte 24/7 dedicado", included: true },
-        { name: "Diagnósticos avanzados con IA", included: true },
-        { name: "Ecosistema completo de integraciones", included: true },
+        {name: "Gestión de clientes", included: true},
+        {name: "Control de inventario premium", included: true},
+        {name: "Facturación completa", included: true},
+        {name: "Agenda de citas inteligente", included: true},
+        {name: "Historial de servicios detallado", included: true},
+        {name: "Soporte 24/7 dedicado", included: true},
+        {name: "Diagnósticos avanzados con IA", included: true},
+        {name: "Ecosistema completo de integraciones", included: true},
       ],
       ctaText: "Contactar Ventas",
       color: "bg-purple-100 border-purple-300",
@@ -204,14 +204,15 @@ export default function Dashboard() {
                   </p>
 
                   <div className="flex flex-wrap gap-4 pt-6">
-                    <button className="px-8 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors shadow-lg shadow-blue-500/20">
+                    <button
+                      className="px-8 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors shadow-lg shadow-blue-500/20">
                       Solicitar Demo
                     </button>
                     <button
                       className={`px-8 py-3 rounded-lg flex items-center gap-2 ${darkMode ? "bg-gray-800 hover:bg-gray-700 text-white" : "bg-white hover:bg-gray-50 text-gray-800"} font-medium transition-colors shadow`}
                     >
                       Ver características
-                      <ChevronRight className="w-4 h-4" />
+                      <ChevronRight className="w-4 h-4"/>
                     </button>
                   </div>
                 </div>
@@ -362,7 +363,7 @@ export default function Dashboard() {
                       className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium ${darkMode ? "bg-blue-800 hover:bg-blue-700 text-white" : "bg-blue-100 hover:bg-blue-200 text-blue-700"} transition-colors`}
                     >
                       Explorar funcionalidad
-                      <ArrowRight className="w-4 h-4 ml-2" />
+                      <ArrowRight className="w-4 h-4 ml-2"/>
                     </a>
                   </div>
                 </div>
@@ -398,7 +399,7 @@ export default function Dashboard() {
                       className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium ${darkMode ? "bg-indigo-800 hover:bg-indigo-700 text-white" : "bg-indigo-100 hover:bg-indigo-200 text-indigo-700"} transition-colors`}
                     >
                       Saber más
-                      <ArrowRight className="w-4 h-4 ml-2" />
+                      <ArrowRight className="w-4 h-4 ml-2"/>
                     </a>
                   </div>
                 </div>
@@ -433,7 +434,7 @@ export default function Dashboard() {
                     className={`inline-flex items-center text-sm font-medium ${darkMode ? "text-green-400" : "text-green-600"} hover:opacity-80 transition-opacity`}
                   >
                     Detalles
-                    <ChevronRight className="w-4 h-4 ml-1" />
+                    <ChevronRight className="w-4 h-4 ml-1"/>
                   </a>
                 </div>
 
@@ -464,7 +465,7 @@ export default function Dashboard() {
                     className={`inline-flex items-center text-sm font-medium ${darkMode ? "text-purple-400" : "text-purple-600"} hover:opacity-80 transition-opacity`}
                   >
                     Ver ejemplo
-                    <ChevronRight className="w-4 h-4 ml-1" />
+                    <ChevronRight className="w-4 h-4 ml-1"/>
                   </a>
                 </div>
 
@@ -495,7 +496,7 @@ export default function Dashboard() {
                     className={`inline-flex items-center text-sm font-medium ${darkMode ? "text-orange-400" : "text-orange-600"} hover:opacity-80 transition-opacity`}
                   >
                     Cómo funciona
-                    <ChevronRight className="w-4 h-4 ml-1" />
+                    <ChevronRight className="w-4 h-4 ml-1"/>
                   </a>
                 </div>
 
@@ -526,7 +527,7 @@ export default function Dashboard() {
                     className={`inline-flex items-center text-sm font-medium ${darkMode ? "text-pink-400" : "text-pink-600"} hover:opacity-80 transition-opacity`}
                   >
                     Descubrir más
-                    <ChevronRight className="w-4 h-4 ml-1" />
+                    <ChevronRight className="w-4 h-4 ml-1"/>
                   </a>
                 </div>
               </div>
@@ -606,7 +607,8 @@ export default function Dashboard() {
                 >
                   {plan.popular && (
                     <div className="absolute top-0 right-0">
-                      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold py-1 px-4 rounded-bl-lg">
+                      <div
+                        className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold py-1 px-4 rounded-bl-lg">
                         MÁS POPULAR
                       </div>
                     </div>
@@ -657,7 +659,7 @@ export default function Dashboard() {
                     {plan.features.map((feature, i) => (
                       <div key={i} className="flex items-center">
                         {feature.included ? (
-                          <Check className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" />
+                          <Check className="w-5 h-5 text-green-500 mr-2 flex-shrink-0"/>
                         ) : (
                           <X
                             className={`w-5 h-5 ${darkMode ? "text-gray-600" : "text-gray-400"} mr-2 flex-shrink-0`}
@@ -691,7 +693,7 @@ export default function Dashboard() {
                     }`}
                   >
                     <span>{plan.ctaText}</span>
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    <ArrowRight className="w-4 h-4 ml-2"/>
                   </button>
                 </div>
               ))}
@@ -741,7 +743,7 @@ export default function Dashboard() {
         </div>
 
         {/* Footer */}
-        <Footer />
+        <Footer/>
       </div>
     </>
   );

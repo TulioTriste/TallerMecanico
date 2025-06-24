@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Wrench, MapPin, Clock, ChevronRight, Home, Plus } from "lucide-react";
-import { useWorkshop } from "../../context/workshopContext.jsx";
-import { useDarkMode } from "../../context/darkModeContext.jsx";
-import { useControlPanel } from "../../context/controlPanelContext.jsx";
-import { formatCitaFecha } from "../../utilities/stringFormatter.js";
+import {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {ChevronRight, Clock, Home, MapPin, Plus, Wrench} from "lucide-react";
+import {useWorkshop} from "../../context/workshopContext.jsx";
+import {useDarkMode} from "../../context/darkModeContext.jsx";
+import {useControlPanel} from "../../context/controlPanelContext.jsx";
+import StringFormatter from "../../utilities/stringFormatter.js";
 
 const Workshops = () => {
-  const { darkMode } = useDarkMode();
+  const {darkMode} = useDarkMode();
   const [selectedTaller, setSelectedTaller] = useState(null);
 
-  const { workshops, cargarTalleres } = useWorkshop(); // Datos de ejemplo de los talleres
+  const {workshops, cargarTalleres} = useWorkshop(); // Datos de ejemplo de los talleres
   const {
     getNextCitaTaller,
     getOrdenesDeTrabajoCountByEstado,
@@ -70,9 +70,9 @@ const Workshops = () => {
   }, [workshops]);
 
   const handleTallerSelect = (taller) => {
-    setSelectedTaller(taller.id);
-    // Aquí se podría navegar al dashboard del taller
-    console.log(`Seleccionado: ${taller.nombre}`);
+    setSelectedTaller(taller.taller_id);
+
+    navigate(`/workshop/dashboard/${taller.taller_id}`)
   };
 
   const getDisponibilidad = (taller) => {
@@ -145,7 +145,7 @@ const Workshops = () => {
               className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700
                          text-white rounded-lg font-medium transition-colors gap-2"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="w-5 h-5"/>
               Agregar Taller
             </button>
           )}
@@ -161,7 +161,7 @@ const Workshops = () => {
                        hover:scale-110 z-50 group"
             onClick={() => navigate("/workshop/create")}
           >
-            <Plus className="w-6 h-6" />
+            <Plus className="w-6 h-6"/>
             <span
               className="absolute right-full mr-2 bg-gray-900 text-white px-2 py-1
                             rounded text-sm whitespace-nowrap opacity-0 group-hover:opacity-100
@@ -258,7 +258,7 @@ const Workshops = () => {
                     >
                       Próxima cita:{" "}
                       {nextCitas[taller.taller_id]?.hora
-                        ? formatCitaFecha(nextCitas[taller.taller_id].hora)
+                        ? StringFormatter.formatCitaFecha(nextCitas[taller.taller_id].hora)
                         : "Sin citas"}
                     </span>
                   </div>
@@ -309,7 +309,7 @@ const Workshops = () => {
                     className={`w-full py-3 px-4 rounded-lg font-medium transition-all
                       ${"bg-blue-600 hover:bg-blue-700 text-white"}`}
                     onClick={() => {
-                      navigate(`/workshop/dashboard/${taller.taller_id}`);
+                      handleTallerSelect(taller);
                     }}
                   >
                     Acceder al Dashboard
@@ -354,7 +354,7 @@ const Workshops = () => {
                 className="fixed bottom-8 right-8 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg"
                 onClick={() => navigate("/workshop/create")}
               >
-                <Plus className="w-6 h-6" />{" "}
+                <Plus className="w-6 h-6"/>{" "}
                 {/* Necesitarás importar Plus de lucide-react */}
               </button>
             )}

@@ -1,5 +1,10 @@
-import { createContext, useContext } from "react";
-import { deleteEmpleadoRequest, getEmpleadosByTallerRequest, insertEmpleadoRequest } from "../api/empleado";
+import {createContext, useContext} from "react";
+import {
+  deleteEmpleadoRequest,
+  getEmpleadosByTallerRequest,
+  insertEmpleadoRequest,
+  isEmpleadoExistsRequest
+} from "../api/empleado";
 
 const EmpleadoContext = createContext();
 
@@ -9,7 +14,7 @@ export const useEmpleado = () => {
   return context;
 };
 
-export function EmpleadoProvider({ children }) {
+export function EmpleadoProvider({children}) {
 
   const addEmpleado = async (data) => {
     try {
@@ -21,7 +26,6 @@ export function EmpleadoProvider({ children }) {
     }
   };
 
-  
 
   const getEmpleadosByTaller = async (taller_id) => {
     try {
@@ -43,12 +47,24 @@ export function EmpleadoProvider({ children }) {
     }
   };
 
+  const isEmpleadoExists = async (rut) => {
+    try {
+      const exist = await isEmpleadoExistsRequest(rut);
+      console.log("Empleado existe:", exist.data.exists);
+      return exist.data.exists;
+    } catch (error) {
+      console.error("Error al verificar si el empleado existe:", error);
+      return false; // Retorna false en caso de error
+    }
+  }
+
   return (
     <EmpleadoContext.Provider
       value={{
         addEmpleado,
         getEmpleadosByTaller,
-        deleteEmpleado
+        deleteEmpleado,
+        isEmpleadoExists,
       }}
     >
       {children}

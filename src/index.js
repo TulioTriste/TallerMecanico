@@ -1,5 +1,5 @@
 import app from './app.js';
-import { connectToDatabase } from './bd.js';
+import {connectToDatabase} from './bd.js';
 
 const db = await connectToDatabase();
 app.listen(3000);

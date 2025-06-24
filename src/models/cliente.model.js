@@ -1,8 +1,8 @@
-import { connectToDatabase } from "../bd.js";
+import {connectToDatabase} from "../bd.js";
 import sql from "mssql";
 
 class ClienteModel {
-  
+
   async getAllClientes() {
     try {
       const pool = await connectToDatabase();
@@ -24,6 +24,20 @@ class ClienteModel {
       return result.recordset[0].nombre;
     } catch (error) {
       console.error("Error al obtener el nombre de el cliente por RUT:", error);
+      throw error;
+    }
+  }
+
+  async getClienteByRut(rut) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+        .request()
+        .input("cliente_rut", sql.VarChar, rut)
+        .query("SELECT * FROM cliente WHERE cliente_rut = @cliente_rut");
+      return result.recordset[0]; // Devuelve el primer registro encontrado
+    } catch (error) {
+      console.error("Error al obtener el cliente por RUT:", error);
       throw error;
     }
   }

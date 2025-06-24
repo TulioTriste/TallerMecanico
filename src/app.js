@@ -7,28 +7,32 @@ import authRoutes from './routes/auth.routes.js';
 import workshopRoutes from './routes/workshop.routes.js';
 import controlpanelRoutes from './routes/controlpanel.routes.js';
 import clienteRoutes from './routes/cliente.routes.js';
-import vehiculoRouter from './routes/vehiculo.routes.js';
-import empleadoRouter from './routes/empleado.routes.js';
-import { FRONTEND_URL } from "./config.js";
+import vehiculoRoutes from './routes/vehiculo.routes.js';
+import empleadoRoutes from './routes/empleado.routes.js';
+import {FRONTEND_URL} from "./config.js";
+import tallerRoutes from "./routes/taller.routes.js";
 
 const app = express();
 
 app.use(
-    cors({
-      credentials: true,
-      origin: FRONTEND_URL,
-    })
-  );
+  cors({
+    credentials: true,
+    origin: FRONTEND_URL,
+  })
+);
 // La configuracion 'dev' es para ver todas las peticiones en la consola (https://www.npmjs.com/package/morgan)
-app.use(morgan('dev'));  
+app.use(morgan('dev'));
 app.use(express.json()); // Para poder recibir datos en formato JSON
-app.use(cookieParser());
+app.use(cookieParser()); // Para poder leer las cookies de las peticiones
+
+app.use("/api/uploads", express.static("uploads")); // Para servir archivos estáticos desde la carpeta 'uploads'
 
 app.use("/api/auth", authRoutes);
 app.use("/api", workshopRoutes);
 app.use("/api/cp", controlpanelRoutes);
 app.use("/api/cliente", clienteRoutes);
-app.use("/api/veh", vehiculoRouter);
-app.use("/api/empleados", empleadoRouter);
+app.use("/api/veh", vehiculoRoutes);
+app.use("/api/empleados", empleadoRoutes);
+app.use("/api/taller", tallerRoutes);
 
 export default app;

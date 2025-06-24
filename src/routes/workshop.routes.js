@@ -1,6 +1,6 @@
-import { Router } from "express";
-import { authRequired, ownTallerRequired } from "../middlewares/validateToken.js";
-import { getTaller, getWorkshops } from "../controllers/workshop.controller.js";
+import {Router} from "express";
+import {authRequired, ownTallerRequired} from "../middlewares/validateToken.js";
+import {getTaller, getWorkshops} from "../controllers/workshop.controller.js";
 
 const router = Router();
 
