@@ -19,7 +19,7 @@ import {
 import {useDarkMode} from "../../context/darkModeContext.jsx";
 import {useParams} from "react-router-dom";
 import {useControlPanel} from "../../context/controlPanelContext.jsx";
-import {API_URL} from "../../config.js";
+import {API_URL, FRONTEND_URL} from "../../config.js";
 import {sendUpdateWhatsapp} from "../../utilities/whatsapp.js";
 import StringFormatter from "../../utilities/stringFormatter.js";
 
@@ -208,6 +208,8 @@ export default function VehicleDetails() {
                 con patente ${ot.vehiculo_patente} ha sido actualizada a "${ot.estado_nombre}".\n
                 \n
                 Descripción del servicio: ${ot.descripcion}\n
+                \n
+                Link: ${FRONTEND_URL}/order/${ot.uniqueId}\n
                 \n
                 Gracias por confiar en nosotros.`;
 

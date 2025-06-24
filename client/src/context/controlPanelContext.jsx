@@ -35,7 +35,6 @@ export function ControlPanelProvider({children}) {
       const response = await getEstadosRequest();
       if (response.data && Array.isArray(response.data)) {
         setEstados(response.data);
-        console.log("Estados cargados.")
       } else {
         console.error("Formato de datos inesperado para estados:", response.data);
         setEstados([]);
@@ -215,7 +214,6 @@ export function ControlPanelProvider({children}) {
   const uploadImages = async (formData) => {
     try {
       const res = await uploadImagesRequest(formData);
-      console.log(res.data);
       return res.data;
     } catch (error) {
       console.error("Error al subir imágenes:", error);
