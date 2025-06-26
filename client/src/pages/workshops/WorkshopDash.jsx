@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
-import { motion } from "framer-motion";
+
 import {
   Clock,
-  Search,
   Plus,
   Check,
   X,

@@ -2,20 +2,25 @@ import { useState } from "react";
 import { Check, X, Zap, Shield, Wrench, ArrowRight } from "lucide-react";
 import Navbar from "../../Components/NavbarPrincipal/PublicNavbar.jsx";
 import { useDarkMode } from "../../context/darkModeContext.jsx";
+import { useNavigate } from "react-router-dom";
+import StringFormatter from "../../utilities/stringFormatter.js";
 
 export default function PricingDashboard() {
   const [billingCycle, setBillingCycle] = useState("monthly");
   const [selectedPlan, setSelectedPlan] = useState(null);
   const {darkMode} = useDarkMode();
 
+  const navigate = useNavigate();
+
   const plans = [
     {
+      plan_id: 1,
       name: "Plan Básico",
       icon: <Wrench className="w-8 h-8 text-blue-500"/>,
       description: "Ideal para talleres pequeños o mecánicos independientes",
-      monthlyPrice: "$29.99",
-      yearlyPrice: "$299.90",
-      savings: "Save $60",
+      monthlyPrice: 29990,
+      yearlyPrice: 290990,
+      savings: "Save $" + StringFormatter.formatNumber(29990 * 12 - 290990),
       features: [
         {name: "Gestión de clientes", included: true},
         {name: "Control de inventario básico", included: true},
@@ -30,12 +35,13 @@ export default function PricingDashboard() {
       popular: false,
     },
     {
+      plan_id: 2,
       name: "Plan Profesional",
       icon: <Zap className="w-8 h-8 text-indigo-500"/>,
       description: "Perfecto para talleres medianos con múltiples mecánicos",
-      monthlyPrice: "$49.99",
-      yearlyPrice: "$499.90",
-      savings: "Save $100",
+      monthlyPrice: 49990,
+      yearlyPrice: 490990,
+      savings: "Save $" + StringFormatter.formatNumber(49990 * 12 - 490990),
       features: [
         {name: "Gestión de clientes", included: true},
         {name: "Control de inventario avanzado", included: true},
@@ -50,13 +56,14 @@ export default function PricingDashboard() {
       popular: true,
     },
     {
+      plan_id: 3,
       name: "Plan Premium",
       icon: <Shield className="w-8 h-8 text-purple-500" />,
       description:
         "Para grandes talleres y concesionarios con múltiples sucursales",
-      monthlyPrice: "$79.99",
-      yearlyPrice: "$799.90",
-      savings: "Save $160",
+      monthlyPrice: 79990,
+      yearlyPrice: 790990,
+      savings: "Save $" + StringFormatter.formatNumber(79990 * 12 - 790990),
       features: [
         {name: "Gestión de clientes", included: true},
         {name: "Control de inventario premium", included: true},
@@ -82,6 +89,7 @@ export default function PricingDashboard() {
 
     // Preparar los detalles del plan para el checkout
     const selectedPlanDetails = {
+      plan_id: plans[index].plan_id,
       name: plans[index].name,
       price:
         billingCycle === "monthly"
@@ -217,9 +225,10 @@ export default function PricingDashboard() {
                       <span
                         className={`text-3xl font-bold ${darkMode ? "text-white" : "text-gray-900"} transition-colors duration-300`}
                       >
-                        {billingCycle === "monthly"
-                          ? plan.monthlyPrice
-                          : plan.yearlyPrice}
+                        ${StringFormatter.formatNumber(
+                          billingCycle === "monthly"
+                            ? plan.monthlyPrice
+                            : plan.yearlyPrice)}
                       </span>
                       <span
                         className={`${darkMode ? "text-gray-400" : "text-gray-500"} ml-2 pb-1 transition-colors duration-300`}

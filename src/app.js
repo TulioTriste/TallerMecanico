@@ -11,6 +11,7 @@ import vehiculoRoutes from './routes/vehiculo.routes.js';
 import empleadoRoutes from './routes/empleado.routes.js';
 import {FRONTEND_URL} from "./config.js";
 import tallerRoutes from "./routes/taller.routes.js";
+import mercadopagoRoutes from "./routes/mercadopago.routes.js";
 
 const app = express();
 
@@ -34,5 +35,6 @@ app.use("/api/cliente", clienteRoutes);
 app.use("/api/veh", vehiculoRoutes);
 app.use("/api/empleados", empleadoRoutes);
 app.use("/api/taller", tallerRoutes);
+app.use("/api/mercadopago", mercadopagoRoutes);
 
 export default app;

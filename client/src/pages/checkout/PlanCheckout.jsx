@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import {useEffect, useState} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Shield, CreditCard, Check, ArrowLeft } from "lucide-react";
 import { useDarkMode } from "../../context/darkModeContext";
+import {createPreferenceRequest} from "../../api/payments.js";
+import CheckoutButton from "./CheckoutButton.jsx";
 
 const PlanCheckout = () => {
   const { darkMode } = useDarkMode();
@@ -9,22 +11,7 @@ const PlanCheckout = () => {
   const navigate = useNavigate();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
 
-  // Esta información vendría de la página anterior a través del estado de la navegación
-  const planDetails = location.state?.planDetails || {
-    name: "Plan Profesional",
-    price: "$49.99",
-    cycle: "monthly",
-    features: [
-      "Gestión de clientes",
-      "Control de inventario avanzado",
-      "Facturación completa",
-      "Agenda de citas",
-      "Historial de servicios",
-      "Soporte prioritario",
-      "Diagnósticos avanzados",
-      "Integración con proveedores",
-    ],
-  };
+  const planDetails = location.state.planDetails;
 
   const paymentMethods = [
     {
@@ -41,11 +28,38 @@ const PlanCheckout = () => {
     },
   ];
 
-  const handlePaymentSubmit = (e) => {
+  const handlePaymentSubmit = async (e) => {
     e.preventDefault();
     // Aquí iría la lógica para procesar el pago según el método seleccionado
     console.log("Procesando pago con:", selectedPaymentMethod);
+    console.log("Plan Details:", planDetails);
+
+    try {
+      const response = await createPreferenceRequest(planDetails);
+      if (response.data && response.data.init_point) {
+        window.location.href = response.data.init_point;
+      } else {
+        console.error("Error al crear la preferencia de pago:", response);
+      }
+    } catch (error) {
+      console.error("Error al procesar el pago:", error);
+    }
   };
+
+  if (!planDetails) {
+    return (
+      <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+        <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
+        <p>No se encontraron detalles del plan. Por favor, vuelve a la página anterior.</p>
+        <button
+          onClick={() => navigate(-1)}
+          className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
+        >
+          Volver
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -168,18 +182,13 @@ const PlanCheckout = () => {
                 ))}
               </div>
 
-              <button
-                type="submit"
-                disabled={!selectedPaymentMethod}
-                className={`mt-8 w-full flex items-center justify-center py-3 px-4 rounded-lg text-white font-medium transition-all ${
-                  selectedPaymentMethod
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-gray-400 cursor-not-allowed"
-                }`}
-              >
-                <CreditCard className="w-5 h-5 mr-2" />
-                Proceder al Pago
-              </button>
+              <CheckoutButton
+                selectedPaymentMethod={selectedPaymentMethod}
+                product={planDetails}
+                user={{ nombre: "Usuario", apellido: "Ejemplo", correo: ""}}
+                onSuccess={(data) => console.log("Pago exitoso:", data)}
+                onError={(error) => console.error("Error en el pago:", error)}
+              />
             </form>
 
             {/* Sello de Seguridad */}

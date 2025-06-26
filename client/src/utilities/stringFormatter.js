@@ -50,6 +50,10 @@ class StringFormatter {
     const minutos = String(fecha.getMinutes()).padStart(2, "0");
     return `${hora}:${minutos}`;
   }
+
+  static formatNumber(number) {
+    return number.toLocaleString('es-CL');
+  }
 }
 
 export default StringFormatter;

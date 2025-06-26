@@ -29,6 +29,7 @@ import RecoverPasswordApprovePage from "./pages/auth/RecoverPasswordApproved.jsx
 import ErrorPage from "./pages/error/ErrorPage.jsx";
 import PlanCheckout from "./pages/checkout/PlanCheckout.jsx";
 import ClientVehicleDetails from "./pages/client/ClientVehicleDetails.jsx";
+import SuccessPage from "./pages/main/SuccessPage.jsx";
 
 function App() {
   return (
@@ -56,10 +57,16 @@ function App() {
                             path="/newpassword"
                             element={<RecoverPasswordApprovePage />}
                           />
-                          <Route path="/plans" element={<PlansPage/>}/>
 
                           {/* Rutas protegidas */}
                           <Route element={<ProtectedRoute/>}>
+                            <Route path="/plans" element={<PlansPage/>}/>
+                            <Route path="/success" element={<SuccessPage/>}/>
+                            <Route
+                              path="/checkout"
+                              element={<PlanCheckout />}
+                            />
+
                             <Route path="/dashboard" element={<Dashboard/>}/>
                             <Route path="/workshops" element={<Workshops/>}/>
                             <Route
@@ -95,10 +102,6 @@ function App() {
                             <Route
                               path="/workshop/orders/:id"
                               element={<WorkOrders/>}
-                            />
-                            <Route
-                              path="/checkout"
-                              element={<PlanCheckout />}
                             />
                             <Route /*VISTA ORDEN LADO CLIENTE */
                               path="/order/:uniqueId"
