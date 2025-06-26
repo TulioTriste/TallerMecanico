@@ -46,7 +46,7 @@ router.post("/addot/:taller_id", authRequired, planRequired, ownTallerRequired, 
 router.get("/getotbyuniqueid/:uniqueId", getOtByUniqueId);
 
 const storage = multer.diskStorage({
-  destination: 'uploads/',
+  destination: '../uploads/',
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     cb(null, uniqueSuffix + path.extname(file.originalname));

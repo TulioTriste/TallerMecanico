@@ -118,7 +118,7 @@ CREATE TABLE [ot] (
     [km] VARCHAR(10) NOT NULL,
     [estado_id] INT NOT NULL,
     [precio] INT NOT NULL,
-    [token] VARCHAR(255) NOT NULL,
+    [uniqueId] VARCHAR(255) NOT NULL,
     [created_at] DATETIME NOT NULL DEFAULT GETDATE(),
     CONSTRAINT [PK_ot] PRIMARY KEY CLUSTERED ([ot_id] ASC),
     CONSTRAINT [FK_ot_cliente] FOREIGN KEY ([cliente_rut]) REFERENCES [cliente]([cliente_rut])

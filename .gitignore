@@ -5,3 +5,6 @@ src/config.js
 /uploads/*
 
 .idea/
+.vercel
+
+backend/node_modules/
