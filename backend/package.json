@@ -5,10 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/index.js",
-    "start": "node src/index.js",
-    "build": "cd client && npm install && npm run build",
-    "vercel-build": "npm run build"
+    "postinstall": "cd ../client && npm install && npm run build",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",

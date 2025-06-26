@@ -12,8 +12,14 @@ import empleadoRoutes from './routes/empleado.routes.js';
 import {FRONTEND_URL} from "./config.js";
 import tallerRoutes from "./routes/taller.routes.js";
 import mercadopagoRoutes from "./routes/mercadopago.routes.js";
+import * as path from "node:path";
 
 const app = express();
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.use(
   cors({

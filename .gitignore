@@ -6,3 +6,5 @@ src/config.js
 
 .idea/
 .vercel
+
+backend/node_modules/
