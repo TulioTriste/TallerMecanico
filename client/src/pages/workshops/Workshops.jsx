@@ -1,16 +1,17 @@
-import {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
-import {ChevronRight, Clock, Home, MapPin, Plus, Wrench} from "lucide-react";
-import {useWorkshop} from "../../context/workshopContext.jsx";
-import {useDarkMode} from "../../context/darkModeContext.jsx";
-import {useControlPanel} from "../../context/controlPanelContext.jsx";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ChevronRight, Clock, Home, MapPin, Plus, Wrench } from "lucide-react";
+import { useWorkshop } from "../../context/workshopContext.jsx";
+import { useDarkMode } from "../../context/darkModeContext.jsx";
+import { useControlPanel } from "../../context/controlPanelContext.jsx";
 import StringFormatter from "../../utilities/stringFormatter.js";
+import { MoreVertical, Edit, Trash2 } from "lucide-react";
 
 const Workshops = () => {
-  const {darkMode} = useDarkMode();
+  const { darkMode } = useDarkMode();
   const [selectedTaller, setSelectedTaller] = useState(null);
 
-  const {workshops, cargarTalleres} = useWorkshop(); // Datos de ejemplo de los talleres
+  const { workshops, cargarTalleres } = useWorkshop(); // Datos de ejemplo de los talleres
   const {
     getNextCitaTaller,
     getOrdenesDeTrabajoCountByEstado,
@@ -19,6 +20,7 @@ const Workshops = () => {
   const [nextCitas, setNextCitas] = useState({});
   const [ordenesTrabajo, setOrdenesTrabajo] = useState({});
   const [proxCitas, setProxCitas] = useState({});
+  const [openMenuId, setOpenMenuId] = useState(null);
 
   const navigate = useNavigate();
 
@@ -46,6 +48,17 @@ const Workshops = () => {
   }, [workshops, getNextCitaTaller]);
 
   useEffect(() => {
+    function handleClickOutside(event) {
+      if (openMenuId && !event.target.closest(".relative")) {
+        setOpenMenuId(null);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [openMenuId]);
+
+  useEffect(() => {
     const fetchStats = async () => {
       const ordenes = {};
       for (const taller of workshops) {
@@ -69,10 +82,21 @@ const Workshops = () => {
     }
   }, [workshops]);
 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (openMenuId && !event.target.closest(".relative")) {
+        setOpenMenuId(null);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [openMenuId]);
+
   const handleTallerSelect = (taller) => {
     setSelectedTaller(taller.taller_id);
 
-    navigate(`/workshop/dashboard/${taller.taller_id}`)
+    navigate(`/workshop/dashboard/${taller.taller_id}`);
   };
 
   const getDisponibilidad = (taller) => {
@@ -145,7 +169,7 @@ const Workshops = () => {
               className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700
                          text-white rounded-lg font-medium transition-colors gap-2"
             >
-              <Plus className="w-5 h-5"/>
+              <Plus className="w-5 h-5" />
               Agregar Taller
             </button>
           )}
@@ -161,7 +185,7 @@ const Workshops = () => {
                        hover:scale-110 z-50 group"
             onClick={() => navigate("/workshop/create")}
           >
-            <Plus className="w-6 h-6"/>
+            <Plus className="w-6 h-6" />
             <span
               className="absolute right-full mr-2 bg-gray-900 text-white px-2 py-1
                             rounded text-sm whitespace-nowrap opacity-0 group-hover:opacity-100
@@ -212,18 +236,10 @@ const Workshops = () => {
                         </h3>
                         <div className="flex items-center space-x-2">
                           <div
-                            className={`w-2 h-2 rounded-full ${
-                              getDisponibilidad(taller)
-                                ? "bg-green-500"
-                                : "bg-red-500"
-                            }`}
+                            className={`w-2 h-2 rounded-full ${getDisponibilidad(taller) ? "bg-green-500" : "bg-red-500"}`}
                           ></div>
                           <span
-                            className={`text-sm font-medium ${
-                              getDisponibilidad(taller)
-                                ? "text-green-500"
-                                : "text-red-500"
-                            }`}
+                            className={`text-sm font-medium ${getDisponibilidad(taller) ? "text-green-500" : "text-red-500"}`}
                           >
                             {getDisponibilidad(taller) ? "Abierto" : "Cerrado"}
                           </span>
@@ -231,11 +247,69 @@ const Workshops = () => {
                       </div>
                     </div>
 
-                    <ChevronRight
-                      className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${
-                        darkMode ? "text-gray-400" : "text-gray-500"
-                      }`}
-                    />
+                    <div className="relative">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenMenuId(
+                            openMenuId === taller.taller_id
+                              ? null
+                              : taller.taller_id,
+                          );
+                        }}
+                        className={`p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors`}
+                      >
+                        <MoreVertical
+                          className={`w-5 h-5 ${darkMode ? "text-gray-400" : "text-gray-500"}`}
+                        />
+                      </button>
+
+                      {openMenuId === taller.taller_id && (
+                        <div
+                          className={`absolute right-0 mt-2 w-48 rounded-lg shadow-lg z-50 ${
+                            darkMode
+                              ? "bg-gray-800 border border-gray-700"
+                              : "bg-white border border-gray-200"
+                          }`}
+                        >
+                          <div className="py-1">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                console.log("Editar taller:", taller.taller_id);
+                                setOpenMenuId(null);
+                              }}
+                              className={`w-full text-left px-4 py-2 text-sm ${
+                                darkMode
+                                  ? "text-gray-300 hover:bg-gray-700"
+                                  : "text-gray-700 hover:bg-gray-100"
+                              } flex items-center gap-2`}
+                            >
+                              <Edit className="w-4 h-4" />
+                              Editar taller
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                console.log(
+                                  "Eliminar taller:",
+                                  taller.taller_id,
+                                );
+                                setOpenMenuId(null);
+                              }}
+                              className={`w-full text-left px-4 py-2 text-sm ${
+                                darkMode
+                                  ? "text-red-400 hover:bg-gray-700"
+                                  : "text-red-600 hover:bg-gray-100"
+                              } flex items-center gap-2`}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              Eliminar taller
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="flex items-center space-x-2 mb-2">
@@ -258,7 +332,9 @@ const Workshops = () => {
                     >
                       Próxima cita:{" "}
                       {nextCitas[taller.taller_id]?.hora
-                        ? StringFormatter.formatCitaFecha(nextCitas[taller.taller_id].hora)
+                        ? StringFormatter.formatCitaFecha(
+                            nextCitas[taller.taller_id].hora,
+                          )
                         : "Sin citas"}
                     </span>
                   </div>
@@ -354,7 +430,7 @@ const Workshops = () => {
                 className="fixed bottom-8 right-8 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg"
                 onClick={() => navigate("/workshop/create")}
               >
-                <Plus className="w-6 h-6"/>{" "}
+                <Plus className="w-6 h-6" />{" "}
                 {/* Necesitarás importar Plus de lucide-react */}
               </button>
             )}

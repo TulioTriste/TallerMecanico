@@ -14,7 +14,6 @@ import {
   MoreVertical,
   Zap,
 } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
 import { useWorkshop } from "../../context/workshopContext.jsx";
 import { useDarkMode } from "../../context/darkModeContext.jsx";
 import { useControlPanel } from "../../context/controlPanelContext.jsx";
@@ -25,6 +24,11 @@ import StringFormatter from "../../utilities/stringFormatter.js";
 export default function WorkshopDash() {
   const { darkMode } = useDarkMode();
   const { id } = useParams();
+
+  const [dateRange, setDateRange] = useState({
+    from: "",
+    to: "",
+  });
 
   // Estados para el modal de citas
   const [showNewAppointmentModal, setShowNewAppointmentModal] = useState(false);
@@ -506,18 +510,109 @@ export default function WorkshopDash() {
               className={`rounded-xl ${darkMode ? "bg-gray-800" : "bg-white"} shadow-sm`}
             >
               <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                <div className="flex items-center justify-between">
-                  <h3
-                    className={`text-lg font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}
-                  >
-                    Órdenes de Trabajo Recientes
-                  </h3>
-                  <Link
-                    to={`/workshop/orders/${taller.taller_id}`}
-                    className={`text-sm ${darkMode ? "text-blue-400" : "text-blue-600"} hover:opacity-80`}
-                  >
-                    Ver todas
-                  </Link>
+                {/* Header y filtros en un contenedor flex */}
+                <div className="space-y-4">
+                  {/* Título y botón "Ver todas" */}
+                  <div className="flex items-center justify-between">
+                    <h3
+                      className={`text-lg font-semibold ${
+                        darkMode ? "text-white" : "text-gray-900"
+                      }`}
+                    >
+                      Órdenes de Trabajo Recientes
+                    </h3>
+                    <Link
+                      to={`/workshop/orders/${taller.taller_id}`}
+                      className={`text-sm ${
+                        darkMode ? "text-blue-400" : "text-blue-600"
+                      } hover:opacity-80`}
+                    >
+                      Ver todas
+                    </Link>
+                  </div>
+
+                  {/* Filtros de fecha en una fila */}
+                  <div className="flex items-end gap-4">
+                    {" "}
+                    {/* Cambiado a items-end */}
+                    <div>
+                      <label
+                        className={`block text-xs font-medium mb-1 ${
+                          darkMode ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      >
+                        Desde
+                      </label>
+                      <input
+                        type="date"
+                        value={dateRange.from}
+                        onChange={(e) =>
+                          setDateRange((prev) => ({
+                            ...prev,
+                            from: e.target.value,
+                          }))
+                        }
+                        className={`px-3 py-1.5 text-sm rounded-lg border ${
+                          darkMode
+                            ? "bg-gray-700 border-gray-600 text-gray-200"
+                            : "bg-white border-gray-300 text-gray-700"
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        className={`block text-xs font-medium mb-1 ${
+                          darkMode ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      >
+                        Hasta
+                      </label>
+                      <input
+                        type="date"
+                        value={dateRange.to}
+                        onChange={(e) =>
+                          setDateRange((prev) => ({
+                            ...prev,
+                            to: e.target.value,
+                          }))
+                        }
+                        className={`px-3 py-1.5 text-sm rounded-lg border ${
+                          darkMode
+                            ? "bg-gray-700 border-gray-600 text-gray-200"
+                            : "bg-white border-gray-300 text-gray-700"
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                      />
+                    </div>
+                    {/* Botones */}
+                    <div className="flex gap-2">
+                      {" "}
+                      {/* Eliminado items-center porque ya no es necesario */}
+                      <button
+                        className={`px-3 py-1.5 text-sm rounded-lg ${
+                          darkMode
+                            ? "bg-blue-600 hover:bg-blue-700"
+                            : "bg-blue-600 hover:bg-blue-700"
+                        } text-white transition-colors`}
+                        onClick={() => {
+                          console.log("Filtrar por fechas:", dateRange);
+                        }}
+                      >
+                        Filtrar
+                      </button>
+                      {(dateRange.from || dateRange.to) && (
+                        <button
+                          onClick={() => setDateRange({ from: "", to: "" })}
+                          className={`px-3 py-1.5 text-sm rounded-lg ${
+                            darkMode
+                              ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
+                              : "bg-gray-100 hover:bg-gray-200 text-gray-600"
+                          } transition-colors`}
+                        >
+                          Limpiar
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -594,14 +689,19 @@ export default function WorkshopDash() {
                           <p
                             className={`font-medium ${darkMode ? "text-white" : "text-gray-900"}`}
                           >
-                            {StringFormatter.formatFechaDDMMYYYY(orden.fecha_entrada)}
+                            {StringFormatter.formatFechaDDMMYYYY(
+                              orden.fecha_entrada,
+                            )}
                           </p>
                           <div className="flex items-center space-x-1 mt-1">
                             <Clock className="w-3 h-3 text-blue-500" />
                             <span
                               className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-600"}`}
                             >
-                              Est. {StringFormatter.formatFechaDDMMYYYY(orden.fecha_salida)}
+                              Est.{" "}
+                              {StringFormatter.formatFechaDDMMYYYY(
+                                orden.fecha_salida,
+                              )}
                             </span>
                           </div>
                         </div>
@@ -626,9 +726,14 @@ export default function WorkshopDash() {
                   >
                     Citas de Hoy
                   </h3>
-                  <Calendar
-                    className={`h-5 w-5 ${darkMode ? "text-gray-400" : "text-gray-500"}`}
-                  />
+                  <Link
+                    to={`/workshop/${id}/appointments`}
+                    className={`p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors`}
+                  >
+                    <Calendar
+                      className={`h-5 w-5 ${darkMode ? "text-gray-400" : "text-gray-500"}`}
+                    />
+                  </Link>
                 </div>
               </div>
 
@@ -683,54 +788,6 @@ export default function WorkshopDash() {
                   <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
                   Agendar nueva cita
                 </button>
-              </div>
-            </div>
-
-            {/* Alertas rápidas */}
-            <div
-              className={`rounded-xl ${darkMode ? "bg-gray-800" : "bg-white"} shadow-sm`}
-            >
-              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                <div className="flex items-center justify-between">
-                  <h3
-                    className={`text-lg font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}
-                  >
-                    Alertas
-                  </h3>
-                  <AlertCircle
-                    className={`h-5 w-5 ${darkMode ? "text-orange-400" : "text-orange-500"}`}
-                  />
-                </div>
-              </div>
-
-              <div className="p-6">
-                <div className="space-y-3">
-                  <div
-                    className={`p-3 rounded-lg ${darkMode ? "bg-yellow-900/20 border border-yellow-800" : "bg-yellow-50 border border-yellow-200"}`}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <AlertCircle className="w-4 h-4 text-yellow-600" />
-                      <span
-                        className={`text-sm ${darkMode ? "text-yellow-300" : "text-yellow-800"}`}
-                      >
-                        Orden ORD-001 se está retrasando
-                      </span>
-                    </div>
-                  </div>
-
-                  <div
-                    className={`p-3 rounded-lg ${darkMode ? "bg-blue-900/20 border border-blue-800" : "bg-blue-50 border border-blue-200"}`}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <Zap className="w-4 h-4 text-blue-600" />
-                      <span
-                        className={`text-sm ${darkMode ? "text-blue-300" : "text-blue-800"}`}
-                      >
-                        Nueva cotización pendiente
-                      </span>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
