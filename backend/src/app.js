@@ -13,8 +13,14 @@ import {FRONTEND_URL} from "./config.js";
 import tallerRoutes from "./routes/taller.routes.js";
 import mercadopagoRoutes from "./routes/mercadopago.routes.js";
 import * as path from "node:path";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
 
 const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('*', (req, res) => {
