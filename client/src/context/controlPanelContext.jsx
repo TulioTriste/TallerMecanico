@@ -33,6 +33,7 @@ export function ControlPanelProvider({children}) {
   const fetchEstados = async () => {
     try {
       const response = await getEstadosRequest();
+      console.log(Array.isArray(response.data));
       if (response.data && Array.isArray(response.data)) {
         setEstados(response.data);
       } else {

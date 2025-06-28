@@ -4,11 +4,13 @@ import { Home, Phone, Mail, MapPin, Clock } from "lucide-react";
 import { useDarkMode } from "../../context/darkModeContext.jsx";
 import { useAuth } from "../../context/authContext.jsx";
 import axios from "../../api/axios.js";
+import {useWorkshop} from "../../context/workshopContext.jsx";
 
 const CreateWorkshop = () => {
   const {darkMode} = useDarkMode();
-  const {auth} = useAuth();
+  const {user} = useAuth();
   const navigate = useNavigate();
+  const {createTaller} = useWorkshop();
 
   const [formData, setFormData] = useState({
     nombre: "",
@@ -43,23 +45,27 @@ const CreateWorkshop = () => {
 
       // Crear el objeto con los datos del taller
       const tallerData = {
-        usuario_rut: auth.rut,
+        usuario_rut: user.rut,
         ...formData,
         inicio_jornada: parseInt(inicio_jornada),
         termino_jornada: parseInt(termino_jornada),
       };
 
       // Realizar la petición POST al backend
-      const response = await axios.post("/api/talleres", tallerData);
+      const response = await createTaller(tallerData);
 
-      if (response.data) {
+      if (response.status === 403) {
+        setError(response.message);
+      } else if (response.message) {
+        setError(response.message);
+      } else {
         setSuccess("Taller creado exitosamente");
-        // Redireccionar después de 2 segundos
         setTimeout(() => {
           navigate("/workshops");
         }, 2000);
       }
-    } catch (err) {
+      } catch (err) {
+      console.log("Error al crear el taller:", err);
       setError(err.response?.data?.message || "Error al crear el taller");
     }
   };

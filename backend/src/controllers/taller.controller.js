@@ -1,9 +1,19 @@
 import TallerModel from "../models/taller.model.js";
+import UserModel from "../models/user.model.js";
 
 export const addTaller = async (req, res) => {
   const { usuario_rut, nombre, telefono, correo, direccion, inicio_jornada, termino_jornada } = req.body;
 
   try {
+    const canCreate = await UserModel.canCreateTaller(usuario_rut);
+
+    if (!canCreate) {
+      return res.status(403).json({
+        message: "Has alcanzado el límite de talleres permitido por tu plan",
+        status: "error"
+      });
+    }
+
     const modelResponse = await TallerModel
       .addTaller(usuario_rut, nombre, telefono, correo, direccion, inicio_jornada, termino_jornada);
 
