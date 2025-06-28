@@ -128,7 +128,7 @@ export const addOt = async (req, res) => {
     console.error("Error al crear la orden de trabajo:", error);
     res.status(500).json({message: "Error interno del servidor"});
   }
-}
+};
 
 export const getOtByUniqueId = async (req, res) => {
   const {uniqueId} = req.params;

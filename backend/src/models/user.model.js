@@ -179,6 +179,58 @@ class UserModel {
       throw error;
     }
   }
-};
+
+  async getLimitTalleres(rut) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+          .request()
+          .input("usuario_rut", sql.VarChar, rut)
+          .query(`
+                SELECT p.talleres as limite_talleres
+                FROM usuario u
+                JOIN [plan] p ON u.plan_id = p.plan_id
+                WHERE u.usuario_rut = @usuario_rut
+            `);
+
+      return result.recordset[0]?.limite_talleres || 0;
+    } catch (error) {
+      console.error("Error al obtener límite de talleres:", error);
+      throw error;
+    }
+  }
+
+  async getNumTalleresActuales(rut) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+          .request()
+          .input("usuario_rut", sql.VarChar, rut)
+          .query(`
+                SELECT COUNT(*) as total_talleres
+                FROM taller
+                WHERE usuario_rut = @usuario_rut
+            `);
+
+      return result.recordset[0]?.total_talleres || 0;
+    } catch (error) {
+      console.error("Error al obtener número de talleres:", error);
+      throw error;
+    }
+  }
+
+  async canCreateTaller(rut) {
+    try {
+      const limiteTalleres = await this.getLimitTalleres(rut);
+      const talleresActuales = await this.getNumTalleresActuales(rut);
+
+      return talleresActuales < limiteTalleres;
+    } catch (error) {
+      console.error("Error al verificar si puede crear taller:", error);
+      throw error;
+    }
+  }
+
+}
 
 export default new UserModel();
