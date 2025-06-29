@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import {
   Building2,
   Phone,
@@ -10,14 +10,14 @@ import {
   Wrench,
 } from "lucide-react";
 import { useDarkMode } from "../../context/darkModeContext.jsx";
-import {useParams} from "react-router-dom";
-import {useControlPanel} from "../../context/controlPanelContext.jsx";
+import { useParams } from "react-router-dom";
+import { useControlPanel } from "../../context/controlPanelContext.jsx";
 import StringFormatter from "../../utilities/stringFormatter.js";
 
 export default function ClientVehicleDetails() {
   const { uniqueId } = useParams();
 
-  const {getOtByUniqueId, getTasks} = useControlPanel();
+  const { getOtByUniqueId, getTasks } = useControlPanel();
   const { darkMode } = useDarkMode();
 
   const [data, setData] = useState(null);
@@ -32,7 +32,10 @@ export default function ClientVehicleDetails() {
           setData(response);
           console.log("Detalles de la OT:", response);
         } else {
-          console.error("No se encontraron detalles para la OT con ID:", uniqueId);
+          console.error(
+            "No se encontraron detalles para la OT con ID:",
+            uniqueId,
+          );
           return;
         }
 
@@ -41,12 +44,15 @@ export default function ClientVehicleDetails() {
           setTasks(taskResponse);
           console.log("Tareas de la OT:", taskResponse);
         } else {
-          console.error("No se encontraron tareas para la OT con ID:", uniqueId);
+          console.error(
+            "No se encontraron tareas para la OT con ID:",
+            uniqueId,
+          );
         }
       } catch (error) {
         console.error("Error al obtener los detalles de la OT:", error);
       }
-    }
+    };
 
     fetchOtDetails();
   }, [uniqueId, getOtByUniqueId, getTasks]);
@@ -56,7 +62,9 @@ export default function ClientVehicleDetails() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-semibold mb-4">Cargando detalles...</h1>
-          <p className="text-gray-500">Por favor, espera mientras se cargan los datos.</p>
+          <p className="text-gray-500">
+            Por favor, espera mientras se cargan los datos.
+          </p>
         </div>
       </div>
     );
@@ -177,9 +185,7 @@ export default function ClientVehicleDetails() {
                       >
                         Nombre
                       </dt>
-                      <dd className="font-medium mt-1">
-                        {data.taller_nombre}
-                      </dd>
+                      <dd className="font-medium mt-1">{data.taller_nombre}</dd>
                     </div>
                     <div className="flex items-center">
                       <MapPin className="w-5 h-5 mr-2" />
