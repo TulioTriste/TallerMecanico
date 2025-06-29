@@ -31,6 +31,7 @@ import PlanCheckout from "./pages/checkout/PlanCheckout.jsx";
 import ClientVehicleDetails from "./pages/client/ClientVehicleDetails.jsx";
 import Appointments from "./pages/workshops/Appointments.jsx";
 import CookieConsent from "./Components/cookies/CookieConsent.jsx";
+import AboutSoftware from "./pages/main/AboutSoftware.jsx";
 
 function App() {
   return (
@@ -50,6 +51,10 @@ function App() {
                           <Route path="/" element={<Dashboard />} />
                           <Route path="/login" element={<LoginPage />} />
                           <Route path="/register" element={<RegisterPage />} />
+                          <Route
+                            path="/sobre-software"
+                            element={<AboutSoftware />}
+                          />
                           <Route
                             path="/recoverpassword"
                             element={<RecoverPasswordPage />}

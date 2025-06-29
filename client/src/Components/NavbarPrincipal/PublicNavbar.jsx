@@ -1,12 +1,22 @@
-import {useState} from "react";
-import {FileText, Home, Info, LogIn, Menu, Moon, Sun, Wrench, X,} from "lucide-react";
-import {useLocation} from "react-router-dom";
-import {useDarkMode} from "../../context/darkModeContext";
+import { useState } from "react";
+import {
+  FileText,
+  Home,
+  Info,
+  LogIn,
+  Menu,
+  Moon,
+  Sun,
+  Wrench,
+  X,
+} from "lucide-react";
+import { useLocation } from "react-router-dom";
+import { useDarkMode } from "../../context/darkModeContext";
 
 export default function Navbar() {
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
-  const {darkMode, toggleDarkMode} = useDarkMode();
+  const { darkMode, toggleDarkMode } = useDarkMode();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -26,7 +36,7 @@ export default function Navbar() {
               <div
                 className={`flex items-center ${darkMode ? "text-blue-400" : "text-blue-600"}`}
               >
-                <Wrench className="h-8 w-8 mr-2"/>
+                <Wrench className="h-8 w-8 mr-2" />
                 <span
                   className={`font-bold text-xl ${darkMode ? "text-white" : "text-gray-900"}`}
                 >
@@ -45,7 +55,7 @@ export default function Navbar() {
                     : "text-gray-700 hover:bg-gray-100"
                 }`}
               >
-                <Home className="w-4 h-4 mr-1.5"/>
+                <Home className="w-4 h-4 mr-1.5" />
                 Dashboard
               </a>
               <a
@@ -56,18 +66,18 @@ export default function Navbar() {
                     : "text-gray-700 hover:bg-gray-100"
                 }`}
               >
-                <FileText className="w-4 h-4 mr-1.5"/>
+                <FileText className="w-4 h-4 mr-1.5" />
                 Planes
               </a>
               <a
-                href="/acerca"
+                href="/sobre-software"
                 className={`px-3 py-2 rounded-md text-sm font-medium flex items-center ${
                   darkMode
                     ? "text-white hover:bg-gray-800"
                     : "text-gray-700 hover:bg-gray-100"
                 }`}
               >
-                <Info className="w-4 h-4 mr-1.5"/>
+                <Info className="w-4 h-4 mr-1.5" />
                 Sobre el Software
               </a>
             </div>
@@ -85,9 +95,9 @@ export default function Navbar() {
               }`}
             >
               {darkMode ? (
-                <Sun className="w-5 h-5"/>
+                <Sun className="w-5 h-5" />
               ) : (
-                <Moon className="w-5 h-5"/>
+                <Moon className="w-5 h-5" />
               )}
             </button>
 
@@ -102,7 +112,7 @@ export default function Navbar() {
                 }`}
               >
                 <span className="flex items-center">
-                  <LogIn className="w-4 h-4 mr-2"/>
+                  <LogIn className="w-4 h-4 mr-2" />
                   {isLoginPage ? "Registrarse" : "Iniciar sesión"}
                 </span>
               </a>
@@ -120,9 +130,9 @@ export default function Navbar() {
               >
                 <span className="sr-only">Abrir menú principal</span>
                 {mobileMenuOpen ? (
-                  <X className="block h-6 w-6"/>
+                  <X className="block h-6 w-6" />
                 ) : (
-                  <Menu className="block h-6 w-6"/>
+                  <Menu className="block h-6 w-6" />
                 )}
               </button>
             </div>
@@ -146,7 +156,7 @@ export default function Navbar() {
             }`}
           >
             <span className="flex items-center">
-              <Home className="w-5 h-5 mr-2"/>
+              <Home className="w-5 h-5 mr-2" />
               Dashboard
             </span>
           </a>
@@ -159,12 +169,12 @@ export default function Navbar() {
             }`}
           >
             <span className="flex items-center">
-              <FileText className="w-5 h-5 mr-2"/>
+              <FileText className="w-5 h-5 mr-2" />
               Planes
             </span>
           </a>
           <a
-            href="/acerca"
+            href="/sobre-software"
             className={`block px-3 py-2 rounded-md text-base font-medium ${
               darkMode
                 ? "text-white hover:bg-gray-800"
@@ -172,7 +182,7 @@ export default function Navbar() {
             }`}
           >
             <span className="flex items-center">
-              <Info className="w-5 h-5 mr-2"/>
+              <Info className="w-5 h-5 mr-2" />
               Sobre el Software
             </span>
           </a>
@@ -188,7 +198,7 @@ export default function Navbar() {
               }`}
             >
               <span className="flex items-center justify-center">
-                <LogIn className="w-5 h-5 mr-2"/>
+                <LogIn className="w-5 h-5 mr-2" />
                 Iniciar sesión
               </span>
             </a>

@@ -1,9 +1,10 @@
-import {Facebook, Instagram, Mail, MapPin, Phone} from "lucide-react";
-import {useDarkMode} from "../context/darkModeContext";
+import { Facebook, Instagram, Mail, MapPin, Phone } from "lucide-react";
+import { useDarkMode } from "../context/darkModeContext";
 import logo from "../assets/logo-taller.png";
+import mercadoPagoLogo from "../Components/Icons/MP_RGB_HANDSHAKE_pluma_horizontal.png";
 
 export default function Footer() {
-  const {darkMode} = useDarkMode();
+  const { darkMode } = useDarkMode();
 
   return (
     <footer
@@ -27,7 +28,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="hover:text-blue-500 transition-colors"
               >
-                <Instagram size={24}/>
+                <Instagram size={24} />
               </a>
               <a
                 href="https://facebook.com/tallermec"
@@ -35,7 +36,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="hover:text-blue-500 transition-colors"
               >
-                <Facebook size={24}/>
+                <Facebook size={24} />
               </a>
             </div>
           </div>
@@ -45,7 +46,7 @@ export default function Footer() {
             <h5 className="font-semibold text-lg mb-4">Contacto</h5>
             <ul className="space-y-3">
               <li className="flex items-center">
-                <Mail className="w-5 h-5 mr-2"/>
+                <Mail className="w-5 h-5 mr-2" />
                 <a
                   href="mailto:contacto@tallermec.cl"
                   className="hover:text-blue-500 transition-colors"
@@ -54,7 +55,7 @@ export default function Footer() {
                 </a>
               </li>
               <li className="flex items-center">
-                <Phone className="w-5 h-5 mr-2"/>
+                <Phone className="w-5 h-5 mr-2" />
                 <a
                   href="tel:+56912345678"
                   className="hover:text-blue-500 transition-colors"
@@ -63,7 +64,7 @@ export default function Footer() {
                 </a>
               </li>
               <li className="flex items-center">
-                <MapPin className="w-5 h-5 mr-2"/>
+                <MapPin className="w-5 h-5 mr-2" />
                 <span>Av. Principal 1234, Santiago</span>
               </li>
             </ul>
@@ -113,12 +114,7 @@ export default function Footer() {
             <h5 className="font-semibold text-lg mb-4">Medios de Pago</h5>
             <div className="flex flex-col space-y-2">
               <img
-                src="https://www.canalcreditovirtual.cl/images/logo_webpay_plus_2x.png"
-                alt="WebPay"
-                className="h-8 object-contain"
-              />
-              <img
-                src="https://logotipoz.com/wp-content/uploads/2021/10/mercado-pago-logo-2.png"
+                src={mercadoPagoLogo}
                 alt="Mercado Pago"
                 className="h-8 object-contain"
               />
