@@ -14,7 +14,6 @@ import {
   getRolesRequest, getTasksRequest, updateOrCreateTasksRequest, updateOtRequest, uploadImagesRequest
 } from "../api/controlpanel";
 import {useLocation} from "react-router-dom";
-import StringFormatter from "../utilities/stringFormatter.js";
 
 const ControlPanelContext = createContext();
 
@@ -33,7 +32,6 @@ export function ControlPanelProvider({children}) {
   const fetchEstados = async () => {
     try {
       const response = await getEstadosRequest();
-      console.log(Array.isArray(response.data));
       if (response.data && Array.isArray(response.data)) {
         setEstados(response.data);
       } else {
@@ -63,6 +61,7 @@ export function ControlPanelProvider({children}) {
   const updateRoles = async () => {
     try {
       const res = await getRolesRequest();
+      console.log(res.data);
       setRoles(res.data);
     } catch (error) {
       console.error("Error al obtener los roles:", error);
@@ -72,7 +71,7 @@ export function ControlPanelProvider({children}) {
 
   // Puesto para que se actualize solo cada 10 segundos
   useEffect(() => {
-    const routesNeedingUpdates = ['/dashboard', '/workshop/dashboard', 'workshop/sucursal/*/nuevo'];
+    const routesNeedingUpdates = ['/dashboard', '/workshop/dashboard', '/workshop/sucursal'];
     const shouldUpdate = routesNeedingUpdates.some(route =>
       location.pathname === route || location.pathname.startsWith(route)
     );
@@ -275,6 +274,7 @@ export function ControlPanelProvider({children}) {
         updateOt,
         addOt,
         getOtByUniqueId,
+        updateRoles,
       }}
     >
       {children}

@@ -35,8 +35,7 @@ const Workshops = () => {
     const fetchNextCitas = async () => {
       const citas = {};
       for (const taller of workshops) {
-        const cita = await getNextCitaTaller(taller.taller_id);
-        citas[taller.taller_id] = cita;
+        citas[taller.taller_id] = await getNextCitaTaller(taller.taller_id);
       }
       setNextCitas(citas);
     };
@@ -49,18 +48,17 @@ const Workshops = () => {
     const fetchStats = async () => {
       const ordenes = {};
       for (const taller of workshops) {
-        const data = await getOrdenesDeTrabajoCountByEstado(
+        console.log("Fetching ordenes for taller:", taller.taller_id);
+        ordenes[taller.taller_id] = await getOrdenesDeTrabajoCountByEstado(
           taller.taller_id,
           2,
         );
-        ordenes[taller.taller_id] = data;
       }
       setOrdenesTrabajo(ordenes);
 
       const citasProx = {};
       for (const taller of workshops) {
-        const data = await getCountCitasProx7Dias(taller.taller_id);
-        citasProx[taller.taller_id] = data;
+        citasProx[taller.taller_id] = await getCountCitasProx7Dias(taller.taller_id);
       }
       setProxCitas(citasProx);
     };

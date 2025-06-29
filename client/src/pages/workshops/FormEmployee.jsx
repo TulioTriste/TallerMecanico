@@ -1,5 +1,5 @@
 import {useNavigate, useParams} from "react-router-dom";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {CreditCard, Eye, EyeOff, Mail, Phone, UserCog, UserPlus,} from "lucide-react";
 import {useDarkMode} from "../../context/darkModeContext.jsx";
 import {useForm} from "react-hook-form";
@@ -20,6 +20,10 @@ export default function FormularioEmpleado() {
     register,
     handleSubmit
   } = useForm();
+
+  useEffect(() => {
+    console.log(roles);
+  }, [roles]);
 
   const onSubmit = async (data) => {
     //e.preventDefault();

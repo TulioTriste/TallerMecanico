@@ -1,5 +1,6 @@
 import empleadoModel from "../models/empleado.model.js";
 import bcrypt from "bcryptjs";
+import EmpleadoModel from "../models/empleado.model.js";
 
 export const insertEmpleado = async (req, res) => {
   const {empleado_rut, taller_id, roles_id, nombre, apellido, telefono, correo, password} = req.body;
@@ -86,10 +87,11 @@ export const deleteEmpleado = async (req, res) => {
 };
 
 export const isEmpleadoExists = async (req, res) => {
-  const {empleado_rut} = req.params;
+  const {empleado_rut} = req.body;
+  console.log(req.body);
 
   try {
-    const empleado = await empleadoModel.isEmpleadoExist(empleado_rut);
+    const empleado = await EmpleadoModel.isEmpleadoExist(empleado_rut);
 
     if (empleado) {
       return res.status(200).json({
@@ -109,4 +111,4 @@ export const isEmpleadoExists = async (req, res) => {
       error: error.message
     });
   }
-}
+};

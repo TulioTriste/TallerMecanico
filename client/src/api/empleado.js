@@ -6,4 +6,4 @@ export const getEmpleadosByTallerRequest = async (taller_id) => axios.get(`/empl
 
 export const deleteEmpleadoRequest = async (data) => axios.delete("/empleados/delete", {data});
 
-export const isEmpleadoExistsRequest = async (rut) => axios.get(`/empleados/exists/${rut}`);
+export const isEmpleadoExistsRequest = async (empleado_rut) => axios.get("/empleados/exists", {params: {empleado_rut}});
