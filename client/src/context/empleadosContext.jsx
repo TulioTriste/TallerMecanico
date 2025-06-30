@@ -47,9 +47,9 @@ export function EmpleadoProvider({children}) {
     }
   };
 
-  const isEmpleadoExists = async (rut) => {
+  const isEmpleadoExists = async (data) => {
     try {
-      const exist = await isEmpleadoExistsRequest(rut);
+      const exist = await isEmpleadoExistsRequest(data);
       console.log("Empleado existe:", exist.data.exists);
       return exist.data.exists;
     } catch (error) {

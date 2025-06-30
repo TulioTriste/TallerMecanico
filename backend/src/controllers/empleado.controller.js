@@ -88,8 +88,7 @@ export const deleteEmpleado = async (req, res) => {
 };
 
 export const isEmpleadoExists = async (req, res) => {
-  const {empleado_rut} = req.body;
-  console.log(req.body);
+  const {empleado_rut} = req.query;
 
   try {
     const empleado = await EmpleadoModel.isEmpleadoExist(empleado_rut);
@@ -115,11 +114,9 @@ export const isEmpleadoExists = async (req, res) => {
 };
 
 export const loginEmpleado = async (req, res) => {
-  console.log(req.body);
   const { correo, password } = req.body;
 
   const employee = await EmpleadoModel.getByCorreo(correo);
-  console.log(employee);
   if (!employee) {
     return res.status(400).json({ message: "Empleado no encontrado." });
   }

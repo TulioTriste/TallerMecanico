@@ -125,7 +125,9 @@ class UserModel {
                     usuario
                 WHERE usuario_rut = @usuario_rut`);
 
-      return result.recordset[0].plan_id !== undefined && result.recordset[0].plan_id !== null;
+      return result.recordset[0]
+        && result.recordset[0].plan_id !== undefined
+        && result.recordset[0].plan_id !== null;
     } catch (error) {
       console.error("Error al verificar si el usuario tiene un plan:", error);
       throw error;

@@ -27,10 +27,10 @@ import * as path from "node:path";
 
 const router = Router();
 
-router.get("/registeredvehicles", authRequired, getCountRegisteredVehicles);
-router.get("/ordenesactivas", authRequired, getOrdenesActivasCount);
-router.get("/clientescount", authRequired, getClientesCount);
-router.get("/citashoytotal", authRequired, getCitasHoyTotalCount);
+router.get("/registeredvehicles", getCountRegisteredVehicles);
+router.get("/ordenesactivas", getOrdenesActivasCount);
+router.get("/clientescount", getClientesCount);
+router.get("/citashoytotal", getCitasHoyTotalCount);
 router.get("/nextcita/:taller_id", authRequired, ownTallerRequired, getNextCita);
 router.get("/ordenestrabajocount/:taller_id", authRequired, getOrdenesDeTrabajoCount);
 router.get("/ordenestrabajocountestado/:taller_id/:estado_id", authRequired, getOrdenesDeTrabajoCountByEstado);
@@ -39,12 +39,12 @@ router.get("/otdelmes/:taller_id", authRequired, ownTallerRequired, getCountOTMe
 router.get("/otsrecientes/:taller_id/:days", authRequired, ownTallerRequired, getRecentOTs);
 router.get("/citashoy/:taller_id", authRequired, ownTallerRequired, getCitasHoy);
 router.get("/ingresosdelmes/:taller_id", authRequired, ownTallerRequired, getIngresosDelMes);
-router.get("/getroles", authRequired, getRoles);
+router.get("/getroles", getRoles);
 router.get("/getot/:taller_id/:ot_id", authRequired, ownTallerRequired, getOt);
 router.post("/addtasktoot/:taller_id/:ot_id", authRequired, ownTallerRequired, addTaskToOt);
 router.get("/gettasksbyotid/:taller_id/:ot_id", authRequired, ownTallerRequired, getTasksByOtId);
 router.post("/updorcretasks/:taller_id/:ot_id", authRequired, ownTallerRequired, updateOrCreateTasks);
-router.get("/getestados", authRequired, getEstados);
+router.get("/getestados", getEstados);
 router.post("/updateot/:taller_id/:ot_id", authRequired, ownTallerRequired, updateOt);
 router.post("/addot/:taller_id", authRequired, planRequired, ownTallerRequired, addOt);
 router.get("/getotbyuniqueid/:uniqueId", getOtByUniqueId);

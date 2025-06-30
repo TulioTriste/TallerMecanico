@@ -153,6 +153,28 @@ class EmpleadoModel {
       throw error;
     }
   }
+
+  async getTallerByRut(empleado_rut) {
+    try {
+      const pool = await connectToDatabase();
+      const request = pool.request()
+                            .input("empleado_rut", sql.VarChar, empleado_rut);
+
+      const result = await request.query(`
+        SELECT 
+            e.taller_id,
+            t.nombre AS taller_nombre
+        FROM empleado e
+        INNER JOIN taller t ON e.taller_id = t.taller_id
+        WHERE e.empleado_rut = @empleado_rut
+      `);
+
+      return result.recordset[0];
+    } catch (error) {
+      console.error("Error fetching taller by empleado rut:", error);
+      throw error;
+    }
+  }
 }
 
 export default new EmpleadoModel();
