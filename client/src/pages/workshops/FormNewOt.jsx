@@ -617,7 +617,7 @@ export default function CreateWorkshop() {
                             ? "bg-gray-700 border-gray-600 text-white"
                             : "bg-white border-gray-300"
                         }`}
-                        placeholder="Nombre del técnico"
+                        placeholder="Rut del técnico"
                       />
                     </div>
                   </div>

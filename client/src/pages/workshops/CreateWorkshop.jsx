@@ -10,7 +10,7 @@ const CreateWorkshop = () => {
   const {darkMode} = useDarkMode();
   const {user} = useAuth();
   const navigate = useNavigate();
-  const {createTaller} = useWorkshop();
+  const {createTaller, cargarTalleres} = useWorkshop();
 
   const [formData, setFormData] = useState({
     nombre: "",
@@ -26,7 +26,6 @@ const CreateWorkshop = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    console.log(`Campo ${name} actualizado:`, value);
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
@@ -56,10 +55,11 @@ const CreateWorkshop = () => {
 
       if (response.status === 403) {
         setError(response.message);
-      } else if (response.message) {
-        setError(response.message);
       } else {
         setSuccess("Taller creado exitosamente");
+
+        await cargarTalleres();
+
         setTimeout(() => {
           navigate("/workshops");
         }, 2000);

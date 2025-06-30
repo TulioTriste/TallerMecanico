@@ -10,14 +10,15 @@ const CheckoutButton = ({ selectedPaymentMethod, product, user, onSuccess, onErr
       setLoading(true);
 
       const data = {
-        items: [
-          {
-            title: product.name,
-            quantity: 1,
-            price: product.price,
-            description: product.features
-          }
-        ],
+        item: {
+          title: product.name,
+          price: product.price,
+          description: product.features,
+          cycle: "months",
+          frecuency: product.cycle === "monthly" ? 1 : 12,
+          currency_id: "CLP",
+          plan_id: product.plan_id,
+        },
         payer: {
           name: user.nombre,
           surname: user.apellido,
@@ -25,8 +26,6 @@ const CheckoutButton = ({ selectedPaymentMethod, product, user, onSuccess, onErr
         }
       };
       const response = await createPreferenceRequest(data);
-
-      // Redirigir al checkout de Mercado Pago
       window.location.href = response.data.init_point;
 
       if (onSuccess) onSuccess(response.data);

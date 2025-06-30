@@ -4,9 +4,11 @@ import { Shield, CreditCard, Check, ArrowLeft } from "lucide-react";
 import { useDarkMode } from "../../context/darkModeContext";
 import {createPreferenceRequest} from "../../api/payments.js";
 import CheckoutButton from "./CheckoutButton.jsx";
+import {useAuth} from "../../context/authContext.jsx";
 
 const PlanCheckout = () => {
   const { darkMode } = useDarkMode();
+  const {user} = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
@@ -185,7 +187,7 @@ const PlanCheckout = () => {
               <CheckoutButton
                 selectedPaymentMethod={selectedPaymentMethod}
                 product={planDetails}
-                user={{ nombre: "Usuario", apellido: "Ejemplo", correo: ""}}
+                user={{ nombre: user.nombre, apellido: user.apellido, correo: user.correo}}
                 onSuccess={(data) => console.log("Pago exitoso:", data)}
                 onError={(error) => console.error("Error en el pago:", error)}
               />

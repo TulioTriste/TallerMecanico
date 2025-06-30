@@ -29,7 +29,7 @@ import RecoverPasswordApprovePage from "./pages/auth/RecoverPasswordApproved.jsx
 import ErrorPage from "./pages/error/ErrorPage.jsx";
 import PlanCheckout from "./pages/checkout/PlanCheckout.jsx";
 import ClientVehicleDetails from "./pages/client/ClientVehicleDetails.jsx";
-import SuccessPage from "./pages/main/SuccessPage.jsx";
+import SuccessPage from "./pages/checkout/SuccessPage.jsx";
 import Appointments from "./pages/workshops/Appointments.jsx";
 import CookieConsent from "./Components/cookies/CookieConsent.jsx";
 import AboutSoftware from "./pages/main/AboutSoftware.jsx";
@@ -114,7 +114,11 @@ function App() {
                             <Route
                               path="/checkout"
                               element={<PlanCheckout />}
-                            />{" "}
+                            />
+                            <Route
+                              path="/checkout/success"
+                              element={<SuccessPage />}
+                            />
                           </Route>
                           <Route path="*" element={<ErrorPage />} />
                         </Routes>

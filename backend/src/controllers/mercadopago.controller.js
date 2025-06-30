@@ -1,5 +1,6 @@
-import { MercadoPagoConfig, Preference } from "mercadopago";
+import {MercadoPagoConfig, PreApproval, Preference} from "mercadopago";
 import dotenv from "dotenv";
+const {Payment} = await import("mercadopago");
 
 dotenv.config();
 
@@ -13,38 +14,38 @@ const preferenceClient = new Preference(client);
 
 export const createPreference = async (req, res) => {
   try {
-    const { items, payer } = req.body;
-
-    console.log("payer:", payer);
+    const { item, payer } = req.body;
 
     // Crear la preferencia de pago
-    const preferenceData = {
-      items: items.map(item => ({
-        title: item.title,
-        quantity: item.quantity || 1,
-        unit_price: item.price,
-        currency_id: "CLP",
-        description: item.description || item.title,
-        plan_id: item.plan_id,
-      })),
-      back_urls: {
-        success: `${process.env.FRONTEND_URL || "http://localhost:5173"}/success`,
-        failure: `${process.env.FRONTEND_URL || "http://localhost:5173"}/failure`,
-        pending: `${process.env.FRONTEND_URL || "http://localhost:5173"}/pending`,
+    const preapprovalData = {
+      reason: item.title,
+      payer_email: payer.email,
+      auto_recurring: {
+        frequency: item.frecuency,
+        frequency_type: item.cycle,
+        transaction_amount: Number(item.price),
+        currency_id: item.currency_id,
       },
-      notification_url: `${process.env.FRONTEND_URL || "http://localhost:5173"}/webhook`,
-      binary_mode: true,
-      payer: payer,
+      back_url: "https://www.google.com",
+      external_reference: `PLAN_${item.plan_id}_${Date.now()}`,
+      payer: {
+        name: payer.name,
+        surname: payer.surname,
+        email: payer.email
+      }
     };
 
-    const preference = await preferenceClient.create({ body: preferenceData });
+    console.log(preapprovalData);
+
+    const preapproval = new PreApproval(client);
+    const subscription = await preapproval.create({ body: preapprovalData });
 
     res.json({
-      id: preference.id,
-      init_point: preference.init_point
+      id: subscription.id,
+      init_point: subscription.init_point
     });
   } catch (error) {
-    console.error("Error al crear preferencia:", error);
+    console.error("Error al crear suscripcion:", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -53,7 +54,6 @@ export const getPaymentById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const { Payment } = await import("mercadopago");
     const paymentClient = new Payment(client);
 
     const payment = await paymentClient.get({ id });

@@ -12,6 +12,6 @@ const router = Router();
 router.post("/add", authRequired, planRequired, insertEmpleado);
 router.get("/get/:taller_id", authRequired, planRequired, ownTallerRequired, getEmpleadosByTaller);
 router.delete("/delete", authRequired, planRequired, deleteEmpleado);
-router.get("/exists/:empleado_rut", authRequired, planRequired, isEmpleadoExists);
+router.get("/exists", authRequired, planRequired, isEmpleadoExists);
 
 export default router;
