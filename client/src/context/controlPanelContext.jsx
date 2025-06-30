@@ -61,7 +61,6 @@ export function ControlPanelProvider({children}) {
   const updateRoles = async () => {
     try {
       const res = await getRolesRequest();
-      console.log(res.data);
       setRoles(res.data);
     } catch (error) {
       console.error("Error al obtener los roles:", error);

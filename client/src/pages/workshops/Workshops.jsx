@@ -173,8 +173,6 @@ const Workshops = () => {
           )}
         </div>
 
-        {/* ... resto del código ... */}
-
         {/* Agregar botón flotante en la esquina inferior derecha cuando hay talleres */}
         {workshops.length > 0 && (
           <button
