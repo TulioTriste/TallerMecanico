@@ -12,7 +12,7 @@ export const ProtectedRoute = () => {
   if (!isAuthenticated) {
     return <Navigate to="/login" replace/>;
   }
-  if (user.plan_id == null || user.plan_id === 0) {
+  if (user.userType !== "empleado" && user.plan_id == null || user.plan_id === 0) {
     console.log("User has a plan or is not logged in, redirecting to dashboard.");
     return <Navigate to="/dashboard" replace/>;
   }

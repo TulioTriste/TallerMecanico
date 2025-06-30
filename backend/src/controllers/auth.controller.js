@@ -78,6 +78,7 @@ export const login = async (req, res) => {
         rut: userFound.usuario_rut,
         correo: userFound.correo,
         nombre: userFound.nombre,
+        tipo: "usuario",
       },
       rememberMe);
 
@@ -123,24 +124,50 @@ export const verifyToken = async (req, res) => {
       });
     }
 
-    const userFound = await UserModel.getUserByRut(user.rut);
-    if (!userFound) {
-      console.log("Usuario no encontrado");
-      return res.status(401).json({
-        message: "Usuario no encontrado",
+    const cargo = user.tipo;
+    if (cargo === "empleado") {
+      const empleadoFound = await UserModel.getUserByRut(user.rut);
+
+      if (!empleadoFound) {
+        console.log("Empleado no encontrado");
+        return res.status(401).json({
+          message: "Empleado no encontrado",
+        });
+      }
+
+      return res.json({
+        rut: empleadoFound.usuario_rut,
+        nombre: empleadoFound.nombre,
+        apellido: empleadoFound.apellido,
+        correo: empleadoFound.correo,
+        telefono: empleadoFound.telefono,
+        direccion: empleadoFound.direccion,
+        empresa: empleadoFound.empresa,
+        plan_id: empleadoFound.plan_id,
+        cargo: cargo,
+      });
+    } else {
+      const userFound = await UserModel.getUserByRut(user.rut);
+
+      if (!userFound) {
+        console.log("Usuario no encontrado");
+        return res.status(401).json({
+          message: "Usuario no encontrado",
+        });
+      }
+
+      return res.json({
+        rut: userFound.usuario_rut,
+        nombre: userFound.nombre,
+        apellido: userFound.apellido,
+        correo: userFound.correo,
+        telefono: userFound.telefono,
+        direccion: userFound.direccion,
+        empresa: userFound.empresa,
+        plan_id: userFound.plan_id,
+        cargo: cargo,
       });
     }
-
-    return res.json({
-      rut: userFound.usuario_rut,
-      nombre: userFound.nombre,
-      apellido: userFound.apellido,
-      correo: userFound.correo,
-      telefono: userFound.telefono,
-      direccion: userFound.direccion,
-      empresa: userFound.empresa,
-      plan_id: userFound.plan_id,
-    });
   });
 };
 

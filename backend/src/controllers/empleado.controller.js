@@ -1,6 +1,7 @@
 import empleadoModel from "../models/empleado.model.js";
 import bcrypt from "bcryptjs";
 import EmpleadoModel from "../models/empleado.model.js";
+import {createAccessToken} from "../libs/jwt.js";
 
 export const insertEmpleado = async (req, res) => {
   const {empleado_rut, taller_id, roles_id, nombre, apellido, telefono, correo, password} = req.body;
@@ -111,4 +112,44 @@ export const isEmpleadoExists = async (req, res) => {
       error: error.message
     });
   }
+};
+
+export const loginEmpleado = async (req, res) => {
+  console.log(req.body);
+  const { correo, password } = req.body;
+
+  const employee = await EmpleadoModel.getByCorreo(correo);
+  console.log(employee);
+  if (!employee) {
+    return res.status(400).json({ message: "Empleado no encontrado." });
+  }
+
+  const isMatch = await bcrypt.compare(password, employee.password);
+  if (!isMatch) {
+    return res.status(400).json({ message: "Credenciales inválidas." });
+  }
+
+  const token = await createAccessToken({
+    rut: employee.empleado_rut,
+    correo: employee.correo,
+    nombre: employee.nombre + " " + employee.apellido,
+    rol: employee.nombre_rol,
+    tipo: "empleado"
+  });
+
+  res.cookie("token", token);
+  res.status(200).json({
+    message: "Login exitoso",
+    token,
+    empleado: {
+      rut: employee.empleado_rut,
+      taller_id: employee.taller_id,
+      roles_id: employee.roles_id,
+      nombre: employee.nombre,
+      apellido: employee.apellido,
+      correo: employee.correo,
+      cel: employee.cel,
+      nombre_rol: employee.nombre_rol
+    }
+  });
 };

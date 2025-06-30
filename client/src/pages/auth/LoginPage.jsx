@@ -24,11 +24,15 @@ export default function LoginForm() {
 
   const navigate = useNavigate();
 
-  const [userType, setUserType] = useState("Usuario");
+  const [userType, setUserType] = useState("usuario");
 
   const onSubmit = async (data) => {
     setLoading(true);
     try {
+      data = {
+        ...data,
+        userType: userType,
+      }
       await signin(data);
     } finally {
       setLoading(false);
@@ -37,7 +41,7 @@ export default function LoginForm() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      if (user.plan_id !== undefined && user.plan_id !== null) {
+      if (user.userType !== "empleado" && user.plan_id !== null && user.plan_id !== undefined) {
         navigate("/workshops");
       } else {
         navigate("/workshops");
@@ -102,9 +106,9 @@ export default function LoginForm() {
               >
                 <button
                   type="button"
-                  onClick={() => setUserType("Usuario")}
+                  onClick={() => setUserType("usuario")}
                   className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${
-                    userType === "Usuario"
+                    userType === "usuario"
                       ? darkMode
                         ? "bg-blue-600 text-white"
                         : "bg-white text-blue-600 shadow-sm"
@@ -117,9 +121,9 @@ export default function LoginForm() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setUserType("Empleado")}
+                  onClick={() => setUserType("empleado")}
                   className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${
-                    userType === "Empleado"
+                    userType === "empleado"
                       ? darkMode
                         ? "bg-blue-600 text-white"
                         : "bg-white text-blue-600 shadow-sm"
