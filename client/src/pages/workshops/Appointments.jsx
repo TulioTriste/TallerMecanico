@@ -9,7 +9,7 @@ import StringFormatter from "../../utilities/stringFormatter";
 export default function Appointments() {
   const { darkMode } = useDarkMode();
   const { id } = useParams();
-  const { getCitas } = useControlPanel(); // Asumiendo que tienes esta función en tu contexto
+  const { getCitasByTaller } = useControlPanel(); // Asumiendo que tienes esta función en tu contexto
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,7 +19,7 @@ export default function Appointments() {
   useEffect(() => {
     const loadAppointments = async () => {
       try {
-        const citas = await getCitas(id);
+        const citas = await getCitasByTaller(id);
         setAppointments(citas);
         setLoading(false);
       } catch (error) {
@@ -105,11 +105,11 @@ export default function Appointments() {
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {appointments.map((cita) => (
                 <tr
-                  key={cita.id}
+                  key={cita.cita_id}
                   className={darkMode ? "bg-gray-800" : "bg-white"}
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    {cita.id}
+                    {cita.cita_id}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     {cita.cliente_rut}

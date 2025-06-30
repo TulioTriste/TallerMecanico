@@ -50,6 +50,7 @@ function App() {
                         <Routes>
                           {/* Rutas públicas */}
                           <Route path="/" element={<Dashboard />} />
+                          <Route path="/dashboard" element={<Dashboard />} />
                           <Route path="/login" element={<LoginPage />} />
                           <Route path="/register" element={<RegisterPage />} />
                           <Route
@@ -69,9 +70,8 @@ function App() {
                             path="/order/:uniqueId"
                             element={<ClientVehicleDetails />}
                           />
-                          {/* Rutas protegidas */}
+
                           <Route element={<ProtectedRoute />}>
-                            <Route path="/dashboard" element={<Dashboard />} />
                             <Route path="/workshops" element={<Workshops />} />
                             <Route
                               path="/workshop/:id/appointments"

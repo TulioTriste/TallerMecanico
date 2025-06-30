@@ -24,6 +24,21 @@ class ControlPanelModel {
     }
   }
 
+  async getCountOrdenesActivas() {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool.request().query(`
+                SELECT COUNT(*) AS total 
+                FROM ot 
+                WHERE estado_id IN (1, 2) -- Asumiendo que 1 y 2 son estados activos
+            `);
+      return result.recordset[0].total;
+    } catch (error) {
+      console.error("Error al obtener el conteo de órdenes activas:", error);
+      throw error;
+    }
+  }
+
   async getCountClientes() {
     try {
       const pool = await connectToDatabase();
@@ -46,6 +61,32 @@ class ControlPanelModel {
       return result.recordset[0].total;
     } catch (error) {
       console.error("Error al obtener el conteo de citas:", error);
+      throw error;
+    }
+  }
+
+  async getCountClientes() {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool.request().query("SELECT COUNT(*) AS total FROM cliente");
+      return result.recordset[0].total;
+    } catch (error) {
+      console.error("Error al obtener el conteo de clientes:", error);
+      throw error;
+    }
+  }
+
+  async getCountCitasTotalHoy() {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool.request().query(`
+                SELECT COUNT(*) AS total 
+                FROM cita 
+                WHERE CAST(hora AS DATE) = CAST(GETDATE() AS DATE)
+            `);
+      return result.recordset[0].total;
+    } catch (error) {
+      console.error("Error al obtener el conteo de citas de hoy:", error);
       throw error;
     }
   }
@@ -296,6 +337,57 @@ class ControlPanelModel {
       return result.recordset;
     } catch (error) {
       console.error("Error al obtener los estados:", error);
+      throw error;
+    }
+  }
+
+  async addCita(taller_id, cita) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool.request()
+        .input("tallerId", sql.Int, taller_id)
+        .input("clienteRut", sql.VarChar, cita.cliente_rut)
+        .input("patente", sql.VarChar, cita.vehiculo_patente)
+        .input("hora", sql.DateTime, cita.hora)
+        .input("descripcion", sql.VarChar, cita.descripcion)
+        .query(`
+                    INSERT INTO cita (taller_id, cliente_rut, patente, hora, descripcion)
+                    VALUES (@tallerId, @clienteRut, @patente, @hora, @descripcion);
+                `);
+      return result.rowsAffected[0] > 0;
+    } catch (error) {
+      console.error("Error al agregar la cita:", error);
+      throw error;
+    }
+  }
+
+  async getCitasByTaller(taller_id) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool.request()
+        .input("tallerId", sql.Int, taller_id)
+        .query(`
+                    SELECT 
+                        c.cita_id,
+                        c.cliente_rut,
+                        cl.nombre AS nombre_cliente,
+                        c.patente,
+                        v.marca + ' ' + v.modelo + ' ' + CAST(v.anio AS VARCHAR(5)) AS nombre_vehiculo,
+                        c.hora,
+                        c.descripcion,
+                        c.created_at
+                    FROM 
+                        cita c
+                        INNER JOIN cliente cl ON c.cliente_rut = cl.cliente_rut
+                        INNER JOIN vehiculo v ON c.patente = v.patente
+                    WHERE 
+                        c.taller_id = @tallerId
+                    ORDER BY 
+                        c.hora ASC
+                `);
+      return result.recordset;
+    } catch (error) {
+      console.error("Error al obtener las citas:", error);
       throw error;
     }
   }

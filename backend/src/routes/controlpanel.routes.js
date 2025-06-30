@@ -1,12 +1,13 @@
 import {Router} from "express";
 import {authRequired, ownTallerRequired, planRequired} from "../middlewares/validateToken.js";
 import {
-  getCitasHoy,
+  addCita, getCitasByTaller,
+  getCitasHoy, getCitasHoyTotalCount, getClientesCount,
   getCountCitasProx7Dias,
   getCountOTMes,
   getCountRegisteredVehicles, getEstados,
   getIngresosDelMes,
-  getNextCita,
+  getNextCita, getOrdenesActivasCount,
   getOrdenesDeTrabajoCount,
   getOrdenesDeTrabajoCountByEstado,
   getRecentOTs,
@@ -27,6 +28,9 @@ import * as path from "node:path";
 const router = Router();
 
 router.get("/registeredvehicles", authRequired, getCountRegisteredVehicles);
+router.get("/ordenesactivas", authRequired, getOrdenesActivasCount);
+router.get("/clientescount", authRequired, getClientesCount);
+router.get("/citashoytotal", authRequired, getCitasHoyTotalCount);
 router.get("/nextcita/:taller_id", authRequired, ownTallerRequired, getNextCita);
 router.get("/ordenestrabajocount/:taller_id", authRequired, getOrdenesDeTrabajoCount);
 router.get("/ordenestrabajocountestado/:taller_id/:estado_id", authRequired, getOrdenesDeTrabajoCountByEstado);
@@ -44,6 +48,8 @@ router.get("/getestados", authRequired, getEstados);
 router.post("/updateot/:taller_id/:ot_id", authRequired, ownTallerRequired, updateOt);
 router.post("/addot/:taller_id", authRequired, planRequired, ownTallerRequired, addOt);
 router.get("/getotbyuniqueid/:uniqueId", getOtByUniqueId);
+router.post("/addcita/:taller_id", authRequired, ownTallerRequired, addCita);
+router.get("/getcitas/:taller_id", authRequired, ownTallerRequired, getCitasByTaller);
 
 const storage = multer.diskStorage({
   destination: '../uploads/',

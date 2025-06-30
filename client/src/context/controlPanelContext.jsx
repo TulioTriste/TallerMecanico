@@ -1,9 +1,10 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {
+  addCitaRequest,
   addOtRequest,
-  addTaskRequest,
-  getCitasHoyRequest,
-  getCountCitasProx7DiasRequest,
+  addTaskRequest, getCitasByTallerRequest,
+  getCitasHoyRequest, getCitasHoyTotalRequest, getClientesCountRequest,
+  getCountCitasProx7DiasRequest, getCountOrdenesActivasRequest,
   getCountOTMesRequest,
   getCountRegisteredVehiclesRequest, getEstadosRequest,
   getIngresosDelMesRequest,
@@ -25,6 +26,9 @@ export const useControlPanel = () => {
 
 export function ControlPanelProvider({children}) {
   const [registeredVehicles, setRegisteredVehicles] = useState(false);
+  const [clientesCount, setClientesCount] = useState(false);
+  const [ordenesActivas, setOrdenesActivas] = useState(false);
+  const [citasTotalHoy, setCitasTotalHoy] = useState(false);
   const [roles, setRoles] = useState([]);
   const [estados, setEstados] = useState([]);
   const location = useLocation();
@@ -48,12 +52,21 @@ export function ControlPanelProvider({children}) {
     fetchEstados();
   }, []);
 
-  const updateRegisteredVehicles = async () => {
+  const updateCounts = async () => {
     try {
-      const res = await getCountRegisteredVehiclesRequest();
-      setRegisteredVehicles(res.data.count);
+      const regVehRes = await getCountRegisteredVehiclesRequest();
+      setRegisteredVehicles(regVehRes.data.count);
+
+      const cliRes = await getClientesCountRequest();
+      setClientesCount(cliRes.data.count);
+
+      const ordActRes = await getCountOrdenesActivasRequest();
+      setOrdenesActivas(ordActRes.data.count);
+
+      const citasHoyRes = await getCitasHoyTotalRequest();
+      setCitasTotalHoy(citasHoyRes.data.count);
     } catch (error) {
-      console.error("Error al obtener el conteo de vehículos registrados:", error);
+      console.error("Error al obtener el conteo:", error);
       setRegisteredVehicles(false); // En caso de error, se puede establecer a false o a un valor predeterminado
     }
   };
@@ -70,16 +83,16 @@ export function ControlPanelProvider({children}) {
 
   // Puesto para que se actualize solo cada 10 segundos
   useEffect(() => {
-    const routesNeedingUpdates = ['/dashboard', '/workshop/dashboard', '/workshop/sucursal'];
+    const routesNeedingUpdates = ['/', '/workshop/dashboard', '/workshop/sucursal'];
     const shouldUpdate = routesNeedingUpdates.some(route =>
       location.pathname === route || location.pathname.startsWith(route)
     );
 
     if (shouldUpdate) {
-      updateRegisteredVehicles();
+      updateCounts();
       updateRoles();
 
-      const interval = setInterval(updateRegisteredVehicles, 10000); // Dentro del setInterval, se actualiza cada 10 segundos
+      const interval = setInterval(updateCounts, 10000); // Dentro del setInterval, se actualiza cada 10 segundos
       return () => clearInterval(interval);
     }
   }, [location.pathname]);
@@ -250,13 +263,39 @@ export function ControlPanelProvider({children}) {
     }
   }
 
+  const addCita = async (taller_id, cita) => {
+    try {
+      const response = await addCitaRequest(taller_id, cita);
+      if (response.status !== 201) {
+        console.error("Error al agregar la cita:", response.data.message);
+        return null;
+      }
+      return true;
+    } catch (error) {
+      console.error("Error al agregar la cita:", error);
+      return null;
+    }
+  }
+
+  const getCitasByTaller = async (taller_id) => {
+    try {
+      const response = await getCitasByTallerRequest(taller_id);
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener las citas del taller:", error);
+      return [];
+    }
+  }
+
   return (
     <ControlPanelContext.Provider
       value={{
         registeredVehicles,
+        ordenesActivas,
+        clientesCount,
+        citasTotalHoy,
         roles,
         estados,
-        updateRegisteredVehicles,
         getNextCitaTaller,
         getOrdenesDeTrabajoCount,
         getOrdenesDeTrabajoCountByEstado,
@@ -274,6 +313,8 @@ export function ControlPanelProvider({children}) {
         addOt,
         getOtByUniqueId,
         updateRoles,
+        addCita,
+        getCitasByTaller,
       }}
     >
       {children}
