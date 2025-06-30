@@ -19,7 +19,7 @@ CREATE TABLE [estado] (
     [nombre] VARCHAR(120),
     [descripcion] VARCHAR(250),
     CONSTRAINT [PK_estado] PRIMARY KEY CLUSTERED ([estado_id] ASC)
-);
+    );
 
 CREATE TABLE [cliente] (
     [cliente_rut] VARCHAR(12) NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE [cliente] (
     [telefono] VARCHAR(12) NOT NULL,
     [created_at] DATETIME NOT NULL DEFAULT GETDATE(),
     CONSTRAINT [PK_cliente] PRIMARY KEY CLUSTERED ([cliente_rut] ASC)
-);
+    );
 
 CREATE TABLE [vehiculo] (
     [patente] VARCHAR(8) NOT NULL,
@@ -41,7 +41,7 @@ CREATE TABLE [vehiculo] (
     CONSTRAINT [PK_vehiculo] PRIMARY KEY CLUSTERED ([patente] ASC),
     CONSTRAINT [FK_vehiculo_cliente] FOREIGN KEY ([cliente_rut]) REFERENCES [cliente]([cliente_rut])
     ON DELETE NO ACTION
-);
+    );
 
 CREATE TABLE [plan] (
     [plan_id] INT NOT NULL IDENTITY(1,1),
@@ -49,7 +49,7 @@ CREATE TABLE [plan] (
     [precio] INT NOT NULL,
     [talleres] INT NOT NULL,
     CONSTRAINT [PK_plan] PRIMARY KEY NONCLUSTERED ([plan_id] ASC)
-);
+    );
 
 CREATE TABLE [usuario] (
     [usuario_rut] VARCHAR(13) NOT NULL,
@@ -64,15 +64,15 @@ CREATE TABLE [usuario] (
     [plan_id] INT,
     CONSTRAINT [PK_usuario] PRIMARY KEY CLUSTERED ([usuario_rut] ASC),
     CONSTRAINT [FK_usuario_plan] FOREIGN KEY ([plan_id]) REFERENCES [plan]([plan_id])
-        ON UPDATE CASCADE ON DELETE CASCADE
-);
+    ON UPDATE CASCADE ON DELETE CASCADE
+    );
 
 CREATE TABLE [roles] (
     [roles_id] INT NOT NULL IDENTITY(1,1),
     [nombre] VARCHAR(250) NOT NULL,
     [descripcion] VARCHAR(250),
     CONSTRAINT [PK_roles] PRIMARY KEY CLUSTERED ([roles_id] ASC)
-);
+    );
 
 CREATE TABLE [taller] (
     [taller_id] INT NOT NULL IDENTITY(1,1),
@@ -86,8 +86,8 @@ CREATE TABLE [taller] (
     [created_at] DATETIME NOT NULL DEFAULT GETDATE(),
     CONSTRAINT [PK_taller] PRIMARY KEY CLUSTERED ([taller_id] ASC),
     CONSTRAINT [FK_taller_usuario] FOREIGN KEY ([usuario_rut]) REFERENCES [usuario]([usuario_rut])
-        ON UPDATE CASCADE ON DELETE CASCADE
-);
+    ON UPDATE CASCADE ON DELETE CASCADE
+    );
 
 CREATE TABLE [empleado] (
     [empleado_rut] VARCHAR(12) NOT NULL,
@@ -101,10 +101,10 @@ CREATE TABLE [empleado] (
     [created_at] DATETIME NOT NULL DEFAULT GETDATE(),
     CONSTRAINT [PK_empleado] PRIMARY KEY CLUSTERED ([empleado_rut] ASC),
     CONSTRAINT [FK_empleado_taller] FOREIGN KEY ([taller_id]) REFERENCES [taller]([taller_id])
-        ON UPDATE CASCADE ON DELETE CASCADE,
+    ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT [FK_empleado_roles] FOREIGN KEY ([roles_id]) REFERENCES [roles]([roles_id])
-        ON UPDATE CASCADE ON DELETE CASCADE
-);
+    ON UPDATE CASCADE ON DELETE CASCADE
+    );
 
 CREATE TABLE [ot] (
     [ot_id] INT NOT NULL IDENTITY(1,1),
@@ -122,13 +122,15 @@ CREATE TABLE [ot] (
     [created_at] DATETIME NOT NULL DEFAULT GETDATE(),
     CONSTRAINT [PK_ot] PRIMARY KEY CLUSTERED ([ot_id] ASC),
     CONSTRAINT [FK_ot_cliente] FOREIGN KEY ([cliente_rut]) REFERENCES [cliente]([cliente_rut])
-    	ON UPDATE CASCADE ON DELETE NO ACTION,
+    ON UPDATE CASCADE ON DELETE NO ACTION,
     CONSTRAINT [FK_ot_vehiculo] FOREIGN KEY ([vehiculo_patente]) REFERENCES [vehiculo]([patente])
-        ON UPDATE CASCADE ON DELETE NO ACTION,
+    ON UPDATE CASCADE ON DELETE NO ACTION,
     CONSTRAINT [FK_ot_estado] FOREIGN KEY ([estado_id]) REFERENCES [estado]([estado_id])
-        ON UPDATE CASCADE ON DELETE NO ACTION,
-    CONSTRAINT [FK_ot_empleado] FOREIGN KEY ([empleado_rut]) REFERENCES [empleado]([empleado_rut])
-);
+    ON UPDATE CASCADE ON DELETE NO ACTION,
+    CONSTRAINT [FK_ot_empleado] FOREIGN KEY ([empleado_rut]) REFERENCES [empleado]([empleado_rut]),
+    CONSTRAINT [FK_ot_taller] FOREIGN KEY ([taller_id]) REFERENCES [taller]([taller_id])
+    ON UPDATE CASCADE ON DELETE CASCADE
+    );
 
 CREATE TABLE [ot_tareas] (
     [tarea_id] INT NOT NULL IDENTITY(1,1),
@@ -139,8 +141,8 @@ CREATE TABLE [ot_tareas] (
     [created_at] DATETIME NOT NULL DEFAULT GETDATE(),
     CONSTRAINT [PK_ot_tareas] PRIMARY KEY CLUSTERED ([tarea_id] ASC),
     CONSTRAINT [FK_ot_tareas_ot] FOREIGN KEY ([ot_id]) REFERENCES [ot]([ot_id])
-        ON UPDATE CASCADE ON DELETE CASCADE
-);
+    ON UPDATE CASCADE ON DELETE CASCADE
+    );
 
 CREATE TABLE [ot_estado_historial] (
     [historial_id] INT NOT NULL IDENTITY(1,1),
@@ -152,39 +154,37 @@ CREATE TABLE [ot_estado_historial] (
     [comentario] VARCHAR(500),
     CONSTRAINT [PK_ot_estado_historial] PRIMARY KEY CLUSTERED ([historial_id] ASC),
     CONSTRAINT [FK_historial_ot] FOREIGN KEY ([ot_id]) REFERENCES [ot]([ot_id])
-        ON UPDATE CASCADE ON DELETE CASCADE,
+    ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT [FK_historial_estado_anterior] FOREIGN KEY ([estado_anterior_id]) REFERENCES [estado]([estado_id]),
-    CONSTRAINT [FK_historial_estado_nuevo] FOREIGN KEY ([estado_nuevo_id]) REFERENCES [estado]([estado_id]),
-    CONSTRAINT [FK_historial_empleado] FOREIGN KEY ([empleado_rut]) REFERENCES [empleado]([empleado_rut])
-        ON UPDATE CASCADE ON DELETE NO ACTION
-);
+    CONSTRAINT [FK_historial_estado_nuevo] FOREIGN KEY ([estado_nuevo_id]) REFERENCES [estado]([estado_id])
+    );
 
 
 CREATE TABLE [cita] (
-	[cita_id] INT NOT NULL IDENTITY(1, 1),
-	[taller_id] INT NOT NULL,
-	[cliente_rut] VARCHAR(12) NOT NULL,
-	[patente] VARCHAR(8) NOT NULL,
-	[hora] DATETIME NOT NULL,
-	[descripcion] VARCHAR(250),
+    [cita_id] INT NOT NULL IDENTITY(1, 1),
+    [taller_id] INT NOT NULL,
+    [cliente_rut] VARCHAR(12) NOT NULL,
+    [patente] VARCHAR(8) NOT NULL,
+    [hora] DATETIME NOT NULL,
+    [descripcion] VARCHAR(250),
     [created_at] DATETIME NOT NULL DEFAULT GETDATE(),
-	CONSTRAINT [PK_cita] PRIMARY KEY CLUSTERED ([cita_id] ASC),
+    CONSTRAINT [PK_cita] PRIMARY KEY CLUSTERED ([cita_id] ASC),
     CONSTRAINT [FK_cita_cliente] FOREIGN KEY ([cliente_rut]) REFERENCES [cliente]([cliente_rut])
-        ON UPDATE CASCADE ON DELETE NO ACTION,
+    ON UPDATE CASCADE ON DELETE NO ACTION,
     CONSTRAINT [FK_cita_vehiculo] FOREIGN KEY ([patente]) REFERENCES [vehiculo]([patente])
-        ON UPDATE CASCADE ON DELETE NO ACTION,
+    ON UPDATE CASCADE ON DELETE NO ACTION,
     CONSTRAINT [FK_cita_taller] FOREIGN KEY ([taller_id]) REFERENCES [taller]([taller_id])
-        ON UPDATE CASCADE ON DELETE NO ACTION
-);
+    ON UPDATE CASCADE ON DELETE CASCADE
+    );
 
 CREATE TABLE [password_reset_tokens] (
-	[usuario_rut] VARCHAR(13) NOT NULL,
-	[token] VARCHAR(255) NOT NULL,
-	[expires_at] DATETIME NOT NULL,
-	[created_at] DATETIME NOT NULL DEFAULT GETDATE(),
-	CONSTRAINT [PK_token] PRIMARY KEY CLUSTERED ([token] ASC),
-	CONSTRAINT [FK_PRT_usuario_rut] FOREIGN KEY ([usuario_rut]) REFERENCES [usuario]([usuario_rut])
-);
+    [usuario_rut] VARCHAR(13) NOT NULL,
+    [token] VARCHAR(255) NOT NULL,
+    [expires_at] DATETIME NOT NULL,
+    [created_at] DATETIME NOT NULL DEFAULT GETDATE(),
+    CONSTRAINT [PK_token] PRIMARY KEY CLUSTERED ([token] ASC),
+    CONSTRAINT [FK_PRT_usuario_rut] FOREIGN KEY ([usuario_rut]) REFERENCES [usuario]([usuario_rut])
+    );
 
 CREATE TABLE [alertas] (
     [alerta_id] INT NOT NULL IDENTITY(1,1),
@@ -194,4 +194,4 @@ CREATE TABLE [alertas] (
     [created_at] DATETIME NOT NULL,
     CONSTRAINT [PK_alerta_id] PRIMARY KEY CLUSTERED ([alerta_id] ASC),
     FOREIGN KEY ([taller_id]) REFERENCES [taller]([taller_id])
-);
+    );
