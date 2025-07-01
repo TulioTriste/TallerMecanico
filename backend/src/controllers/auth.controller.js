@@ -28,6 +28,7 @@ export const register = async (req, res) => {
         rut: newUser.usuario_rut,
         correo: newUser.correo,
         nombre: newUser.nombre,
+        tipo: "usuario",
       },
       true);
 
@@ -43,6 +44,7 @@ export const register = async (req, res) => {
         direccion: newUser.direccion,
         empresa: newUser.empresa,
         plan_id: newUser.plan_id,
+        tipo: "usuario",
       },
     });
   } catch (error) {
@@ -95,6 +97,7 @@ export const login = async (req, res) => {
         direccion: userFound.direccion,
         empresa: userFound.empresa,
         plan_id: userFound.plan_id,
+        tipo: "usuario",
       },
     });
   } catch (error) {
@@ -124,12 +127,11 @@ export const verifyToken = async (req, res) => {
       });
     }
 
-    const cargo = user.tipo;
-    if (cargo === "empleado") {
+    const tipo = user.tipo;
+    if (tipo === "empleado") {
       const empleadoFound = await UserModel.getUserByRut(user.rut);
 
       if (!empleadoFound) {
-        console.log("Empleado no encontrado");
         return res.status(401).json({
           message: "Empleado no encontrado",
         });
@@ -144,13 +146,12 @@ export const verifyToken = async (req, res) => {
         direccion: empleadoFound.direccion,
         empresa: empleadoFound.empresa,
         plan_id: empleadoFound.plan_id,
-        cargo: cargo,
+        tipo: tipo,
       });
     } else {
       const userFound = await UserModel.getUserByRut(user.rut);
 
       if (!userFound) {
-        console.log("Usuario no encontrado");
         return res.status(401).json({
           message: "Usuario no encontrado",
         });
@@ -165,32 +166,10 @@ export const verifyToken = async (req, res) => {
         direccion: userFound.direccion,
         empresa: userFound.empresa,
         plan_id: userFound.plan_id,
-        cargo: cargo,
+        tipo: tipo,
       });
     }
   });
-};
-
-export const profile = async (req, res) => {
-  const userFound = await UserModel.getUserByRut(req.user.rut);
-  if (!userFound) {
-    return res.status(400).json({
-      message: "Este usuario no existe.",
-    });
-  }
-
-  res.json({
-    user: {
-      rut: userFound.usuario_rut,
-      nombre: userFound.nombre,
-      apellido: userFound.apellido,
-      correo: userFound.correo,
-      telefono: userFound.telefono,
-      direccion: userFound.direccion,
-      empresa: userFound.empresa,
-      plan_id: userFound.plan_id,
-    },
-  })
 };
 
 export const getRutByCorreo = async (req, res) => {

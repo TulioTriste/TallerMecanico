@@ -36,13 +36,11 @@ export function WorkshopProvider({children}) {
     } catch (error) {
       if (error.response) {
         if (error.response.status === 403) {
-          console.log("Límite de talleres alcanzado:", error.response.data.message);
           return {
             status: error.response.status,
             message: error.response.data.message
           };
         } else {
-          console.log("Error al crear el taller:", error.response.data);
           return {
             status: error.response.status,
             message: error.response.data.message || "Error al crear el taller"

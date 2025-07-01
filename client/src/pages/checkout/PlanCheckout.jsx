@@ -32,10 +32,6 @@ const PlanCheckout = () => {
 
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
-    // Aquí iría la lógica para procesar el pago según el método seleccionado
-    console.log("Procesando pago con:", selectedPaymentMethod);
-    console.log("Plan Details:", planDetails);
-
     try {
       const response = await createPreferenceRequest(planDetails);
       if (response.data && response.data.init_point) {

@@ -50,7 +50,6 @@ export function EmpleadoProvider({children}) {
   const isEmpleadoExists = async (data) => {
     try {
       const exist = await isEmpleadoExistsRequest(data);
-      console.log("Empleado existe:", exist.data.exists);
       return exist.data.exists;
     } catch (error) {
       console.error("Error al verificar si el empleado existe:", error);

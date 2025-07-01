@@ -49,3 +49,5 @@ export const getOtByUniqueIdRequest = async (unique_id) => axios.get(`/cp/getotb
 export const addCitaRequest = async (taller_id, cita) => axios.post(`/cp/addcita/${taller_id}`, cita);
 
 export const getCitasByTallerRequest = async (taller_id) => axios.get(`/cp/getcitas/${taller_id}`);
+
+export const getOtsByTallerIdRequest = async (taller_id) => axios.get(`/cp/getots/${taller_id}`);

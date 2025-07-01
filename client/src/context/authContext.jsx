@@ -67,7 +67,6 @@ export const AuthProvider = ({children}) => {
             userType: user.userType,
           }
           setUser(res.data.empleado);
-          console.log("Empleado logueado:", res.data.empleado);
           setIsAuthenticated(true);
         }
       } else if (user.userType === "usuario") {
@@ -174,6 +173,7 @@ export const AuthProvider = ({children}) => {
           return;
         }
         setIsAuthenticated(true);
+        console.log("checklogin", res.data);
         setUser(res.data);
         // eslint-disable-next-line no-unused-vars
       } catch (error) {

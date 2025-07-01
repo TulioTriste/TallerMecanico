@@ -18,8 +18,7 @@ import StringFormatter from "../../utilities/stringFormatter.js";
 export default function WorkOrders() {
   const {darkMode} = useDarkMode();
   const {id} = useParams();
-  const [taller, setTaller] = useState(null);
-  const { getTaller } = useWorkshop();
+  const { getOtsByTallerId } = useControlPanel();
   const [ordenes, setOrdenes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,128 +27,17 @@ export default function WorkOrders() {
   const ordenesPerPage = 10;
 
   useEffect(() => {
-    loadTaller();
     loadOrdenes();
   }, [id, statusFilter]);
-
-  const loadTaller = async () => {
-    try {
-      const tallerData = await getTaller(id);
-      setTaller(tallerData);
-    } catch (error) {
-      console.error("Error al cargar el taller:", error);
-    }
-  };
 
   const loadOrdenes = async () => {
     setLoading(true);
     try {
-      const datosEjemplo = [
-        {
-          ot_id: 1,
-          cliente_rut: "12.345.678-9",
-          vehiculo_patente: "BBCC34",
-          estado_id: 1,
-          descripcion: "Cambio de aceite y filtros",
-          tecnico: "Juan Pérez",
-          fecha_entrada: "2024-01-15T10:00:00",
-          fecha_salida: "2024-01-16T15:00:00",
-          cliente: "Carlos González",
-          vehiculo: "Toyota Corolla 2020",
-        },
-        {
-          ot_id: 2,
-          cliente_rut: "11.111.111-1",
-          vehiculo_patente: "AADD56",
-          estado_id: 2,
-          descripcion: "Revisión de frenos y cambio de pastillas",
-          tecnico: "María López",
-          fecha_entrada: "2024-01-14T09:30:00",
-          fecha_salida: "2024-01-17T12:00:00",
-          cliente: "Ana Martínez",
-          vehiculo: "Mazda 3 2021",
-        },
-        {
-          ot_id: 3,
-          cliente_rut: "9.876.543-2",
-          vehiculo_patente: "XXYY78",
-          estado_id: 3,
-          descripcion: "Diagnóstico completo y afinamiento",
-          tecnico: "Pedro Soto",
-          fecha_entrada: "2024-01-13T14:00:00",
-          fecha_salida: "2024-01-15T17:00:00",
-          cliente: "Roberto Silva",
-          vehiculo: "Honda Civic 2019",
-        },
-        {
-          ot_id: 4,
-          cliente_rut: "15.234.567-8",
-          vehiculo_patente: "HHGG90",
-          estado_id: 1,
-          descripcion: "Cambio de correa de distribución",
-          tecnico: "Luis Rojas",
-          fecha_entrada: "2024-01-16T11:00:00",
-          fecha_salida: "2024-01-18T16:00:00",
-          cliente: "Carmen Núñez",
-          vehiculo: "Kia Sportage 2022",
-        },
-        {
-          ot_id: 5,
-          cliente_rut: "14.567.890-1",
-          vehiculo_patente: "JJKK12",
-          estado_id: 2,
-          descripcion: "Reparación sistema eléctrico",
-          tecnico: "Andrea Muñoz",
-          fecha_entrada: "2024-01-15T08:00:00",
-          fecha_salida: "2024-01-17T14:00:00",
-          cliente: "Jorge Pérez",
-          vehiculo: "Hyundai Tucson 2021",
-        },
-        {
-          ot_id: 6,
-          cliente_rut: "13.456.789-0",
-          vehiculo_patente: "LLMM34",
-          estado_id: 3,
-          descripcion: "Mantención 10.000 km",
-          tecnico: "Diego Sánchez",
-          fecha_entrada: "2024-01-14T13:00:00",
-          fecha_salida: "2024-01-16T12:00:00",
-          cliente: "Patricia Vega",
-          vehiculo: "Suzuki Swift 2020",
-        },
-        {
-          ot_id: 7,
-          cliente_rut: "16.789.012-3",
-          vehiculo_patente: "NNPP56",
-          estado_id: 1,
-          descripcion: "Cambio de amortiguadores",
-          tecnico: "Carla Medina",
-          fecha_entrada: "2024-01-16T09:00:00",
-          fecha_salida: "2024-01-18T15:00:00",
-          cliente: "Fernando Torres",
-          vehiculo: "Nissan Qashqai 2023",
-        },
-        {
-          ot_id: 8,
-          cliente_rut: "17.890.123-4",
-          vehiculo_patente: "QQRR78",
-          estado_id: 2,
-          descripcion: "Revisión de transmisión",
-          tecnico: "Pablo Vera",
-          fecha_entrada: "2024-01-15T15:00:00",
-          fecha_salida: "2024-01-17T18:00:00",
-          cliente: "Marcela Rivas",
-          vehiculo: "Volkswagen Golf 2022",
-        },
-      ];
+      const response = await getOtsByTallerId(id);
 
-      // Simular retraso de carga
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Filtrar por estado si es necesario
-      let ordenesData = datosEjemplo;
+      let ordenesData = Array.isArray(response) ? response : [];
       if (statusFilter !== "all") {
-        ordenesData = datosEjemplo.filter(
+        ordenesData = ordenesData.filter(
           (orden) => orden.estado_id === parseInt(statusFilter),
         );
       }
@@ -198,12 +86,14 @@ export default function WorkOrders() {
   };
 
   // Filtrar órdenes por búsqueda
-  const filteredOrdenes = ordenes.filter(
-    (orden) =>
-      orden.cliente.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      orden.vehiculo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      orden.descripcion.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  const filteredOrdenes = Array.isArray(ordenes)
+    ? ordenes.filter(
+      (orden) =>
+        orden.cliente.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        orden.vehiculo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        orden.descripcion.toLowerCase().includes(searchTerm.toLowerCase()),
+    )
+    : [];
 
   // Paginación
   const indexOfLastOrden = currentPage * ordenesPerPage;
@@ -213,6 +103,14 @@ export default function WorkOrders() {
     indexOfLastOrden,
   );
   const totalPages = Math.ceil(filteredOrdenes.length / ordenesPerPage);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-500">Cargando órdenes...</div>
+      </div>
+    );
+  }
 
   return (
     <div

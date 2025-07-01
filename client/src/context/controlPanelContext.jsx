@@ -10,7 +10,7 @@ import {
   getIngresosDelMesRequest,
   getNextCitaRequest,
   getOrdenesDeTrabajoCountByEstadoRequest,
-  getOrdenesDeTrabajoCountRequest, getOtByUniqueIdRequest, getOtRequest,
+  getOrdenesDeTrabajoCountRequest, getOtByUniqueIdRequest, getOtRequest, getOtsByTallerIdRequest,
   getRecentOTsRequest,
   getRolesRequest, getTasksRequest, updateOrCreateTasksRequest, updateOtRequest, uploadImagesRequest
 } from "../api/controlpanel";
@@ -287,6 +287,20 @@ export function ControlPanelProvider({children}) {
     }
   }
 
+  const getOtsByTallerId = async (taller_id) => {
+    try {
+      const response = await getOtsByTallerIdRequest(taller_id);
+      if (!response.data) {
+        console.error("No se encontraron órdenes de trabajo para el taller:", taller_id);
+        return [];
+      }
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener las órdenes de trabajo del taller:", error);
+      return [];
+    }
+  }
+
   return (
     <ControlPanelContext.Provider
       value={{
@@ -315,6 +329,7 @@ export function ControlPanelProvider({children}) {
         updateRoles,
         addCita,
         getCitasByTaller,
+        getOtsByTallerId,
       }}
     >
       {children}

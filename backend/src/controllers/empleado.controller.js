@@ -129,8 +129,7 @@ export const loginEmpleado = async (req, res) => {
   const token = await createAccessToken({
     rut: employee.empleado_rut,
     correo: employee.correo,
-    nombre: employee.nombre + " " + employee.apellido,
-    rol: employee.nombre_rol,
+    nombre: employee.nombre,
     tipo: "empleado"
   });
 

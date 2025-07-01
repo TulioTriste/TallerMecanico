@@ -251,10 +251,42 @@ class OtModel {
           empleado_rut = @empleado_rut, fecha_salida = @fecha_salida, descripcion = @descripcion,
           km = @km, estado_id = @estado_id, precio = @precio WHERE ot_id = @ot_id`
         );
-      console.log("Resultado de la actualización:", result);
       return result.rowsAffected[0] > 0;
     } catch (error) {
       console.error("Error al actualizar la OT:", error);
+      throw error;
+    }
+  }
+
+  async getOtsByTallerId(taller_id) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+        .request()
+        .input("taller_id", sql.Int, taller_id)
+        .query(`
+            SELECT
+                ot.ot_id,
+                ot.cliente_rut,
+                ot.vehiculo_patente,
+                ot.estado_id,
+                ot.descripcion,
+                CONCAT(emp.nombre, ' ', emp.apellido) AS tecnico,
+                ot.fecha_entrada,
+                ot.fecha_salida,
+                c.nombre AS cliente,
+                CONCAT(v.marca, ' ', v.modelo, ' ', v.anio) AS vehiculo
+            FROM
+                ot
+                  LEFT JOIN vehiculo v ON ot.vehiculo_patente = v.patente
+                  LEFT JOIN cliente c ON ot.cliente_rut = c.cliente_rut
+                  LEFT JOIN empleado emp ON ot.empleado_rut = emp.empleado_rut
+            WHERE ot.taller_id = @taller_id
+            ORDER BY ot.fecha_salida DESC;
+        `);
+      return result.recordset;
+    } catch (error) {
+      console.error("Error al obtener OTs por ID de taller:", error);
       throw error;
     }
   }

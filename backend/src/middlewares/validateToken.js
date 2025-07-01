@@ -32,7 +32,9 @@ export const ownTallerRequired = async (req, res, next) => {
       return res.status(404).json({ message: 'Taller no encontrado' });
     }
 
-    if (req.user.tipo === 'empleado' || req.user.tipo === 'practicante') {
+    const tipo = req.user.tipo;
+
+    if (tipo === 'empleado' || tipo === 'practicante') {
       const empleado = await EmpleadoModel.getByRut(rut);
       if (!empleado) {
         return res.status(404).json({ message: 'Empleado no encontrado' });
@@ -45,7 +47,7 @@ export const ownTallerRequired = async (req, res, next) => {
       return next();
     }
 
-    if (req.user.tipo === 'administrador' || req.user.tipo === 'usuario') {
+    if (tipo === 'administrador' || tipo === 'usuario') {
       if (taller.usuario_rut !== rut) {
         return res.status(403).json({ message: 'No autorizado para acceder a este taller' });
       }
