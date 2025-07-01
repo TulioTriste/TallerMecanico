@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 
 import {
   Clock,
@@ -10,21 +10,23 @@ import {
   Clipboard,
   Users,
   DollarSign,
-  AlertCircle,
   MoreVertical,
-  Zap,
 } from "lucide-react";
-import { useWorkshop } from "../../context/workshopContext.jsx";
-import { useDarkMode } from "../../context/darkModeContext.jsx";
-import { useControlPanel } from "../../context/controlPanelContext.jsx";
-import { useCliente } from "../../context/clienteContext.jsx";
-import { useVehiculo } from "../../context/vehiculoContext.jsx";
+import {useWorkshop} from "../../context/workshopContext.jsx";
+import {useDarkMode} from "../../context/darkModeContext.jsx";
+import {useControlPanel} from "../../context/controlPanelContext.jsx";
+import {useCliente} from "../../context/clienteContext.jsx";
+import {useVehiculo} from "../../context/vehiculoContext.jsx";
 import StringFormatter from "../../utilities/stringFormatter.js";
 import {Link, useParams} from "react-router-dom";
+import {addCitaRequest} from "../../api/controlpanel.js";
 
 export default function WorkshopDash() {
-  const { darkMode } = useDarkMode();
-  const { id } = useParams();
+  const {darkMode} = useDarkMode();
+  const {id} = useParams();
+  const {getClienteByRut} = useCliente();
+  const {getVehiculoByPatente} = useVehiculo();
+  const {addCita} = useControlPanel();
 
   const [dateRange, setDateRange] = useState({
     from: "",
@@ -36,14 +38,21 @@ export default function WorkshopDash() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [newAppointment, setNewAppointment] = useState({
     cliente_rut: "",
-    patente: "",
+    cliente_nombre: "",
+    cliente_correo: "",
+    cliente_telefono: "",
+    vehiculo_patente: "",
+    vehiculo_marca: "",
+    vehiculo_modelo: "",
+    vehiculo_anio: "",
+    vehiculo_color: "",
     hora: "",
     descripcion: "",
   });
 
   // Estados existentes
   const [taller, setTaller] = useState(null);
-  const { getTaller } = useWorkshop();
+  const {getTaller} = useWorkshop();
   const {
     getOrdenesDeTrabajoCountByEstado,
     getOtsRecientes,
@@ -51,8 +60,8 @@ export default function WorkshopDash() {
     getIngresosDelMes,
     getCitasHoy,
   } = useControlPanel();
-  const { getClienteName } = useCliente();
-  const { getVehiculoName } = useVehiculo();
+  const {getClienteName} = useCliente();
+  const {getVehiculoName} = useVehiculo();
   const [otCount, setOtCount] = useState(0);
   const [otMesCount, setOtMesCount] = useState(0);
   const [otRecents, setOtRecents] = useState([]);
@@ -92,7 +101,7 @@ export default function WorkshopDash() {
         recentOTs.map(async (orden) => {
           const nombre = await getClienteName(orden.cliente_rut);
           const vehiculoName = await getVehiculoName(orden.vehiculo_patente);
-          return { ...orden, cliente: nombre, vehiculo: vehiculoName };
+          return {...orden, cliente: nombre, vehiculo: vehiculoName};
         }),
       );
       setOtRecents(recentOTsWithChanges);
@@ -112,11 +121,28 @@ export default function WorkshopDash() {
     }
   };
 
+  // Función para validar RUT chileno
+  const validateRut = (rut) => {
+    // Expresión regular para validar el formato XX.XXX.XXX-X
+    const rutRegex = /^\d{1,2}\.\d{3}\.\d{3}-[\dkK]$/;
+    return rutRegex.test(rut);
+  };
+
   // Nueva función para manejar el envío de citas
   const handleSubmitAppointment = async (e) => {
     e.preventDefault();
     try {
-      // Aquí iría la lógica para enviar la cita a la API
+      if (!validateRut(newAppointment.cliente_rut)) {
+        alert("El RUT ingresado no es válido. Por favor, verifica el formato.");
+        return;
+      }
+
+      const response = await addCita(taller.taller_id, newAppointment);
+      if (!response) {
+        alert("Error al añadir la cita. Por favor, intenta nuevamente.");
+        return;
+      }
+
       setShowNewAppointmentModal(false);
       setShowSuccess(true);
       await loadCitasHoy(); // Recargar las citas después de añadir una nueva
@@ -124,7 +150,14 @@ export default function WorkshopDash() {
       // Limpiar el formulario
       setNewAppointment({
         cliente_rut: "",
-        patente: "",
+        cliente_nombre: "",
+        cliente_correo: "",
+        cliente_telefono: "",
+        vehiculo_patente: "",
+        vehiculo_marca: "",
+        vehiculo_modelo: "",
+        vehiculo_anio: "",
+        vehiculo_color: "",
         hora: "",
         descripcion: "",
       });
@@ -178,6 +211,73 @@ export default function WorkshopDash() {
     }
   };
 
+  const formatRut = (rut) => {
+    let valor = rut.replace(/\./g, "").replace("-", "");
+
+    valor = valor.replace(/[^0-9kK]/g, "");
+
+    let dv = valor.slice(-1);
+    let numero = valor.slice(0, -1);
+
+    if (numero.length > 0) {
+      numero = numero.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      return numero + "-" + dv;
+    }
+
+    return valor;
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name.endsWith("_rut")) {
+      setNewAppointment((prev) => ({
+        ...prev,
+        [name]: formatRut(value),
+      }));
+    } else if (name === "vehiculo_patente") {
+      // Convertir a mayúsculas la patente
+      setNewAppointment((prev) => ({
+        ...prev,
+        [name]: value.toUpperCase(),
+      }));
+    } else {
+      setNewAppointment((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+
+  const handleBlur = async (e) => {
+    if (e.target.name.startsWith("cliente_")) {
+      const response = await getClienteByRut(e.target.value);
+      if (response) {
+        setNewAppointment((prev) => ({
+          ...prev,
+          cliente_nombre: response.nombre,
+          cliente_correo: response.correo,
+          cliente_telefono: response.telefono,
+        }));
+
+        alert("El cliente ha sido encontrado y sus datos han sido cargados automáticamente.");
+      }
+    }
+    else if (e.target.name.startsWith("vehiculo_")) {
+      const response = await getVehiculoByPatente(e.target.value);
+      if (response) {
+        setNewAppointment((prev) => ({
+          ...prev,
+          vehiculo_marca: response.marca,
+          vehiculo_modelo: response.modelo,
+          vehiculo_anio: response.anio,
+          vehiculo_color: response.color,
+        }));
+
+        alert("El vehículo ha sido encontrado y sus datos han sido cargados automáticamente.");
+      }
+    }
+  };
+
   if (!taller) {
     return (
       <div
@@ -221,7 +321,7 @@ export default function WorkshopDash() {
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             } transition-colors`}
           >
-            <Clipboard className="w-4 h-4" />
+            <Clipboard className="w-4 h-4"/>
             Todas las Órdenes
           </Link>
 
@@ -233,7 +333,7 @@ export default function WorkshopDash() {
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             } transition-colors`}
           >
-            <Users className="w-4 h-4" />
+            <Users className="w-4 h-4"/>
             Gestionar Empleados
           </Link>
           <Link
@@ -244,7 +344,7 @@ export default function WorkshopDash() {
                 : "bg-blue-600 hover:bg-blue-700 text-white"
             } transition-colors`}
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4"/>
             Nueva Orden
           </Link>
         </div>
@@ -253,9 +353,7 @@ export default function WorkshopDash() {
       {/* Modal de Nueva Cita */}
       {showNewAppointmentModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+          <div
             className={`rounded-xl p-6 max-w-md w-full ${
               darkMode ? "bg-gray-800" : "bg-white"
             }`}
@@ -266,156 +364,161 @@ export default function WorkshopDash() {
                 onClick={() => setShowNewAppointmentModal(false)}
                 className="p-2 hover:bg-gray-200 rounded-full dark:hover:bg-gray-700"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5"/>
               </button>
             </div>
 
-            <form onSubmit={handleSubmitAppointment} className="space-y-4">
-              <div>
-                <label
-                  className={`block text-sm font-medium mb-2 ${
-                    darkMode ? "text-gray-300" : "text-gray-700"
-                  }`}
-                >
+            <form onSubmit={handleSubmitAppointment} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="col-span-1">
+                {/* RUT Cliente */}
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
                   RUT Cliente
                 </label>
-                <input
-                  type="text"
-                  value={newAppointment.cliente_rut}
-                  onChange={(e) =>
-                    setNewAppointment({
-                      ...newAppointment,
-                      cliente_rut: e.target.value,
-                    })
-                  }
-                  className={`w-full p-3 rounded-lg border ${
-                    darkMode
-                      ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500"
-                      : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
-                  placeholder="12.345.678-9"
-                  required
-                />
+                <input type="text" value={newAppointment.cliente_rut}
+                       name="cliente_rut"
+                       onChange={handleInputChange}
+                       onBlur={handleBlur}
+                       className={`w-full p-3 rounded-lg border ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"} focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                       placeholder="12.345.678-9" required/>
               </div>
-
-              <div>
-                <label
-                  className={`block text-sm font-medium mb-2 ${
-                    darkMode ? "text-gray-300" : "text-gray-700"
-                  }`}
-                >
+              <div className="col-span-1">
+                {/* Nombre Cliente */}
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+                  Nombre Completo Cliente
+                </label>
+                <input type="text" value={newAppointment.cliente_nombre}
+                       name="cliente_nombre"
+                       onChange={handleInputChange}
+                       className={`w-full p-3 rounded-lg border ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"} focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                       placeholder="Nombre Completo del Cliente" required/>
+              </div>
+              <div className="col-span-1">
+                {/* Correo Cliente */}
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+                  Correo Cliente
+                </label>
+                <input type="text" value={newAppointment.cliente_correo}
+                       name="cliente_correo"
+                       onChange={handleInputChange}
+                       className={`w-full p-3 rounded-lg border ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"} focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                       placeholder="correo@gmail.com" required/>
+              </div>
+              <div className="col-span-1">
+                {/* Teléfono Cliente */}
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+                  Teléfono Cliente
+                </label>
+                <input type="text" value={newAppointment.cliente_telefono}
+                       name="cliente_telefono"
+                       onChange={handleInputChange}
+                       className={`w-full p-3 rounded-lg border ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"} focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                       required/>
+              </div>
+              <div className="col-span-1">
+                {/* Patente */}
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
                   Patente
                 </label>
-                <input
-                  type="text"
-                  value={newAppointment.patente}
-                  onChange={(e) =>
-                    setNewAppointment({
-                      ...newAppointment,
-                      patente: e.target.value.toUpperCase(),
-                    })
-                  }
-                  className={`w-full p-3 rounded-lg border ${
-                    darkMode
-                      ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500"
-                      : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
-                  placeholder="ABCD12"
-                  required
-                />
+                <input type="text" value={newAppointment.vehiculo_patente}
+                       name="vehiculo_patente"
+                       onChange={handleInputChange}
+                       onBlur={handleBlur}
+                       className={`w-full p-3 rounded-lg border ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"} focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                       placeholder="ABCD12" required/>
               </div>
-
-              <div>
-                <label
-                  className={`block text-sm font-medium mb-2 ${
-                    darkMode ? "text-gray-300" : "text-gray-700"
-                  }`}
-                >
+              <div className="col-span-1">
+                {/* Marca Vehículo */}
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+                  Marca Vehículo
+                </label>
+                <input type="text" value={newAppointment.vehiculo_marca}
+                       name="vehiculo_marca"
+                       onChange={handleInputChange}
+                       className={`w-full p-3 rounded-lg border ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"} focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                       required/>
+              </div>
+              <div className="col-span-1">
+                {/* Modelo Vehículo */}
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+                  Modelo Vehículo
+                </label>
+                <input type="text" value={newAppointment.vehiculo_modelo}
+                       name="vehiculo_modelo"
+                       onChange={handleInputChange}
+                       className={`w-full p-3 rounded-lg border ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"} focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                       required/>
+              </div>
+              <div className="col-span-1">
+                {/* Año Vehículo */}
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+                  Año Vehículo
+                </label>
+                <input type="number" value={newAppointment.vehiculo_anio}
+                       name="vehiculo_anio"
+                       onChange={handleInputChange}
+                       className={`w-full p-3 rounded-lg border ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"} focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                       required/>
+              </div>
+              <div className="col-span-1">
+                {/* Color Vehículo */}
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+                  Color Vehículo
+                </label>
+                <input type="text" value={newAppointment.vehiculo_color}
+                       name="vehiculo_color"
+                       onChange={handleInputChange}
+                       className={`w-full p-3 rounded-lg border ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"} focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                       required/>
+              </div>
+              <div className="col-span-1">
+                {/* Hora */}
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
                   Hora
                 </label>
-                <input
-                  type="datetime-local"
-                  value={newAppointment.hora}
-                  onChange={(e) =>
-                    setNewAppointment({
-                      ...newAppointment,
-                      hora: e.target.value,
-                    })
-                  }
-                  className={`w-full p-3 rounded-lg border ${
-                    darkMode
-                      ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500"
-                      : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
-                  required
-                />
+                <input type="datetime-local" value={newAppointment.hora}
+                       name="hora"
+                       onChange={handleInputChange}
+                       className={`w-full p-3 rounded-lg border ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"} focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                       required/>
               </div>
-
-              <div>
-                <label
-                  className={`block text-sm font-medium mb-2 ${
-                    darkMode ? "text-gray-300" : "text-gray-700"
-                  }`}
-                >
+              <div className="col-span-2">
+                {/* Descripción */}
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
                   Descripción
                 </label>
-                <textarea
-                  value={newAppointment.descripcion}
-                  onChange={(e) =>
-                    setNewAppointment({
-                      ...newAppointment,
-                      descripcion: e.target.value,
-                    })
-                  }
-                  className={`w-full p-3 rounded-lg border min-h-[100px] resize-none ${
-                    darkMode
-                      ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500"
-                      : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
-                  placeholder="Descripción del servicio requerido"
-                  required
-                />
+                <textarea value={newAppointment.descripcion}
+                          name="descripcion"
+                          onChange={handleInputChange}
+                          className={`w-full p-3 rounded-lg border min-h-[100px] resize-none ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"} focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                          placeholder="Descripción del servicio requerido" required/>
               </div>
-
-              <div className="flex justify-end gap-4 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setShowNewAppointmentModal(false)}
-                  className={`px-6 py-2 rounded-lg transition-colors ${
-                    darkMode
-                      ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
-                      : "bg-gray-200 hover:bg-gray-300 text-gray-700"
-                  }`}
-                >
+              <div className="col-span-2 flex justify-end gap-4 mt-6">
+                <button type="button"
+                        onClick={() => setShowNewAppointmentModal(false)}
+                        className={`px-6 py-2 rounded-lg transition-colors ${darkMode ? "bg-gray-700 hover:bg-gray-600 text-gray-300" : "bg-gray-200 hover:bg-gray-300 text-gray-700"}`}>
                   Cancelar
                 </button>
-                <button
-                  type="submit"
-                  className={`px-6 py-2 rounded-lg transition-colors ${
-                    darkMode
-                      ? "bg-blue-600 hover:bg-blue-700"
-                      : "bg-blue-500 hover:bg-blue-600"
-                  } text-white font-medium`}
-                >
+                <button type="submit"
+                        className={`px-6 py-2 rounded-lg transition-colors ${darkMode ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"} text-white font-medium`}>
                   Añadir Cita
                 </button>
               </div>
             </form>
-          </motion.div>
+          </div>
         </div>
       )}
 
       {/* Notificación de éxito */}
       {showSuccess && (
-        <motion.div
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 20 }}
-          exit={{ opacity: 0, y: -50 }}
+        <div
+          initial={{opacity: 0, y: -50}}
+          animate={{opacity: 1, y: 20}}
+          exit={{opacity: 0, y: -50}}
           className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center z-50"
         >
-          <Check className="w-5 h-5 mr-2" />
+          <Check className="w-5 h-5 mr-2"/>
           Cita añadida correctamente
-        </motion.div>
+        </div>
       )}
 
       {/* Fondo decorativo */}
@@ -602,7 +705,7 @@ export default function WorkshopDash() {
                       </button>
                       {(dateRange.from || dateRange.to) && (
                         <button
-                          onClick={() => setDateRange({ from: "", to: "" })}
+                          onClick={() => setDateRange({from: "", to: ""})}
                           className={`px-3 py-1.5 text-sm rounded-lg ${
                             darkMode
                               ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
@@ -640,7 +743,7 @@ export default function WorkshopDash() {
                         <button
                           className={`p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600`}
                         >
-                          <MoreVertical className="w-4 h-4" />
+                          <MoreVertical className="w-4 h-4"/>
                         </button>
                       </div>
 
@@ -695,7 +798,7 @@ export default function WorkshopDash() {
                             )}
                           </p>
                           <div className="flex items-center space-x-1 mt-1">
-                            <Clock className="w-3 h-3 text-blue-500" />
+                            <Clock className="w-3 h-3 text-blue-500"/>
                             <span
                               className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-600"}`}
                             >
@@ -754,7 +857,7 @@ export default function WorkshopDash() {
                         <button
                           className={`p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600`}
                         >
-                          <Phone className="w-4 h-4" />
+                          <Phone className="w-4 h-4"/>
                         </button>
                       </div>
 
@@ -786,7 +889,7 @@ export default function WorkshopDash() {
                       : "border-gray-300 text-gray-600 hover:border-gray-400 hover:text-gray-700 hover:bg-gray-50"
                   } transition-all duration-200 flex items-center justify-center gap-2 group`}
                 >
-                  <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                  <Plus className="w-4 h-4 group-hover:scale-110 transition-transform"/>
                   Agendar nueva cita
                 </button>
               </div>

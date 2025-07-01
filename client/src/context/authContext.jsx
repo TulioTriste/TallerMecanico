@@ -9,6 +9,7 @@ import {
   verifyTokenRequest
 } from "../api/auth";
 import Cookies from "js-cookie";
+import {loginEmpleadoRequest} from "../api/empleado.js";
 
 const AuthContext = createContext();
 
@@ -39,6 +40,10 @@ export const AuthProvider = ({children}) => {
     try {
       const res = await registerRequest(user);
       if (res.status === 200) {
+        res.data.user = {
+          ...res.data.empleado,
+          userType: "usuario",
+        }
         setUser(res.data.user);
         setIsAuthenticated(true);
       }
@@ -54,10 +59,26 @@ export const AuthProvider = ({children}) => {
 
   const signin = async (user) => {
     try {
-      const res = await loginRequest(user);
-      if (res.status === 200) {
-        setUser(res.data.user);
-        setIsAuthenticated(true);
+      if (user.userType === "empleado") {
+        const res = await loginEmpleadoRequest(user);
+        if (res.status === 200) {
+          res.data.empleado = {
+            ...res.data.empleado,
+            userType: user.userType,
+          }
+          setUser(res.data.empleado);
+          setIsAuthenticated(true);
+        }
+      } else if (user.userType === "usuario") {
+        const res = await loginRequest(user);
+        if (res.status === 200) {
+          res.data.user = {
+            ...res.data.empleado,
+            userType: user.userType, // Aseguramos que roles_id esté definido
+          }
+          setUser(res.data.user);
+          setIsAuthenticated(true);
+        }
       }
     } catch (error) {
       if (error.response && error.response.data) {
@@ -152,6 +173,7 @@ export const AuthProvider = ({children}) => {
           return;
         }
         setIsAuthenticated(true);
+        console.log("checklogin", res.data);
         setUser(res.data);
         // eslint-disable-next-line no-unused-vars
       } catch (error) {

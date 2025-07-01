@@ -26,7 +26,7 @@ export default function Dashboard() {
   // Agregar estado para controlar la visibilidad antes de que se complete la hidratación
   const [isClient, setIsClient] = useState(false);
 
-  const {registeredVehicles} = useControlPanel();
+  const {registeredVehicles, clientesCount, ordenesActivas, citasTotalHoy} = useControlPanel();
 
   // Marcar que estamos en el cliente cuando el componente se monta
   useEffect(() => {
@@ -269,7 +269,9 @@ export default function Dashboard() {
                           />
                           <div>
                             <h4 className="font-medium">Órdenes activas</h4>
-                            <p className="text-2xl font-bold">12</p>
+                            <p className="text-2xl font-bold">
+                              {ordenesActivas}
+                            </p>
                           </div>
                         </div>
 
@@ -283,7 +285,9 @@ export default function Dashboard() {
                             <h4 className="font-medium">
                               Clientes fidelizados
                             </h4>
-                            <p className="text-2xl font-bold">89</p>
+                            <p className="text-2xl font-bold">
+                              {clientesCount}
+                            </p>
                           </div>
                         </div>
 
@@ -295,7 +299,9 @@ export default function Dashboard() {
                           />
                           <div>
                             <h4 className="font-medium">Citas programadas</h4>
-                            <p className="text-2xl font-bold">24</p>
+                            <p className="text-2xl font-bold">
+                              {citasTotalHoy}
+                            </p>
                           </div>
                         </div>
                       </div>

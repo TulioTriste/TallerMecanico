@@ -1,15 +1,12 @@
 
--- Primero eliminar el trigger existente
 DROP TRIGGER IF EXISTS [trg_registrar_cambio_estado];
 GO
 
--- Crear el nuevo trigger
 CREATE TRIGGER [trg_registrar_cambio_estado]
     ON [ot]
     AFTER UPDATE
     AS
 BEGIN
-    -- Solo proceder si el estado ha cambiado
     IF UPDATE(estado_id)
         BEGIN
             INSERT INTO [ot_estado_historial] (
@@ -34,6 +31,15 @@ BEGIN
                 i.estado_id <> d.estado_id;
         END
 END;
+GO
+
+CREATE INDEX idx_empleado_correo ON empleado(correo)
+GO
+
+CREATE INDEX idx_usuario_correo ON usuario(correo)
+GO
+
+CREATE INDEX idx_ot_estado ON ot(estado_id)
 GO
 
 -- Inserción de datos en las tablas

@@ -31,6 +31,12 @@ BEGIN
     END
 END;
 
+CREATE INDEX idx_empleado_correo ON empleado(correo)
+
+CREATE INDEX idx_usuario_correo ON usuario(correo)
+
+CREATE INDEX idx_ot_estado ON ot(estado_id)
+
 --DELETE FROM [plan];
 INSERT INTO [plan] (nombre, precio, talleres) VALUES 
 	('Basico', 30000, 1),

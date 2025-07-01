@@ -127,7 +127,9 @@ CREATE TABLE [ot] (
         ON UPDATE CASCADE ON DELETE NO ACTION,
     CONSTRAINT [FK_ot_estado] FOREIGN KEY ([estado_id]) REFERENCES [estado]([estado_id])
         ON UPDATE CASCADE ON DELETE NO ACTION,
-    CONSTRAINT [FK_ot_empleado] FOREIGN KEY ([empleado_rut]) REFERENCES [empleado]([empleado_rut])
+    CONSTRAINT [FK_ot_empleado] FOREIGN KEY ([empleado_rut]) REFERENCES [empleado]([empleado_rut]),
+    CONSTRAINT [FK_ot_taller] FOREIGN KEY ([taller_id]) REFERENCES [taller]([taller_id])
+    	ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE [ot_tareas] (
@@ -154,9 +156,7 @@ CREATE TABLE [ot_estado_historial] (
     CONSTRAINT [FK_historial_ot] FOREIGN KEY ([ot_id]) REFERENCES [ot]([ot_id])
         ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT [FK_historial_estado_anterior] FOREIGN KEY ([estado_anterior_id]) REFERENCES [estado]([estado_id]),
-    CONSTRAINT [FK_historial_estado_nuevo] FOREIGN KEY ([estado_nuevo_id]) REFERENCES [estado]([estado_id]),
-    CONSTRAINT [FK_historial_empleado] FOREIGN KEY ([empleado_rut]) REFERENCES [empleado]([empleado_rut])
-        ON UPDATE CASCADE ON DELETE NO ACTION
+    CONSTRAINT [FK_historial_estado_nuevo] FOREIGN KEY ([estado_nuevo_id]) REFERENCES [estado]([estado_id])
 );
 
 
@@ -174,7 +174,7 @@ CREATE TABLE [cita] (
     CONSTRAINT [FK_cita_vehiculo] FOREIGN KEY ([patente]) REFERENCES [vehiculo]([patente])
         ON UPDATE CASCADE ON DELETE NO ACTION,
     CONSTRAINT [FK_cita_taller] FOREIGN KEY ([taller_id]) REFERENCES [taller]([taller_id])
-        ON UPDATE CASCADE ON DELETE NO ACTION
+        ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE [password_reset_tokens] (

@@ -30,7 +30,6 @@ export default function ClientVehicleDetails() {
         if (response) {
           // Aquí podrías actualizar el estado con los datos obtenidos
           setData(response);
-          console.log("Detalles de la OT:", response);
         } else {
           console.error(
             "No se encontraron detalles para la OT con ID:",
@@ -42,7 +41,6 @@ export default function ClientVehicleDetails() {
         const taskResponse = await getTasks(response.taller_id, response.ot_id);
         if (taskResponse) {
           setTasks(taskResponse);
-          console.log("Tareas de la OT:", taskResponse);
         } else {
           console.error(
             "No se encontraron tareas para la OT con ID:",

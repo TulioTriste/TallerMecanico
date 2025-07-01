@@ -257,7 +257,7 @@ export default function CreateWorkshop() {
       console.error("Error al crear la orden:", err);
     } finally {
       setTimeout(() => {
-        navigate("/workshops");
+        navigate("/workshop/dashboard/" + id);
       }, 1000);
     }
   };

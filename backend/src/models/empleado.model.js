@@ -96,6 +96,85 @@ class EmpleadoModel {
       throw error;
     }
   }
+
+  async getByRut(empleado_rut) {
+    try {
+      const pool = await connectToDatabase();
+      const request = pool.request();
+      request.input("empleado_rut", sql.VarChar, empleado_rut);
+
+      const result = await request.query(`
+        SELECT 
+            e.empleado_rut,
+            e.taller_id,
+            e.roles_id,
+            e.nombre,
+            e.apellido,
+            e.cel,
+            e.correo,
+            r.nombre AS nombre_rol
+        FROM empleado e
+        INNER JOIN roles r ON e.roles_id = r.roles_id
+        WHERE e.empleado_rut = @empleado_rut
+      `);
+
+      return result.recordset[0];
+    } catch (error) {
+      console.error("Error fetching empleado by rut:", error);
+      throw error;
+    }
+  }
+
+  async getByCorreo(correo) {
+    try {
+      const pool = await connectToDatabase();
+      const request = pool.request();
+      request.input("correo", sql.VarChar, correo);
+
+      const result = await request.query(`
+        SELECT 
+            e.empleado_rut,
+            e.taller_id,
+            e.roles_id,
+            e.nombre,
+            e.apellido,
+            e.cel,
+            e.correo,
+            e.password,
+            r.nombre AS nombre_rol
+        FROM empleado e
+        INNER JOIN roles r ON e.roles_id = r.roles_id
+        WHERE e.correo = @correo
+      `);
+
+      return result.recordset[0];
+    } catch (error) {
+      console.error("Error fetching empleado by correo:", error);
+      throw error;
+    }
+  }
+
+  async getTallerByRut(empleado_rut) {
+    try {
+      const pool = await connectToDatabase();
+      const request = pool.request()
+                            .input("empleado_rut", sql.VarChar, empleado_rut);
+
+      const result = await request.query(`
+        SELECT 
+            e.taller_id,
+            t.nombre AS taller_nombre
+        FROM empleado e
+        INNER JOIN taller t ON e.taller_id = t.taller_id
+        WHERE e.empleado_rut = @empleado_rut
+      `);
+
+      return result.recordset[0];
+    } catch (error) {
+      console.error("Error fetching taller by empleado rut:", error);
+      throw error;
+    }
+  }
 }
 
 export default new EmpleadoModel();

@@ -144,3 +144,15 @@ export const getOtByUniqueId = async (req, res) => {
     res.status(500).json({message: "Error interno del servidor"});
   }
 };
+
+export const getOtsByTallerId = async (req, res) => {
+  const {taller_id} = req.params;
+
+  try {
+    const ots = await OtModel.getOtsByTallerId(taller_id);
+    res.json(ots);
+  } catch (error) {
+    console.error("Error al obtener las órdenes de trabajo del taller:", error);
+    res.status(500).json({message: "Error interno del servidor"});
+  }
+}

@@ -2,6 +2,12 @@ import axios from "./axios";
 
 export const getCountRegisteredVehiclesRequest = async () => axios.get("/cp/registeredvehicles");
 
+export const getCountOrdenesActivasRequest = async () => axios.get("/cp/ordenesactivas");
+
+export const getClientesCountRequest = async () => axios.get("/cp/clientescount");
+
+export const getCitasHoyTotalRequest = async () => axios.get("/cp/citashoytotal");
+
 export const getNextCitaRequest = async (taller_id) => axios.get(`/cp/nextcita/${taller_id}`);
 
 export const getOrdenesDeTrabajoCountRequest = async (taller_id) => axios.get(`/cp/ordenestrabajocount/${taller_id}`);
@@ -39,3 +45,9 @@ export const updateOtRequest = async (taller_id, ot_id, orden) => axios.post(`/c
 export const addOtRequest = async (taller_id, orden) => axios.post(`/cp/addot/${taller_id}`, orden);
 
 export const getOtByUniqueIdRequest = async (unique_id) => axios.get(`/cp/getotbyuniqueid/${unique_id}`);
+
+export const addCitaRequest = async (taller_id, cita) => axios.post(`/cp/addcita/${taller_id}`, cita);
+
+export const getCitasByTallerRequest = async (taller_id) => axios.get(`/cp/getcitas/${taller_id}`);
+
+export const getOtsByTallerIdRequest = async (taller_id) => axios.get(`/cp/getots/${taller_id}`);
