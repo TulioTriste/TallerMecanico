@@ -1,14 +1,8 @@
-import {MercadoPagoConfig, PreApproval, Preference} from "mercadopago";
+import {PreApproval} from "mercadopago";
 import dotenv from "dotenv";
 import {Payment} from "mercadopago";
 import UserModel from "../models/user.model.js";
-
-dotenv.config();
-
-const client = new MercadoPagoConfig({
-  accessToken: "APP_USR-4074908485418894-062920-4cde9ad51e962a2f0c89127dc71a3bde-2522435915",
-  options: { timeout: 5000 },
-});
+import {client} from "../mercadopago.js";
 
 export const createPreference = async (req, res) => {
   try {
