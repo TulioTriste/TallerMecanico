@@ -49,4 +49,7 @@ https://www.youtube.com/watch?v=NmkY4JgS21A
 
 - Hacer la opción de si acepta cookies, y en el caso de que no acepte desactivar la funcionalidad del token
 
-# Parte de la idea del Proyecto
+# Ejecutar Tunel NGROK para pruebas con certificación SSL
+- Primero instalas NGROK en node Systema "npm install -g ngrok"
+- Despues inicias sesión en tu cuenta de ngrok y pegas el comando de authtoken que te darán para poder usarlo
+- En la terminal ponemos ''ngrok http 3000'' y nos dará una URL que podemos usar para probar el Front con el Back
