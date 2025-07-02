@@ -233,6 +233,21 @@ class UserModel {
     }
   }
 
+  async updatePlanUser(correo, planId) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+        .request()
+        .input("correo", sql.VarChar, correo)
+        .input("plan_id", sql.Int, planId)
+        .query("UPDATE usuario SET plan_id = @plan_id WHERE correo = @correo");
+      return result;
+    } catch (error) {
+      console.error("Error al actualizar el plan del usuario:", error);
+      throw error;
+    }
+  }
+
 }
 
 export default new UserModel();

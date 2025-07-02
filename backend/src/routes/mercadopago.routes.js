@@ -6,6 +6,6 @@ const router = Router();
 
 router.post("/create-preference", authRequired, createPreference);
 router.get("/payments/:id", authRequired, getPaymentById);
-router.post("/webhook", authRequired, receiveWebhook);
+router.post("/webhook", receiveWebhook);
 
 export default router;

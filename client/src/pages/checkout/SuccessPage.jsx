@@ -33,6 +33,14 @@ const SuccessPage = () => {
     fetchPaymentInfo();
   }, [location]);
 
+  // Si no hay payment_id en la URL, redirigir al inicio
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (!params.get("payment_id")) {
+      navigate("/");
+    }
+  }, [location, navigate]);
+
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
       <div className="text-center">
