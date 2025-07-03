@@ -21,11 +21,7 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({children}) => {
-  // Inicializa el usuario desde localStorage si existe
-  const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem("user");
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
+  const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +45,6 @@ export const AuthProvider = ({children}) => {
           userType: "usuario",
         }
         setUser(res.data.user);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
         setIsAuthenticated(true);
       }
     } catch (error) {
@@ -64,7 +59,6 @@ export const AuthProvider = ({children}) => {
 
   const signin = async (user) => {
     try {
-      console.log("user", user);
       if (user.userType === "empleado") {
         const res = await loginEmpleadoRequest(user);
         let userData = res.data.empleado;
@@ -108,7 +102,6 @@ export const AuthProvider = ({children}) => {
   const logout = () => {
     Cookies.remove("token");
     setUser(null);
-    localStorage.removeItem("user");
     setIsAuthenticated(false);
     setLoading(false);
   };
@@ -183,6 +176,7 @@ export const AuthProvider = ({children}) => {
 
       try {
         const res = await verifyTokenRequest(cookies.token);
+        console.log("checklogin", res.data);
         if (!res.data) {
           setIsAuthenticated(false);
           setLoading(false);
@@ -190,12 +184,10 @@ export const AuthProvider = ({children}) => {
         }
         setIsAuthenticated(true);
         setUser(res.data);
-        localStorage.setItem("user", JSON.stringify(res.data));
         // eslint-disable-next-line no-unused-vars
       } catch (error) {
         setIsAuthenticated(false);
         setUser(null);
-        localStorage.removeItem("user");
       }
 
       setLoading(false);

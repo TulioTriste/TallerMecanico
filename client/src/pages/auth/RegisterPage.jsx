@@ -6,6 +6,7 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {registerSchema} from '../../schemas/authSchema.js';
 import {useDarkMode} from '../../context/darkModeContext.jsx';
+import StringFormatter from "../../utilities/stringFormatter.js";
 
 export default function RegisterForm() {
   const [loading, setLoading] = useState(false);
@@ -33,32 +34,6 @@ export default function RegisterForm() {
   useEffect(() => {
     if (isAuthenticated) navigate("/profile");
   }, [isAuthenticated, navigate]);
-
-  // Formatear RUT chileno (XX.XXX.XXX-X)
-  const formatRut = (value) => {
-    // Eliminar cualquier caracter que no sea número o K/k
-    let cleaned = value.replace(/[^0-9kK]/g, '');
-
-    // Formatear el RUT
-    if (cleaned.length > 1) {
-      // Separar el dígito verificador
-      const body = cleaned.slice(0, -1);
-      const dv = cleaned.slice(-1).toUpperCase();
-
-      // Formatear el cuerpo del RUT
-      let formatted = '';
-      for (let i = body.length - 1; i >= 0; i--) {
-        formatted = body[i] + formatted;
-        if ((body.length - i) % 3 === 0 && i !== 0) {
-          formatted = '.' + formatted;
-        }
-      }
-
-      return `${formatted}-${dv}`;
-    }
-
-    return cleaned;
-  };
 
   return (
     <>
@@ -115,7 +90,7 @@ export default function RegisterForm() {
                     {...register("rut", {
                       required: true,
                       onChange: (e) => {
-                        e.target.value = formatRut(e.target.value);
+                        e.target.value = StringFormatter.formatRut(e.target.value);
                       }
                     })}
                     required

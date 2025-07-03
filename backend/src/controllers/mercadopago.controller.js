@@ -69,7 +69,7 @@ export const receiveWebhook = async (req, res) => {
       const paymentClient = new Payment(client);
       const paymentInfo = await paymentClient.get({ id });
 
-      await updateOrderStatus(paymentInfo);
+      await updatePlanUser(paymentInfo);
     }
 
     res.status(200).send("OK");
@@ -79,25 +79,20 @@ export const receiveWebhook = async (req, res) => {
   }
 };
 
-const updateOrderStatus = async (paymentInfo) => {
-  if (paymentInfo.status === "approved") {
-    if (await updatePlanUser(paymentInfo)) {
-      console.log("El Usuario con correo:", paymentInfo.payer.email, "ha sido actualizado al plan:", paymentInfo.order.plan_id);
-    }
-  }
-  else if (paymentInfo.status === "rejected" || paymentInfo.status === "cancelled") {
-    if (await updatePlanUser(paymentInfo)) {
-      console.log("El Usuario con correo:", paymentInfo.payer.email, "no ha podido ser actualizado al plan:", paymentInfo.order.plan_id);
-    }
-  }
-  else {
-    console.log("El pago con ID:", paymentInfo.id, "tiene un estado no manejado:", paymentInfo.status, " | Información del pago:", paymentInfo);
-  }
-};
-
 const updatePlanUser = async (paymentInfo) => {
   const correo = paymentInfo.payer.email;
-  const planId = paymentInfo.order.plan_id;
+  if (paymentInfo.status !== "approved") {
+    const planId = paymentInfo.order.plan_id;
 
-  return await UserModel.updatePlanUser(correo, planId);
+    console.log("El Usuario con correo:", paymentInfo.payer.email, "ha sido actualizado al plan:", paymentInfo.order.plan_id);
+
+    return await UserModel.updatePlanUser(correo, planId);
+  }
+  else if (paymentInfo.status === "rejected" || paymentInfo.status === "cancelled") {
+    console.log("El Usuario con correo:", paymentInfo.payer.email, "no ha podido ser actualizado al plan:", paymentInfo.order.plan_id);
+    return await UserModel.updatePlanUser(correo, null);
+  } else {
+    console.log("El pago con ID:", paymentInfo.id, "tiene un estado no manejado:", paymentInfo.status, " | Información del pago:", paymentInfo);
+    return false;
+  }
 }

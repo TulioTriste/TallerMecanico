@@ -10,7 +10,8 @@ export const ProtectedRoute = () => {
   if (!isAuthenticated) {
     return <Navigate to="/login" replace/>;
   }
-  if (user.userType !== "empleado" && user.plan_id == null || user.plan_id === 0) {
+  if (user.userType !== "empleado" && (user.userType === "usuario" && (user.plan_id == null || user.plan_id === 0))) {
+    console.log("User does not have a plan or is not an employee");
     return <Navigate to="/dashboard" replace/>;
   }
   return <Outlet/>;

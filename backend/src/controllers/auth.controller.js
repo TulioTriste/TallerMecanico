@@ -6,6 +6,7 @@ import {TOKEN_KEY_SECRET} from "../config.js";
 import {v4} from "uuid";
 import PassModel from "../models/pass.model.js";
 import {transporter} from "../transporter.js";
+import EmpleadoModel from "../models/empleado.model.js";
 
 export const register = async (req, res) => {
   const {rut, nombre, apellido, correo, password, telefono, direccion} = req.body;
@@ -123,6 +124,7 @@ export const verifyToken = async (req, res) => {
 
   jwt.verify(token, TOKEN_KEY_SECRET, async (error, user) => {
     if (error) {
+      console.error("Token no valido", error);
       return res.status(401).json({
         message: "Token no valido",
       });
@@ -130,23 +132,25 @@ export const verifyToken = async (req, res) => {
 
     const tipo = user.tipo;
     if (tipo === "empleado") {
-      const empleadoFound = await UserModel.getUserByRut(user.rut);
+      const empleadoFound = await EmpleadoModel.getByRut(user.rut);
 
       if (!empleadoFound) {
+        console.error("Empleado no encontrado");
         return res.status(401).json({
           message: "Empleado no encontrado",
         });
       }
 
+      console.log("Empleado encontrado:", empleadoFound);
       return res.json({
-        rut: empleadoFound.usuario_rut,
+        rut: empleadoFound.empleado_rut,
         nombre: empleadoFound.nombre,
         apellido: empleadoFound.apellido,
         correo: empleadoFound.correo,
-        telefono: empleadoFound.telefono,
-        direccion: empleadoFound.direccion,
-        empresa: empleadoFound.empresa,
-        plan_id: empleadoFound.plan_id,
+        telefono: empleadoFound.cel,
+        taller_id: empleadoFound.taller_id,
+        roles_id: empleadoFound.roles_id,
+        nombre_rol: empleadoFound.nombre_rol,
         tipo: tipo,
       });
     } else {

@@ -18,12 +18,13 @@ import {useCliente} from "../../context/clienteContext.jsx";
 import {useVehiculo} from "../../context/vehiculoContext.jsx";
 import {useEmpleado} from "../../context/empleadosContext.jsx";
 import {useControlPanel} from "../../context/controlPanelContext.jsx";
+import StringFormatter from "../../utilities/stringFormatter.js";
 
 export default function CreateWorkshop() {
   const { id } = useParams();
   const { darkMode } = useDarkMode();
-  const {getClienteByRut} = useCliente();
-  const {getVehiculoByPatente} = useVehiculo();
+  const {getClienteByRut, createCliente} = useCliente();
+  const {getVehiculoByPatente, createVehiculo} = useVehiculo();
   const {isEmpleadoExists} = useEmpleado();
   const {addOt} = useControlPanel();
 
@@ -56,28 +57,12 @@ export default function CreateWorkshop() {
     taller_id: id,
   });
 
-  const formatRut = (rut) => {
-    let valor = rut.replace(/\./g, "").replace("-", "");
-
-    valor = valor.replace(/[^0-9kK]/g, "");
-
-    let dv = valor.slice(-1);
-    let numero = valor.slice(0, -1);
-
-    if (numero.length > 0) {
-      numero = numero.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      return numero + "-" + dv;
-    }
-
-    return valor;
-  };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name.endsWith("_rut")) {
       setFormData((prev) => ({
         ...prev,
-        [name]: formatRut(value),
+        [name]: StringFormatter.formatRut(value),
       }));
     } else if (name === "vehiculo_patente") {
       // Convertir a mayúsculas la patente
@@ -238,6 +223,22 @@ export default function CreateWorkshop() {
     if (!await validateStep(3)) return;
 
     try {
+      await createCliente({
+        cliente_rut: formData.cliente_rut,
+        nombre: formData.cliente_nombre,
+        correo: formData.cliente_correo,
+        telefono: formData.cliente_telefono,
+      });
+
+      await createVehiculo({
+        patente: formData.vehiculo_patente,
+        marca: formData.vehiculo_marca,
+        modelo: formData.vehiculo_modelo,
+        anio: formData.vehiculo_anio,
+        color: formData.vehiculo_color,
+        cliente_rut: formData.cliente_rut,
+      });
+
       const formattedData = {
         ...formData,
         km: parseInt(formData.km),
