@@ -70,6 +70,7 @@ export const login = async (req, res) => {
   const isMatch = await bcrypt.compare(password, userFound.password);
 
   if (!isMatch) {
+    console.log("Credenciales Invalidas");
     return res.status(400).json({
       message: "Credenciales Invalidas.",
     });

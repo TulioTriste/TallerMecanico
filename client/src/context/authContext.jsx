@@ -59,26 +59,36 @@ export const AuthProvider = ({children}) => {
 
   const signin = async (user) => {
     try {
+      console.log("user", user);
       if (user.userType === "empleado") {
         const res = await loginEmpleadoRequest(user);
-        if (res.status === 200) {
-          res.data.empleado = {
-            ...res.data.empleado,
-            userType: user.userType,
-          }
-          setUser(res.data.empleado);
-          setIsAuthenticated(true);
+        let userData = res.data.empleado;
+        userData = {
+          ...userData,
+          userType: user.userType,
         }
-      } else if (user.userType === "usuario") {
+        if (res.status === 200) {
+          setUser(userData);
+          setIsAuthenticated(true);
+        } else {
+          setErrors([res.data.message || "Error al iniciar sesión."]);
+        }
+        return res;
+      }
+      else if (user.userType === "usuario") {
         const res = await loginRequest(user);
-        if (res.status === 200) {
-          res.data.user = {
-            ...res.data.empleado,
-            userType: user.userType, // Aseguramos que roles_id esté definido
-          }
-          setUser(res.data.user);
-          setIsAuthenticated(true);
+        let userData = res.data.user;
+        userData = {
+          ...userData,
+          userType: user.userType,
         }
+        if (res.status === 200) {
+          setUser(userData);
+          setIsAuthenticated(true);
+        } else {
+          setErrors([res.data.message || "Error al iniciar sesión."]);
+        }
+        return res;
       }
     } catch (error) {
       if (error.response && error.response.data) {
@@ -86,8 +96,8 @@ export const AuthProvider = ({children}) => {
       } else {
         setErrors(["No se pudo conectar con el servidor"]);
       }
+      return null;
     }
-    setLoading(false);
   };
 
   const logout = () => {
