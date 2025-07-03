@@ -19,13 +19,12 @@ import {useCliente} from "../../context/clienteContext.jsx";
 import {useVehiculo} from "../../context/vehiculoContext.jsx";
 import StringFormatter from "../../utilities/stringFormatter.js";
 import {Link, useParams} from "react-router-dom";
-import {addCitaRequest} from "../../api/controlpanel.js";
 
 export default function WorkshopDash() {
   const {darkMode} = useDarkMode();
   const {id} = useParams();
-  const {getClienteByRut} = useCliente();
-  const {getVehiculoByPatente} = useVehiculo();
+  const {getClienteByRut, createCliente} = useCliente();
+  const {getVehiculoByPatente, createVehiculo} = useVehiculo();
   const {addCita} = useControlPanel();
 
   const [dateRange, setDateRange] = useState({
@@ -137,6 +136,22 @@ export default function WorkshopDash() {
         return;
       }
 
+      await createCliente({
+        cliente_rut: newAppointment.cliente_rut,
+        nombre: newAppointment.cliente_nombre,
+        correo: newAppointment.cliente_correo,
+        telefono: newAppointment.cliente_telefono,
+      });
+
+      await createVehiculo({
+        patente: newAppointment.vehiculo_patente,
+        marca: newAppointment.vehiculo_marca,
+        modelo: newAppointment.vehiculo_modelo,
+        anio: newAppointment.vehiculo_anio,
+        color: newAppointment.vehiculo_color,
+        cliente_rut: newAppointment.cliente_rut,
+      });
+
       const response = await addCita(taller.taller_id, newAppointment);
       if (!response) {
         alert("Error al añadir la cita. Por favor, intenta nuevamente.");
@@ -211,28 +226,12 @@ export default function WorkshopDash() {
     }
   };
 
-  const formatRut = (rut) => {
-    let valor = rut.replace(/\./g, "").replace("-", "");
-
-    valor = valor.replace(/[^0-9kK]/g, "");
-
-    let dv = valor.slice(-1);
-    let numero = valor.slice(0, -1);
-
-    if (numero.length > 0) {
-      numero = numero.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      return numero + "-" + dv;
-    }
-
-    return valor;
-  };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name.endsWith("_rut")) {
       setNewAppointment((prev) => ({
         ...prev,
-        [name]: formatRut(value),
+        [name]: StringFormatter.formatRut(value),
       }));
     } else if (name === "vehiculo_patente") {
       // Convertir a mayúsculas la patente

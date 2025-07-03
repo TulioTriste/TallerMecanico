@@ -1,5 +1,5 @@
 import {createContext, useContext} from "react";
-import {getVehiculoByPatenteRequest, getVehiculoNameRequest} from "../api/vehiculo";
+import {createVehiculoRequest, getVehiculoByPatenteRequest, getVehiculoNameRequest} from "../api/vehiculo";
 
 const VehiculoContext = createContext();
 
@@ -31,11 +31,22 @@ export function VehiculoProvider({children}) {
     }
   }
 
+  const createVehiculo = async (vehiculo) => {
+    try {
+      const response = await createVehiculoRequest(vehiculo);
+      return response.data;
+    } catch (error) {
+      console.error("Error al crear el vehículo:", error);
+      return null;
+    }
+  }
+
   return (
     <VehiculoContext.Provider
       value={{
         getVehiculoName,
         getVehiculoByPatente,
+        createVehiculo,
       }}
     >
       {children}

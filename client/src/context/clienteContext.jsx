@@ -1,5 +1,5 @@
 import {createContext, useContext} from "react";
-import {getClienteByRutRequest, getNameRequest} from "../api/cliente";
+import {createClienteRequest, getClienteByRutRequest, getNameRequest} from "../api/cliente";
 
 const ClienteContext = createContext();
 
@@ -29,6 +29,16 @@ export function ClienteProvider({children}) {
       console.error("Error al obtener el cliente por RUT:", error);
       return null;
     }
+  };
+
+  const createCliente = async (cliente) => {
+    try {
+      const response = await createClienteRequest(cliente);
+      return response.data;
+    } catch (error) {
+      console.error("Error al crear el cliente:", error);
+      return null;
+    }
   }
 
   return (
@@ -36,6 +46,7 @@ export function ClienteProvider({children}) {
       value={{
         getClienteName,
         getClienteByRut,
+        createCliente
       }}
     >
       {children}

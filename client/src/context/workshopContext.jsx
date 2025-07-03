@@ -1,5 +1,5 @@
 import {createContext, useContext, useState} from "react";
-import {createTallerRequest, getTallerRequest, getWorkshopsRequest} from "../api/workshops";
+import {createTallerRequest, deleteTallerRequest, getTallerRequest, getWorkshopsRequest} from "../api/workshops";
 
 const WorkshopContext = createContext();
 
@@ -59,7 +59,17 @@ export function WorkshopProvider({children}) {
           message: error.message
         };
       }
+    }
+  }
 
+  const deleteTaller = async (tallerId) => {
+    try {
+      const res = await deleteTallerRequest({taller_id: tallerId});
+      setWorkshops(prevWorkshops => prevWorkshops.filter(taller => taller.taller_id !== tallerId));
+      return res.data;
+    } catch (error) {
+      console.error("Error al eliminar el taller:", error);
+      throw error;
     }
   }
 
@@ -70,6 +80,7 @@ export function WorkshopProvider({children}) {
         cargarTalleres,
         getTaller,
         createTaller,
+        deleteTaller,
       }}
     >
       {children}

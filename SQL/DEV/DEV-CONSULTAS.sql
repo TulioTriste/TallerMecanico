@@ -149,3 +149,5 @@ SELECT
         AND estado_id = 3
         AND taller_id = 1;
 SELECT * FROM ot;
+
+UPDATE usuario SET plan_id = null WHERE correo = 'lunaloboez@gmail.com';

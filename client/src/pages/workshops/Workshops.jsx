@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronRight, Clock, Home, MapPin, Plus, Wrench } from "lucide-react";
+import { Clock, Home, MapPin, Plus, Wrench } from "lucide-react";
 import { useWorkshop } from "../../context/workshopContext.jsx";
 import { useDarkMode } from "../../context/darkModeContext.jsx";
 import { useControlPanel } from "../../context/controlPanelContext.jsx";
 import StringFormatter from "../../utilities/stringFormatter.js";
 import { MoreVertical, Edit, Trash2 } from "lucide-react";
+import {useAuth} from "../../context/authContext.jsx";
 
 const Workshops = () => {
   const { darkMode } = useDarkMode();
+  const {user} = useAuth();
   const [selectedTaller, setSelectedTaller] = useState(null);
 
-  const { workshops, cargarTalleres } = useWorkshop(); // Datos de ejemplo de los talleres
+  const { workshops, cargarTalleres, deleteTaller } = useWorkshop(); // Datos de ejemplo de los talleres
   const {
     getNextCitaTaller,
     getOrdenesDeTrabajoCountByEstado,
@@ -114,6 +116,14 @@ const Workshops = () => {
 
     return currentMinutes >= inicioTotal && currentMinutes <= terminoTotal;
   };
+
+  const eliminarTaller = async (tallerId) => {
+    if (user.tipo === "usuario" || user.tipo === "administrador") {
+      await deleteTaller(tallerId);
+    } else {
+      alert("No tienes permisos para eliminar un taller");
+    }
+  }
 
   return (
     <div
@@ -286,11 +296,7 @@ const Workshops = () => {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                console.log(
-                                  "Eliminar taller:",
-                                  taller.taller_id,
-                                );
-                                setOpenMenuId(null);
+                                eliminarTaller(taller.taller_id);
                               }}
                               className={`w-full text-left px-4 py-2 text-sm ${
                                 darkMode

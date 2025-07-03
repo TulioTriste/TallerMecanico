@@ -23,4 +23,18 @@ export const getVehiculoByPatente = async (req, res) => {
     console.error("Error al obtener el vehículo por patente:", error);
     res.status(500).json({message: "Error al obtener el vehículo por patente"});
   }
+};
+
+export const createVehiculo = async (req, res) => {
+  try {
+    const vehiculo = req.body;
+    const result = await VehiculoModel.createVehiculo(vehiculo);
+    if (result === 0) {
+      return res.status(400).json({message: "Error al crear el vehículo"});
+    }
+    res.status(201).json({message: "Vehículo creado exitosamente"});
+  } catch (error) {
+    console.error("Error al crear el vehículo:", error);
+    res.status(500).json({message: "Error al crear el vehículo"});
+  }
 }
