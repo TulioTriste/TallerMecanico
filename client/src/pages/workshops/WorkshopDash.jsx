@@ -19,7 +19,6 @@ import {useCliente} from "../../context/clienteContext.jsx";
 import {useVehiculo} from "../../context/vehiculoContext.jsx";
 import StringFormatter from "../../utilities/stringFormatter.js";
 import {Link, useParams} from "react-router-dom";
-import {addCitaRequest} from "../../api/controlpanel.js";
 
 export default function WorkshopDash() {
   const {darkMode} = useDarkMode();
