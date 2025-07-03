@@ -118,10 +118,14 @@ export default function DashboardNavbar() {
                 >
                   <div
                     className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
-                    {user?.nombre?.[0] || "U"}
+                    {user?.nombre?.[0] || (user ? "C" : "U")}
                   </div>
                   <span className="ml-2 text-sm font-medium">
-                    {user?.nombre || "Usuario"}
+                    {user
+                      ? user.nombre
+                        ? user.nombre
+                        : "Cargando..."
+                      : "Usuario"}
                   </span>
                   <ChevronDown className="w-4 h-4 ml-2"/>
                 </button>

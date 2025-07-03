@@ -21,7 +21,11 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({children}) => {
-  const [user, setUser] = useState(null);
+  // Inicializa el usuario desde localStorage si existe
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,6 +49,7 @@ export const AuthProvider = ({children}) => {
           userType: "usuario",
         }
         setUser(res.data.user);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
         setIsAuthenticated(true);
       }
     } catch (error) {
@@ -67,6 +72,7 @@ export const AuthProvider = ({children}) => {
             userType: user.userType,
           }
           setUser(res.data.empleado);
+          localStorage.setItem("user", JSON.stringify(res.data.empleado));
           setIsAuthenticated(true);
         }
       } else if (user.userType === "usuario") {
@@ -77,6 +83,7 @@ export const AuthProvider = ({children}) => {
             userType: user.userType, // Aseguramos que roles_id esté definido
           }
           setUser(res.data.user);
+          localStorage.setItem("user", JSON.stringify(res.data.user));
           setIsAuthenticated(true);
         }
       }
@@ -93,6 +100,7 @@ export const AuthProvider = ({children}) => {
   const logout = () => {
     Cookies.remove("token");
     setUser(null);
+    localStorage.removeItem("user");
     setIsAuthenticated(false);
     setLoading(false);
   };
@@ -173,12 +181,13 @@ export const AuthProvider = ({children}) => {
           return;
         }
         setIsAuthenticated(true);
-        console.log("checklogin", res.data);
         setUser(res.data);
+        localStorage.setItem("user", JSON.stringify(res.data));
         // eslint-disable-next-line no-unused-vars
       } catch (error) {
         setIsAuthenticated(false);
         setUser(null);
+        localStorage.removeItem("user");
       }
 
       setLoading(false);
