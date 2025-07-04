@@ -61,3 +61,41 @@ export const deleteTaller = async (req, res) => {
     });
   }
 }
+
+export const updateTaller = async (req, res) => {
+  try {
+    const { taller_id } = req.params;
+    const { nombre, telefono, correo, direccion, inicio_jornada, termino_jornada } = req.body;
+
+    // Validar que el taller existe
+    const tallerExistente = await TallerModel.getTallerById(taller_id);
+    if (!tallerExistente) {
+      return res.status(404).json({ message: "Taller no encontrado" });
+    }
+
+    // Validar que el usuario tiene permiso para editar este taller
+    // Asumiendo que el usuario_rut viene del token de autenticación
+    if (tallerExistente.usuario_rut !== req.user.rut) {
+      return res.status(403).json({ message: "No tienes permiso para editar este taller" });
+    }
+
+    const updated = await TallerModel.updateTaller(taller_id, {
+      nombre,
+      telefono,
+      correo,
+      direccion,
+      inicio_jornada,
+      termino_jornada
+    });
+
+    if (updated) {
+      const tallerActualizado = await TallerModel.getTallerById(taller_id);
+      res.json(tallerActualizado);
+    } else {
+      res.status(400).json({ message: "No se pudo actualizar el taller" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
