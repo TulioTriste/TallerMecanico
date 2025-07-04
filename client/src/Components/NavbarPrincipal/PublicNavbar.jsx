@@ -40,7 +40,7 @@ export default function Navbar() {
                 <span
                   className={`font-bold text-xl ${darkMode ? "text-white" : "text-gray-900"}`}
                 >
-                  TallerApp
+                  TallerConectados
                 </span>
               </div>
             </div>

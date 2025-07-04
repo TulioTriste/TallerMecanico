@@ -78,11 +78,9 @@ export default function DashboardNavbar() {
               >
                 <Wrench className="h-8 w-8 mr-2"/>
                 <span
-                  className={`font-bold text-xl ${
-                    darkMode ? "text-white" : "text-gray-900"
-                  }`}
+                  className={`font-bold text-xl ${darkMode ? "text-white" : "text-gray-900"}`}
                 >
-                  TallerApp
+                  TallerConectados
                 </span>
               </Link>
             </div>
