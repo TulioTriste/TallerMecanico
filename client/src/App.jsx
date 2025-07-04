@@ -33,6 +33,7 @@ import SuccessPage from "./pages/checkout/SuccessPage.jsx";
 import Appointments from "./pages/workshops/Appointments.jsx";
 import CookieConsent from "./Components/cookies/CookieConsent.jsx";
 import AboutSoftware from "./pages/main/AboutSoftware.jsx";
+import ChangePassword from "./pages/profile/ChangePassword.jsx";
 
 function App() {
   return (
@@ -118,6 +119,10 @@ function App() {
                             <Route
                               path="/checkout/success"
                               element={<SuccessPage />}
+                            />
+                            <Route
+                              path="/profile/change-password"
+                              element={<ChangePassword />}
                             />
                           </Route>
                           <Route path="*" element={<ErrorPage />} />
