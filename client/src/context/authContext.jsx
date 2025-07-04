@@ -10,10 +10,10 @@ import {
 } from "../api/auth";
 import Cookies from "js-cookie";
 import {loginEmpleadoRequest} from "../api/empleado.js";
+import {updateProfileUserRequest} from "../api/usuario.js";
 
 const AuthContext = createContext();
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error("useAuth must be used within a AuthProvider");
@@ -39,12 +39,13 @@ export const AuthProvider = ({children}) => {
   const signup = async (user) => {
     try {
       const res = await registerRequest(user);
+      let userData = res.data.user;
+      userData = {
+        ...userData,
+        userType: user.userType,
+      }
       if (res.status === 200) {
-        res.data.user = {
-          ...res.data.empleado,
-          userType: "usuario",
-        }
-        setUser(res.data.user);
+        setUser(userData);
         setIsAuthenticated(true);
       }
     } catch (error) {
@@ -165,6 +166,30 @@ export const AuthProvider = ({children}) => {
     }
   }
 
+  const updateProfileUser = async (data) => {
+    try {
+      const res = await updateProfileUserRequest(data);
+      if (res.status === 200) {
+        let newUser = user;
+        newUser = {
+          ...newUser,
+          nombre: data.nombre,
+          apellido: data.apellido,
+          telefono: data.telefono,
+        };
+        setUser(newUser);
+        return true;
+      } else {
+        setErrors([res.data.message || "Error al actualizar el perfil."]);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error al actualizar el perfil:", error);
+      setErrors(["No se pudo conectar con el servidor"]);
+      return false;
+    }
+  }
+
   useEffect(() => {
     const checkLogin = async () => {
       const cookies = Cookies.get();
@@ -176,7 +201,6 @@ export const AuthProvider = ({children}) => {
 
       try {
         const res = await verifyTokenRequest(cookies.token);
-        console.log("checklogin", res.data);
         if (!res.data) {
           setIsAuthenticated(false);
           setLoading(false);
@@ -208,7 +232,8 @@ export const AuthProvider = ({children}) => {
         getRutByCorreo,
         isValidEmail,
         sentRecoverPasswordEmail,
-        resetPassword
+        resetPassword,
+        updateProfileUser,
       }}
     >
       {children}

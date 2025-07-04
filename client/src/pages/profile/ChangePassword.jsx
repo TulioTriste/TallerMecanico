@@ -1,8 +1,10 @@
 import {useState} from "react";
 import {Eye, EyeOff, Lock} from "lucide-react";
 import {useDarkMode} from "../../context/darkModeContext.jsx";
+import {useAuth} from "../../context/authContext.jsx";
 
 export default function ChangePassword() {
+  const {user, errors} = useAuth();
   const {darkMode} = useDarkMode();
   const [showPassword, setShowPassword] = useState({
     current: false,
@@ -16,9 +18,12 @@ export default function ChangePassword() {
   });
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    // Aquí irá la lógica para cambiar la contraseña
-    console.log("Cambio de contraseña:", formData);
+    try {
+      e.preventDefault();
+
+    } catch (error) {
+      console.error("Error al cambiar la contraseña:", error);
+    }
   };
 
   const togglePasswordVisibility = (field) => {

@@ -13,7 +13,7 @@ export const register = async (req, res) => {
 
   const passwordHash = await bcrypt.hash(password, 10);
 
-  var responseMessage;
+  let responseMessage;
   let newUser = await UserModel.addUser(rut, nombre, apellido, correo, passwordHash, telefono, direccion);
 
   if (!newUser) {
@@ -46,6 +46,7 @@ export const register = async (req, res) => {
         empresa: newUser.empresa,
         plan_id: newUser.plan_id,
         tipo: "usuario",
+        created_at: newUser.created_at,
       },
     });
   } catch (error) {
@@ -100,6 +101,7 @@ export const login = async (req, res) => {
         empresa: userFound.empresa,
         plan_id: userFound.plan_id,
         tipo: "usuario",
+        created_at: userFound.created_at,
       },
     });
   } catch (error) {
@@ -152,6 +154,7 @@ export const verifyToken = async (req, res) => {
         roles_id: empleadoFound.roles_id,
         nombre_rol: empleadoFound.nombre_rol,
         tipo: tipo,
+        created_at: empleadoFound.created_at,
       });
     } else {
       const userFound = await UserModel.getUserByRut(user.rut);
@@ -172,6 +175,7 @@ export const verifyToken = async (req, res) => {
         empresa: userFound.empresa,
         plan_id: userFound.plan_id,
         tipo: tipo,
+        created_at: userFound.created_at,
       });
     }
   });
