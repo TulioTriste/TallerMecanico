@@ -17,6 +17,7 @@ import {
 import {useDarkMode} from "../../context/darkModeContext.jsx";
 import {useControlPanel} from "../../context/controlPanelContext.jsx";
 import Footer from "../../Components/Footer.jsx";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const {darkMode} = useDarkMode();
@@ -27,6 +28,7 @@ export default function Dashboard() {
   const [isClient, setIsClient] = useState(false);
 
   const {registeredVehicles, clientesCount, ordenesActivas, citasTotalHoy} = useControlPanel();
+  const navigate = useNavigate();
 
   // Marcar que estamos en el cliente cuando el componente se monta
   useEffect(() => {
@@ -170,7 +172,9 @@ export default function Dashboard() {
             className={`min-h-screen flex items-center justify-center relative py-8 px-6 sm:px-8 ${darkMode ? "bg-gray-900" : "bg-white"}`}
           >
             {/* Elementos decorativos de fondo */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+            <div
+              className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0"
+            >
               <div
                 className={`absolute -top-24 -right-24 w-96 h-96 rounded-full ${darkMode ? "bg-blue-900/10" : "bg-blue-100/50"} blur-3xl`}
               ></div>
@@ -186,14 +190,14 @@ export default function Dashboard() {
                   <div
                     className={`inline-block px-4 py-1 rounded-full text-sm font-medium ${darkMode ? "bg-blue-900/30 text-blue-400" : "bg-blue-100 text-blue-800"}`}
                   >
-                    Optimice su taller mecánico
+                    Optimice su TallerConectados
                   </div>
 
                   <h1
                     className={`text-4xl sm:text-5xl font-bold leading-tight ${darkMode ? "text-white" : "text-gray-900"}`}
                   >
                     Software Integral para{" "}
-                    <span className="text-blue-600">Talleres Mecánicos</span>
+                    <span className="text-blue-600">Talleres Mecanicos</span>
                   </h1>
 
                   <p
@@ -205,11 +209,14 @@ export default function Dashboard() {
 
                   <div className="flex flex-wrap gap-4 pt-6">
                     <button
-                      className="px-8 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors shadow-lg shadow-blue-500/20">
-                      Solicitar Demo
+                      className="px-8 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors shadow-lg shadow-blue-500/20"
+                      onClick={() => navigate("/plans")}
+                    >
+                      Contratar plan
                     </button>
                     <button
                       className={`px-8 py-3 rounded-lg flex items-center gap-2 ${darkMode ? "bg-gray-800 hover:bg-gray-700 text-white" : "bg-white hover:bg-gray-50 text-gray-800"} font-medium transition-colors shadow`}
+                      onClick={() => window.open("http://localhost:5173/sobre-software", "_self")}
                     >
                       Ver características
                       <ChevronRight className="w-4 h-4"/>
@@ -217,15 +224,15 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="lg:w-3/5">
+                <div className="lg:w-3/5 w-full">
                   <div
-                    className={`relative rounded-2xl overflow-hidden shadow-2xl ${darkMode ? "bg-gray-800 shadow-blue-900/20" : "bg-white shadow-gray-200/80"}`}
+                    className={`relative rounded-2xl overflow-hidden shadow-2xl w-full ${darkMode ? "bg-gray-800 shadow-blue-900/20" : "bg-white shadow-gray-200/80"}`}
                   >
                     <div
                       className={`absolute top-0 left-0 right-0 h-2 ${darkMode ? "bg-gradient-to-r from-blue-600 to-indigo-600" : "bg-gradient-to-r from-blue-500 to-indigo-500"}`}
                     ></div>
-                    <div className="p-6 sm:p-8">
-                      <div className="flex justify-between items-center mb-6">
+                    <div className="p-4 sm:p-6 md:p-8">
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                         <div>
                           <div className="flex items-center gap-3">
                             <Wrench
@@ -243,8 +250,8 @@ export default function Dashboard() {
                         </div>
                       </div>
 
-                      {/* 4 parámetros en forma de cuadrado (grid 2x2) */}
-                      <div className="grid grid-cols-2 gap-4">
+                      {/* 4 parámetros en forma de cuadrado (grid 2x2 en desktop, 1x4 en móvil) */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div
                           className={`rounded-lg p-4 flex items-center gap-4 ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}
                         >
@@ -327,7 +334,7 @@ export default function Dashboard() {
               <h2
                 className={`text-3xl font-bold mb-4 ${darkMode ? "text-white" : "text-gray-900"}`}
               >
-                Características Principales
+                Características Principales de TallerConectados
               </h2>
               <p
                 className={`text-lg max-w-2xl mx-auto ${darkMode ? "text-gray-300" : "text-gray-600"}`}
@@ -536,213 +543,6 @@ export default function Dashboard() {
                     <ChevronRight className="w-4 h-4 ml-1"/>
                   </a>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Plans Section */}
-        <div
-          className={`py-16 px-4 sm:px-6 lg:px-8 ${
-            darkMode
-              ? "bg-gradient-to-br from-gray-800 to-gray-900"
-              : "bg-gradient-to-br from-gray-50 to-gray-100"
-          }`}
-        >
-          <div className="max-w-6xl mx-auto">
-            {/* Header */}
-            <div className="text-center mb-12">
-              <h2
-                className={`text-3xl font-bold mb-4 ${darkMode ? "text-white" : "text-gray-900"}`}
-              >
-                Planes de Precios Flexibles
-              </h2>
-              <p
-                className={`text-lg max-w-2xl mx-auto ${darkMode ? "text-gray-300" : "text-gray-600"}`}
-              >
-                Elija el plan perfecto para su taller mecánico y optimice sus
-                operaciones diarias
-              </p>
-
-              {/* Billing toggle */}
-              <div
-                className={`mt-8 inline-flex items-center p-1 rounded-full border shadow-sm ${
-                  darkMode
-                    ? "bg-gray-700 border-gray-600"
-                    : "bg-white border-gray-200"
-                }`}
-              >
-                <button
-                  onClick={() => setBillingCycle("monthly")}
-                  className={`px-4 py-2 text-sm font-medium rounded-full transition-all ${
-                    billingCycle === "monthly"
-                      ? "bg-blue-600 text-white shadow-md"
-                      : `${darkMode ? "text-gray-300 hover:bg-gray-600" : "text-gray-700 hover:bg-gray-100"}`
-                  }`}
-                >
-                  Facturación Mensual
-                </button>
-                <button
-                  onClick={() => setBillingCycle("yearly")}
-                  className={`px-4 py-2 text-sm font-medium rounded-full transition-all ${
-                    billingCycle === "yearly"
-                      ? "bg-blue-600 text-white shadow-md"
-                      : `${darkMode ? "text-gray-300 hover:bg-gray-600" : "text-gray-700 hover:bg-gray-100"}`
-                  }`}
-                >
-                  Facturación Anual{" "}
-                  <span className="text-xs font-normal">(-17%)</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Plans grid */}
-            <div className="grid md:grid-cols-3 gap-8 mb-12">
-              {plans.map((plan, index) => (
-                <div
-                  key={index}
-                  className={`relative rounded-2xl border-2 transition-all ${
-                    selectedPlan === index
-                      ? "border-blue-500"
-                      : `${darkMode ? plan.darkColor.split(" ")[1] : plan.color.split(" ")[1]} border-opacity-50`
-                  } ${darkMode ? plan.darkColor : plan.color} p-6 overflow-hidden ${
-                    selectedPlan === index
-                      ? "shadow-xl transform scale-105"
-                      : "shadow hover:shadow-lg"
-                  }`}
-                >
-                  {plan.popular && (
-                    <div className="absolute top-0 right-0">
-                      <div
-                        className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold py-1 px-4 rounded-bl-lg">
-                        MÁS POPULAR
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex items-center mb-4">
-                    <div
-                      className={`p-3 rounded-lg ${darkMode ? "bg-gray-800 bg-opacity-50" : "bg-white bg-opacity-50"} mr-4`}
-                    >
-                      {plan.icon}
-                    </div>
-                    <h3
-                      className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}
-                    >
-                      {plan.name}
-                    </h3>
-                  </div>
-
-                  <p
-                    className={`text-sm mb-4 ${darkMode ? "text-gray-400" : "text-gray-600"}`}
-                  >
-                    {plan.description}
-                  </p>
-
-                  <div className="mb-6">
-                    <div className="flex items-end">
-                      <span
-                        className={`text-3xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}
-                      >
-                        {billingCycle === "monthly"
-                          ? plan.monthlyPrice
-                          : plan.yearlyPrice}
-                      </span>
-                      <span
-                        className={`ml-2 pb-1 ${darkMode ? "text-gray-400" : "text-gray-500"}`}
-                      >
-                        {billingCycle === "monthly" ? "/mes" : "/año"}
-                      </span>
-                    </div>
-                    {billingCycle === "yearly" && (
-                      <div className="text-sm text-green-500 font-medium mt-1">
-                        {plan.savings} anualmente
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="space-y-3 mb-8">
-                    {plan.features.map((feature, i) => (
-                      <div key={i} className="flex items-center">
-                        {feature.included ? (
-                          <Check className="w-5 h-5 text-green-500 mr-2 flex-shrink-0"/>
-                        ) : (
-                          <X
-                            className={`w-5 h-5 ${darkMode ? "text-gray-600" : "text-gray-400"} mr-2 flex-shrink-0`}
-                          />
-                        )}
-                        <span
-                          className={`text-sm ${
-                            feature.included
-                              ? darkMode
-                                ? "text-gray-300"
-                                : "text-gray-700"
-                              : darkMode
-                                ? "text-gray-500"
-                                : "text-gray-500"
-                          }`}
-                        >
-                          {feature.name}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <button
-                    onClick={() => selectPlan(index)}
-                    className={`w-full flex items-center justify-center py-3 px-4 rounded-lg text-white font-medium transition-all ${
-                      selectedPlan === index
-                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md"
-                        : darkMode
-                          ? "bg-gray-700 hover:bg-gray-600"
-                          : "bg-gray-800 hover:bg-gray-700"
-                    }`}
-                  >
-                    <span>{plan.ctaText}</span>
-                    <ArrowRight className="w-4 h-4 ml-2"/>
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            {/* Selected plan notification */}
-            {selectedPlan !== null && (
-              <div
-                className={`fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-full shadow-lg transition-all ${
-                  tooltipVisible
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-10 pointer-events-none"
-                }`}
-              >
-                Ha seleccionado el {plans[selectedPlan].name}
-              </div>
-            )}
-
-            {/* Features comparison note */}
-            <div className="text-center mt-12">
-              <p className={darkMode ? "text-gray-400" : "text-gray-600"}>
-                ¿Necesita ver una comparación completa de características?{" "}
-                <a
-                  href="#"
-                  className="text-blue-500 font-medium hover:text-blue-400"
-                >
-                  Ver tabla comparativa
-                </a>
-              </p>
-
-              <div
-                className={`mt-8 border rounded-lg p-4 max-w-2xl mx-auto ${
-                  darkMode
-                    ? "bg-blue-900 bg-opacity-20 border-blue-800"
-                    : "bg-blue-50 border-blue-200"
-                }`}
-              >
-                <p
-                  className={`text-sm ${darkMode ? "text-blue-300" : "text-blue-800"}`}
-                >
-                  Todos los planes incluyen una prueba gratuita de 14 días. No
-                  se requiere tarjeta de crédito hasta que decida continuar.
-                </p>
               </div>
             </div>
           </div>

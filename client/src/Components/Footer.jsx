@@ -18,7 +18,7 @@ export default function Footer() {
           <div className="flex flex-col items-center md:items-start">
             <img
               src={logo}
-              alt="Taller Mecánico"
+              alt="TallerConectados"
               className="h-16 w-auto mb-4"
             />
             <div className="flex space-x-4">
@@ -110,13 +110,14 @@ export default function Footer() {
           </div>
 
           {/* Medios de Pago */}
-          <div>
+          <div className="flex flex-col items-start md:items-start p-0 m-0">
             <h5 className="font-semibold text-lg mb-4">Medios de Pago</h5>
-            <div className="flex flex-col space-y-2">
+            <div className="flex flex-col items-start justify-start h-full min-h-[64px] w-full p-0 m-0">
               <img
                 src={mercadoPagoLogo}
                 alt="Mercado Pago"
-                className="h-8 object-contain"
+                className="h-20 w-auto object-contain p-0 m-0"
+                style={{ maxWidth: "220px" }}
               />
             </div>
           </div>
@@ -129,7 +130,7 @@ export default function Footer() {
           } text-center`}
         >
           <p>
-            &copy; {new Date().getFullYear()} Taller Mecánico. Todos los
+            &copy; {new Date().getFullYear()} TallerConectados. Todos los
             derechos reservados.
           </p>
         </div>

@@ -17,12 +17,6 @@ const PlanCheckout = () => {
 
   const paymentMethods = [
     {
-      id: "webpay",
-      name: "WebPay",
-      description: "Pago seguro con WebPay de Transbank",
-      logo: "/path-to-webpay-logo.png", // Necesitarás agregar las imágenes
-    },
-    {
       id: "mercadopago",
       name: "MercadoPago",
       description: "Pago fácil y seguro con MercadoPago",
