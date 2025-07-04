@@ -152,7 +152,7 @@ const AboutSoftware = () => {
                 gestión
               </p>
               <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-bold hover:bg-blue-50 transition-colors">
-                Prueba Gratis por 30 Días
+                Comienza ya a digitalizar tu taller!
               </button>
             </div>
           </div>
