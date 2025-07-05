@@ -291,6 +291,20 @@ class OtModel {
     }
   }
 
+  async deleteTaskById(taskId) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+        .request()
+        .input("tarea_id", sql.Int, taskId)
+        .query(`DELETE FROM ot_tareas WHERE tarea_id = @tarea_id`);
+      return result.rowsAffected[0] > 0; // Devuelve true si se eliminó correctamente
+    } catch (error) {
+      console.error("Error al eliminar la tarea:", error);
+      throw error;
+    }
+  }
+
 }
 
 export default new OtModel();

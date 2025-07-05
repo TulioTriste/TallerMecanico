@@ -155,4 +155,21 @@ export const getOtsByTallerId = async (req, res) => {
     console.error("Error al obtener las órdenes de trabajo del taller:", error);
     res.status(500).json({message: "Error interno del servidor"});
   }
+};
+
+export const deleteTask = async (req, res) => {
+  const {task_id} = req.params;
+  console.log(task_id);
+
+  try {
+    const result = await OtModel.deleteTaskById(task_id);
+    if (result) {
+      res.status(200).json({message: "Tarea eliminada correctamente"});
+    } else {
+      res.status(400).json({message: "Error al eliminar la tarea"});
+    }
+  } catch (error) {
+    console.error("Error al eliminar la tarea de la OT:", error);
+    res.status(500).json({message: "Error interno del servidor"});
+  }
 }

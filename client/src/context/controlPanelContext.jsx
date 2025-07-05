@@ -2,7 +2,7 @@ import {createContext, useContext, useEffect, useState} from "react";
 import {
   addCitaRequest,
   addOtRequest,
-  addTaskRequest, getCitasByTallerRequest,
+  addTaskRequest, deleteTaskRequest, getCitasByTallerRequest,
   getCitasHoyRequest, getCitasHoyTotalRequest, getClientesCountRequest,
   getCountCitasProx7DiasRequest, getCountOrdenesActivasRequest,
   getCountOTMesRequest,
@@ -301,6 +301,20 @@ export function ControlPanelProvider({children}) {
     }
   }
 
+  const deleteTask = async (taller_id, task_id) => {
+    try {
+      const response = await deleteTaskRequest(taller_id, task_id);
+      if (response.status !== 200) {
+        console.error("Error al eliminar la tarea:", response.data.message);
+        return null;
+      }
+      return true;
+    } catch (error) {
+      console.error("Error al eliminar la tarea:", error);
+      return null;
+    }
+  }
+
   return (
     <ControlPanelContext.Provider
       value={{
@@ -330,6 +344,7 @@ export function ControlPanelProvider({children}) {
         addCita,
         getCitasByTaller,
         getOtsByTallerId,
+        deleteTask,
       }}
     >
       {children}

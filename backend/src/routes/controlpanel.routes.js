@@ -15,7 +15,7 @@ import {
 } from "../controllers/controlpanel.controller.js";
 import {
   addOt,
-  addTaskToOt,
+  addTaskToOt, deleteTask,
   getOt, getOtByUniqueId, getOtsByTallerId,
   getTasksByOtId,
   updateOrCreateTasks,
@@ -51,6 +51,7 @@ router.get("/getotbyuniqueid/:uniqueId", getOtByUniqueId);
 router.post("/addcita/:taller_id", authRequired, ownTallerRequired, addCita);
 router.get("/getcitas/:taller_id", authRequired, ownTallerRequired, getCitasByTaller);
 router.get("/getots/:taller_id", authRequired, ownTallerRequired, getOtsByTallerId);
+router.post("/deletetask/:taller_id/:task_id", authRequired, ownTallerRequired, deleteTask);
 
 const storage = multer.diskStorage({
   destination: '../uploads/',
