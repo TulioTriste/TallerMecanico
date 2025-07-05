@@ -39,6 +39,27 @@ export const addTaller = async (req, res) => {
       message: "Error interno del servidor.",
     });
   }
+};
+
+export const deleteTaller = async (req, res) => {
+  const { taller_id } = req.body;
+
+  try {
+    const response = await TallerModel.deleteTaller(taller_id);
+
+    if (!response) {
+      return res.status(400).json({
+        message: "Error al eliminar el taller.",
+      });
+    }
+    return res.status(200).json({
+      message: "Taller eliminado correctamente.",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error interno del servidor.",
+    });
+  }
 }
 
 export const updateTaller = async (req, res) => {

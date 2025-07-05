@@ -54,6 +54,27 @@ class StringFormatter {
   static formatNumber(number) {
     return number.toLocaleString('es-CL');
   }
+
+  static formatRut(rut) {
+    if (!rut) return "";
+    // Elimina puntos y guiones, y filtra caracteres válidos
+    let cleaned = rut.replace(/\./g, "").replace(/-/g, "").replace(/[^0-9kK]/g, "");
+    if (cleaned.length < 2) return cleaned;
+
+    const body = cleaned.slice(0, -1);
+    const dv = cleaned.slice(-1).toUpperCase();
+
+    // Formatea el cuerpo del RUT con puntos cada 3 dígitos
+    let formatted = "";
+    for (let i = body.length - 1, count = 1; i >= 0; i--, count++) {
+      formatted = body[i] + formatted;
+      if (count % 3 === 0 && i !== 0) {
+        formatted = "." + formatted;
+      }
+    }
+
+    return `${formatted}-${dv}`;
+  }
 }
 
 export default StringFormatter;

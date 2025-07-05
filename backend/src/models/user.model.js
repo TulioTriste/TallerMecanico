@@ -79,19 +79,18 @@ class UserModel {
   }
 
   // Actualizar un usuario
-  async updateUser(id, nombre, email, password) {
+  async updateProfileUser(rut, nombre, apellido, telefono) {
     try {
       const pool = await connectToDatabase();
-      const result = await pool
+      return await pool
         .request()
-        .input("id", sql.Int, id)
+        .input("usuario_rut", sql.VarChar, rut)
         .input("nombre", sql.VarChar, nombre)
-        .input("email", sql.VarChar, email)
-        .input("password", sql.VarChar, password)
+        .input("apellido", sql.VarChar, apellido)
+        .input("telefono", sql.VarChar, telefono)
         .query(
-          "UPDATE usuario SET nombre = @nombre, email = @email, contrasena = @password WHERE user_id = @id"
-        );
-      return result; // Devuelve el resultado de la consulta
+          "UPDATE usuario SET nombre = @nombre, apellido = @apellido, telefono = @telefono WHERE usuario_rut = @usuario_rut"
+        ); // Devuelve el resultado de la consulta
     } catch (error) {
       console.error("Error al actualizar el usuario:", error);
       throw error;
@@ -102,11 +101,10 @@ class UserModel {
   async deleteUser(id) {
     try {
       const pool = await connectToDatabase();
-      const result = await pool
+      return await pool
         .request()
         .input("id", sql.Int, id)
-        .query("DELETE FROM usuario WHERE user_id = @id");
-      return result; // Devuelve el resultado de la consulta
+        .query("DELETE FROM usuario WHERE user_id = @id"); // Devuelve el resultado de la consulta
     } catch (error) {
       console.error("Error al eliminar el usuario:", error);
       throw error;

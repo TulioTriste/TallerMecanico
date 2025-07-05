@@ -6,13 +6,14 @@ import {TOKEN_KEY_SECRET} from "../config.js";
 import {v4} from "uuid";
 import PassModel from "../models/pass.model.js";
 import {transporter} from "../transporter.js";
+import EmpleadoModel from "../models/empleado.model.js";
 
 export const register = async (req, res) => {
   const {rut, nombre, apellido, correo, password, telefono, direccion} = req.body;
 
   const passwordHash = await bcrypt.hash(password, 10);
 
-  var responseMessage;
+  let responseMessage;
   let newUser = await UserModel.addUser(rut, nombre, apellido, correo, passwordHash, telefono, direccion);
 
   if (!newUser) {
@@ -45,6 +46,7 @@ export const register = async (req, res) => {
         empresa: newUser.empresa,
         plan_id: newUser.plan_id,
         tipo: "usuario",
+        created_at: newUser.created_at,
       },
     });
   } catch (error) {
@@ -70,6 +72,7 @@ export const login = async (req, res) => {
   const isMatch = await bcrypt.compare(password, userFound.password);
 
   if (!isMatch) {
+    console.log("Credenciales Invalidas");
     return res.status(400).json({
       message: "Credenciales Invalidas.",
     });
@@ -98,6 +101,7 @@ export const login = async (req, res) => {
         empresa: userFound.empresa,
         plan_id: userFound.plan_id,
         tipo: "usuario",
+        created_at: userFound.created_at,
       },
     });
   } catch (error) {
@@ -122,6 +126,7 @@ export const verifyToken = async (req, res) => {
 
   jwt.verify(token, TOKEN_KEY_SECRET, async (error, user) => {
     if (error) {
+      console.error("Token no valido", error);
       return res.status(401).json({
         message: "Token no valido",
       });
@@ -129,24 +134,27 @@ export const verifyToken = async (req, res) => {
 
     const tipo = user.tipo;
     if (tipo === "empleado") {
-      const empleadoFound = await UserModel.getUserByRut(user.rut);
+      const empleadoFound = await EmpleadoModel.getByRut(user.rut);
 
       if (!empleadoFound) {
+        console.error("Empleado no encontrado");
         return res.status(401).json({
           message: "Empleado no encontrado",
         });
       }
 
+      console.log("Empleado encontrado:", empleadoFound);
       return res.json({
-        rut: empleadoFound.usuario_rut,
+        rut: empleadoFound.empleado_rut,
         nombre: empleadoFound.nombre,
         apellido: empleadoFound.apellido,
         correo: empleadoFound.correo,
-        telefono: empleadoFound.telefono,
-        direccion: empleadoFound.direccion,
-        empresa: empleadoFound.empresa,
-        plan_id: empleadoFound.plan_id,
+        telefono: empleadoFound.cel,
+        taller_id: empleadoFound.taller_id,
+        roles_id: empleadoFound.roles_id,
+        nombre_rol: empleadoFound.nombre_rol,
         tipo: tipo,
+        created_at: empleadoFound.created_at,
       });
     } else {
       const userFound = await UserModel.getUserByRut(user.rut);
@@ -167,6 +175,7 @@ export const verifyToken = async (req, res) => {
         empresa: userFound.empresa,
         plan_id: userFound.plan_id,
         tipo: tipo,
+        created_at: userFound.created_at,
       });
     }
   });
