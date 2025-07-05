@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   User,
@@ -19,13 +19,14 @@ import {useVehiculo} from "../../context/vehiculoContext.jsx";
 import {useEmpleado} from "../../context/empleadosContext.jsx";
 import {useControlPanel} from "../../context/controlPanelContext.jsx";
 import StringFormatter from "../../utilities/stringFormatter.js";
+import { toast } from "react-toastify";
 
 export default function CreateWorkshop() {
   const { id } = useParams();
   const { darkMode } = useDarkMode();
   const {getClienteByRut, createCliente} = useCliente();
   const {getVehiculoByPatente, createVehiculo} = useVehiculo();
-  const {isEmpleadoExists} = useEmpleado();
+  const {isEmpleadoExists, getEmpleadosByTaller} = useEmpleado();
   const {addOt} = useControlPanel();
 
   const navigate = useNavigate();
@@ -56,6 +57,21 @@ export default function CreateWorkshop() {
     precio: "",
     taller_id: id,
   });
+
+  const [empleados, setEmpleados] = useState([]);
+
+  useEffect(() => {
+    if (currentStep === 3) {
+      const fetchEmpleados = async () => {
+        const lista = await getEmpleadosByTaller(id);
+        // Filtrar por roles: 2 (mecánico), 3 (practicante), 4 (jefe de sucursal)
+        setEmpleados(
+          (lista || []).filter(emp => [2, 3, 4].includes(emp.roles_id))
+        );
+      };
+      fetchEmpleados();
+    }
+  }, [currentStep, id, getEmpleadosByTaller]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -287,8 +303,7 @@ export default function CreateWorkshop() {
           cliente_correo: response.correo,
           cliente_telefono: response.telefono,
         }));
-
-        alert("El cliente ha sido encontrado y sus datos han sido cargados automáticamente.");
+        toast.info("El cliente ha sido encontrado y sus datos han sido cargados automáticamente.");
       }
     }
     else if (e.target.name.startsWith("vehiculo_")) {
@@ -301,8 +316,7 @@ export default function CreateWorkshop() {
           vehiculo_anio: response.anio,
           vehiculo_color: response.color,
         }));
-
-        alert("El vehículo ha sido encontrado y sus datos han sido cargados automáticamente.");
+        toast.info("El vehículo ha sido encontrado y sus datos han sido cargados automáticamente.");
       }
     }
   };
@@ -607,19 +621,24 @@ export default function CreateWorkshop() {
                       Técnico Asignado
                     </label>
                     <div className="relative">
-                      <wrench className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                      <input
-                        type="text"
+                      {/* <wrench className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" /> */}
+                      <select
                         name="empleado_rut"
                         value={formData.empleado_rut}
                         onChange={handleInputChange}
-                        className={`w-full pl-10 p-2 rounded-lg border ${
+                        className={`w-full pl-3 p-2 rounded-lg border ${
                           darkMode
                             ? "bg-gray-700 border-gray-600 text-white"
                             : "bg-white border-gray-300"
                         }`}
-                        placeholder="Rut del técnico"
-                      />
+                      >
+                        <option value="">Seleccione un técnico</option>
+                        {empleados.map(emp => (
+                          <option key={emp.empleado_rut} value={emp.empleado_rut}>
+                            {emp.nombre} {emp.apellido} ({emp.empleado_rut}) - {emp.rol}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 

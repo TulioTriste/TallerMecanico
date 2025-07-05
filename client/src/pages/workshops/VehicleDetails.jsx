@@ -78,11 +78,6 @@ export default function VehicleDetails() {
     } else {
       response = await updateOt(tallerId, orderId, ot);
     }
-    if (response) {
-      alert("Cambios guardados correctamente.");
-      setShowAlert(false);
-      setShowEditModal(false);
-    }
   };
 
   const handleAddImageToTask = async () => {

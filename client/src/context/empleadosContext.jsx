@@ -18,6 +18,11 @@ export function EmpleadoProvider({children}) {
 
   const addEmpleado = async (data) => {
     try {
+      // Formatea el rut antes de enviarlo a la base de datos
+      if (data.empleado_rut) {
+        const { default: StringFormatter } = await import("../utilities/stringFormatter.js");
+        data.empleado_rut = StringFormatter.formatRut(data.empleado_rut);
+      }
       const response = await insertEmpleadoRequest(data);
       return response.status === 200; // Retorna true si la inserción fue exitosa
     } catch (error) {
@@ -52,8 +57,12 @@ export function EmpleadoProvider({children}) {
       const exist = await isEmpleadoExistsRequest(data);
       return exist.data.exists;
     } catch (error) {
+      if (error.response && error.response.status === 404) {
+        // Si el backend responde 404, significa que no existe
+        return false;
+      }
       console.error("Error al verificar si el empleado existe:", error);
-      return false; // Retorna false en caso de error
+      throw error; // Propaga otros errores para que el frontend pueda mostrar un mensaje
     }
   }
 

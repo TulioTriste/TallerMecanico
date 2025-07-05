@@ -3,6 +3,8 @@ import {useParams} from "react-router-dom";
 import {Edit, Search, Trash2, UserPlus, Users} from 'lucide-react';
 import {useEmpleado} from '../../context/empleadosContext.jsx';
 import {useDarkMode} from "../../context/darkModeContext.jsx";
+import { useCustomConfirm } from "../../utilities/customConfirm.jsx";
+import { Fragment } from "react";
 
 export default function ListaEmpleados() {
   const {id} = useParams();
@@ -11,6 +13,7 @@ export default function ListaEmpleados() {
 
   const {getEmpleadosByTaller, deleteEmpleado} = useEmpleado();
   const [empleados, setEmpleados] = useState([]);
+  const { show, ConfirmModal } = useCustomConfirm();
 
   const fetchEmpleados = async () => {
     try {
@@ -212,13 +215,15 @@ export default function ListaEmpleados() {
                     <Edit className="w-5 h-5"/>
                   </button>
                   <button
-                    onClick={async () => {
-                      if (window.confirm('¿Estás seguro de eliminar este empleado?')) {
-                        {
+                    onClick={() => {
+                      show({
+                        title: "¿Eliminar empleado?",
+                        message: `¿Estás seguro que quieres eliminar a ${empleado.nombre} ${empleado.apellido}?`,
+                        onConfirm: async () => {
                           await deleteEmpleado({empleado_rut: empleado.empleado_rut});
                           fetchEmpleados();
                         }
-                      }
+                      });
                     }}
                     className={`inline-flex items-center p-2 rounded-lg ${
                       darkMode
@@ -325,11 +330,14 @@ export default function ListaEmpleados() {
                 </button>
                 <button
                   onClick={() => {
-                    if (
-                      window.confirm("¿Estás seguro de eliminar este empleado?")
-                    ) {
-                      // Lógica para eliminar
-                    }
+                    show({
+                      title: "¿Eliminar empleado?",
+                      message: `¿Estás seguro que quieres eliminar a ${empleado.nombre} ${empleado.apellido}?`,
+                      onConfirm: async () => {
+                        await deleteEmpleado({empleado_rut: empleado.empleado_rut});
+                        fetchEmpleados();
+                      }
+                    });
                   }}
                   className={`p-2 rounded-lg ${
                     darkMode
@@ -344,6 +352,7 @@ export default function ListaEmpleados() {
           ))}
         </div>
       </div>
+      <ConfirmModal />
     </div>
   );
 }
