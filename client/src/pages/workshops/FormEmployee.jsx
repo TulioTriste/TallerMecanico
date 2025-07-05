@@ -82,8 +82,10 @@ export default function FormularioEmpleado() {
   const handlePhoneChange = (e) => {
     let digits = e.target.value.replace(/\D/g, "");
     if (digits.startsWith("56")) digits = digits.slice(2);
-    if (digits.startsWith("9")) digits = digits;
-    else if (digits.length > 0) digits = "9" + digits;
+    if (!digits.startsWith("9")) digits = "9" + digits.replace(/^9+/, "");
+    // Limitar a 9 dígitos (9 + 8 números)
+    digits = digits.slice(0, 9);
+    // Formato: 9 XXXX XXXX
     let formatted = "";
     if (digits.length > 0) formatted += digits[0];
     if (digits.length > 1) formatted += " " + digits.slice(1, 5);
@@ -275,7 +277,7 @@ export default function FormularioEmpleado() {
                         : "border-gray-300 text-gray-900"
                     }`}
                     placeholder="9 XXXX XXXX"
-                    maxLength={10}
+                    maxLength={11}
                     autoComplete="off"
                   />
                 </div>
@@ -367,7 +369,7 @@ export default function FormularioEmpleado() {
                 type="button"
                 onClick={() => {
                   navigate(
-                    `/workshop/sucursal/${tallerId}/empleados`,
+                    `/workshops/${tallerId}/empleados`,
                   );
                 }}
                 className={`px-4 py-2 rounded-lg font-medium ${

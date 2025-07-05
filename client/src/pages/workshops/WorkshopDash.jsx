@@ -9,6 +9,7 @@ import {useVehiculo} from "../../context/vehiculoContext.jsx";
 import StringFormatter from "../../utilities/stringFormatter.js";
 import {Link, useParams} from "react-router-dom";
 import DateUtil from "../../utilities/dateUtil.js";
+import {toast} from "react-toastify";
 
 export default function WorkshopDash() {
   const {darkMode} = useDarkMode();
@@ -269,8 +270,7 @@ export default function WorkshopDash() {
           cliente_correo: response.correo,
           cliente_telefono: response.telefono,
         }));
-
-        alert("El cliente ha sido encontrado y sus datos han sido cargados automáticamente.");
+        toast.info("El cliente ha sido encontrado y sus datos han sido cargados automáticamente.");
       }
     }
     else if (e.target.name.startsWith("vehiculo_")) {
@@ -283,8 +283,7 @@ export default function WorkshopDash() {
           vehiculo_anio: response.anio,
           vehiculo_color: response.color,
         }));
-
-        alert("El vehículo ha sido encontrado y sus datos han sido cargados automáticamente.");
+        toast.info("El vehículo ha sido encontrado y sus datos han sido cargados automáticamente.");
       }
     }
   };
