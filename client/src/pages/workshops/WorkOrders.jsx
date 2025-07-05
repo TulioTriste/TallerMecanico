@@ -24,6 +24,7 @@ export default function WorkOrders() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [openMenuId, setOpenMenuId] = useState(null);
   const ordenesPerPage = 10;
 
   useEffect(() => {
@@ -195,11 +196,29 @@ export default function WorkOrders() {
                       ORD-{orden.ot_id}
                     </span>
                   </div>
-                  <button
-                    className={`p-2 rounded-full hover:${darkMode ? "bg-gray-700" : "bg-gray-100"}`}
-                  >
-                    <MoreVertical className="w-5 h-5" />
-                  </button>
+                  <div className="relative">
+                    <button
+                      className={`p-2 rounded-full hover:${darkMode ? "bg-gray-700" : "bg-gray-100"}`}
+                      onClick={() => setOpenMenuId(openMenuId === orden.ot_id ? null : orden.ot_id)}
+                    >
+                      <MoreVertical className="w-5 h-5" />
+                    </button>
+                    {openMenuId === orden.ot_id && (
+                      <div className={`absolute right-0 mt-2 w-56 rounded-lg shadow-lg z-50 ${darkMode ? "bg-gray-800 border border-gray-700" : "bg-white border border-gray-200"}`}>
+                        <div className="py-1">
+                          <button
+                            onClick={() => {
+                              window.open(`/workshop/${id}/vehicle/${orden.ot_id}`, '_blank');
+                              setOpenMenuId(null);
+                            }}
+                            className={`w-full text-left px-4 py-2 text-sm ${darkMode ? "text-blue-400 hover:bg-gray-700" : "text-blue-700 hover:bg-gray-100"} flex items-center gap-2`}
+                          >
+                            Ver detalles internos (admin)
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

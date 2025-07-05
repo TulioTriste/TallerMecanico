@@ -72,6 +72,17 @@ export default function Appointments() {
           </div>
         </div>
 
+        {/* Flecha hacia atrás */}
+        <div className="mb-4">
+          <button
+            onClick={() => window.history.back()}
+            className="inline-flex items-center text-blue-600 hover:underline font-medium mb-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+            Volver
+          </button>
+        </div>
+
         {/* Tabla de citas */}
         <div
           className={`rounded-lg shadow overflow-hidden ${darkMode ? "bg-gray-800" : "bg-white"}`}
@@ -97,9 +108,6 @@ export default function Appointments() {
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                   Fecha Creación
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                  Acciones
-                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -123,17 +131,6 @@ export default function Appointments() {
                   <td className="px-6 py-4 text-sm">{cita.descripcion}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     {StringFormatter.formatFechaDDMMYYYY(cita.created_at)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <button
-                      className={`px-3 py-1 rounded-lg ${
-                        darkMode
-                          ? "bg-blue-600 hover:bg-blue-700"
-                          : "bg-blue-100 hover:bg-blue-200 text-blue-700"
-                      }`}
-                    >
-                      Ver detalles
-                    </button>
                   </td>
                 </tr>
               ))}
