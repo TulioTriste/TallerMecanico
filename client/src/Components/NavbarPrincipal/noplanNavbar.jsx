@@ -7,12 +7,11 @@ export default function NoPlanNavbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Solo renderiza si el usuario está logueado, no es empleado y no tiene plan
+  // Solo renderiza si el usuario está logueado, es tipo 'usuario' y NO tiene plan activo
   if (
     !user ||
-    user.userType === "empleado" ||
     user.userType !== "usuario" ||
-    user.plan_id !== null && user.plan_id !== 0
+    (user.plan_id !== null && user.plan_id !== 0)
   ) {
     return null;
   }

@@ -7,6 +7,8 @@ import { useControlPanel } from "../../context/controlPanelContext.jsx";
 import StringFormatter from "../../utilities/stringFormatter.js";
 import { MoreVertical, Edit, Trash2 } from "lucide-react";
 import { updateTallerRequest } from "../../api/workshops"; // Asegúrate de tener este endpoint
+import { useAuth } from "../../context/authContext.jsx";
+import NoPlanWorkshops from "./NoPlanWorkshops";
 
 const Workshops = () => {
   const { darkMode } = useDarkMode();
@@ -26,6 +28,8 @@ const Workshops = () => {
   const [ordenesTrabajo, setOrdenesTrabajo] = useState({});
   const [proxCitas, setProxCitas] = useState({});
   const [openMenuId, setOpenMenuId] = useState(null);
+
+  const { user } = useAuth();
 
   const navigate = useNavigate();
 
@@ -228,6 +232,11 @@ const Workshops = () => {
     }
     setSaving(false);
   };
+
+  // Mostrar pantalla de planes si el usuario es 'usuario' sin plan
+  if (user && user.userType === "usuario" && (user.plan_id === null || user.plan_id === 0)) {
+    return <NoPlanWorkshops />;
+  }
 
   return (
     <div
