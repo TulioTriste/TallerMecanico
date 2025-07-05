@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
-import {Edit, Search, Trash2, UserPlus, Users} from 'lucide-react';
+import {Edit, Search, Trash2, UserPlus, Users, ChevronLeft} from 'lucide-react';
 import {useEmpleado} from '../../context/empleadosContext.jsx';
 import {useDarkMode} from "../../context/darkModeContext.jsx";
 import { useCustomConfirm } from "../../utilities/customConfirm.jsx";
@@ -44,6 +44,15 @@ export default function ListaEmpleados() {
       }`}
     >
       <div className="max-w-7xl mx-auto">
+        {/* Flecha hacia atrás */}
+        <div className="mb-4">
+          <button
+            onClick={() => window.history.back()}
+            className="inline-flex items-center text-blue-600 hover:underline font-medium mb-2"
+          >
+            <ChevronLeft className="w-5 h-5 mr-1" /> Volver
+          </button>
+        </div>
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div className="flex-1">

@@ -8,7 +8,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useWorkshop } from "../../context/workshopContext.jsx";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useDarkMode } from "../../context/darkModeContext.jsx";
 import { useControlPanel } from "../../context/controlPanelContext.jsx";
 import { useCliente } from "../../context/clienteContext.jsx";
@@ -119,6 +119,15 @@ export default function WorkOrders() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Flecha hacia atrás */}
+        <div className="mb-4">
+          <button
+            onClick={() => window.history.back()}
+            className="inline-flex items-center text-blue-600 hover:underline font-medium mb-2"
+          >
+            <ChevronLeft className="w-5 h-5 mr-1" /> Volver
+          </button>
+        </div>
         {/* Header con filtros */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-4">Órdenes de Trabajo</h1>

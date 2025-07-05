@@ -15,6 +15,8 @@ import {
   User,
   Wrench,
   X,
+  MoreVertical,
+  Trash2
 } from "lucide-react";
 import {useDarkMode} from "../../context/darkModeContext.jsx";
 import {useParams} from "react-router-dom";
@@ -38,6 +40,9 @@ export default function VehicleDetails() {
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [taskMenuOpen, setTaskMenuOpen] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteIndex, setDeleteIndex] = useState(null);
 
   const fetchTasks = async () => {
     try {
@@ -216,6 +221,26 @@ export default function VehicleDetails() {
         alert("Error al enviar el mensaje. Por favor, inténtalo de nuevo.");
       });
   }
+
+  const handleDeleteTask = (index) => {
+    setDeleteIndex(index);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteTask = async (index) => {
+    try {
+      const taskToDelete = tasks[index];
+
+      // Aquí puedes realizar la llamada a la API para eliminar la tarea, si es necesario.
+
+      // Actualizar el estado local
+      setTasks(prevTasks => prevTasks.filter((_, i) => i !== index));
+      setShowDeleteModal(false);
+    } catch (error) {
+      console.error("Error al eliminar la tarea:", error);
+      alert("Error al eliminar la tarea. Por favor, inténtalo de nuevo.");
+    }
+  };
 
   if (!ot) {
     return (
@@ -482,8 +507,16 @@ export default function VehicleDetails() {
             </div>
             <div className="space-y-8">
               {tasks.map((task, index) => (
-                <div key={index} className="space-y-4">
-                  <h3 className="text-lg font-medium">{task.titulo}</h3>
+                <div key={index} className="space-y-4 relative group">
+                  <h3 className="text-lg font-medium flex items-center justify-between">
+                    {task.titulo}
+                    <button
+                      className="flex items-center px-3 py-1 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm font-medium"
+                      onClick={() => handleDeleteTask(index)}
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" /> Eliminar tarea
+                    </button>
+                  </h3>
                   <p
                     className={`text-sm ${
                       darkMode ? "text-gray-400" : "text-gray-600"
