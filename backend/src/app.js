@@ -40,7 +40,10 @@ app.use(express.json()); // Para poder recibir datos en formato JSON
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser()); // Para poder leer las cookies de las peticiones
 
-app.use("/api/uploads", express.static("uploads")); // Para servir archivos estáticos desde la carpeta 'uploads'
+app.use(
+  "/api/uploads",
+  express.static(path.join(__dirname, '../../uploads'))
+);
 
 app.use("/api/auth", authRoutes);
 app.use("/api", workshopRoutes);
