@@ -635,7 +635,7 @@ export default function CreateWorkshop() {
                         <option value="">Seleccione un técnico</option>
                         {empleados.map(emp => (
                           <option key={emp.empleado_rut} value={emp.empleado_rut}>
-                            {emp.nombre} {emp.apellido} ({emp.empleado_rut}) - {emp.rol}
+                            {emp.nombre} {emp.apellido} ({emp.empleado_rut}) 
                           </option>
                         ))}
                       </select>

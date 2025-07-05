@@ -1,6 +1,6 @@
 import { Facebook, Instagram, Mail, MapPin, Phone } from "lucide-react";
 import { useDarkMode } from "../context/darkModeContext";
-import logo from "../assets/logo-taller.png";
+import logoTaller from "../assets/logo-taller-modif.png";
 import mercadoPagoLogo from "../Components/Icons/MP_RGB_HANDSHAKE_pluma_horizontal.png";
 
 export default function Footer() {
@@ -17,7 +17,7 @@ export default function Footer() {
           {/* Logo y Redes Sociales */}
           <div className="flex flex-col items-center md:items-start">
             <img
-              src={logo}
+              src={logoTaller}
               alt="TallerConectados"
               className="h-16 w-auto mb-4"
             />

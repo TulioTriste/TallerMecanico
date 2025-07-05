@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useDarkMode } from "../../context/darkModeContext";
+import logoTaller from "../../assets/logo-taller-modif.png";
 
 export default function Navbar() {
   const location = useLocation();
@@ -36,7 +37,11 @@ export default function Navbar() {
               <div
                 className={`flex items-center ${darkMode ? "text-blue-400" : "text-blue-600"}`}
               >
-                <Wrench className="h-8 w-8 mr-2" />
+                <img
+                  src={logoTaller}
+                  alt="Logo Taller"
+                  className="h-8 w-8 mr-2"
+                />
                 <span
                   className={`font-bold text-xl ${darkMode ? "text-white" : "text-gray-900"}`}
                 >
