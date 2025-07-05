@@ -246,6 +246,35 @@ class UserModel {
     }
   }
 
+  async getCurrentPassword(rut) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+        .request()
+        .input("usuario_rut", sql.VarChar, rut)
+        .query("SELECT password FROM usuario WHERE usuario_rut = @usuario_rut");
+      return result.recordset[0] ? result.recordset[0].password : null; // Devuelve la contraseña del usuario o null si no se encuentra
+    } catch (error) {
+      console.error("Error al obtener la contraseña actual del usuario:", error);
+      throw error;
+    }
+  }
+
+  async updatePassword(rut, newPassword) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+        .request()
+        .input("usuario_rut", sql.VarChar, rut)
+        .input("password", sql.VarChar, newPassword)
+        .query("UPDATE usuario SET password = @password WHERE usuario_rut = @usuario_rut");
+      return result; // Devuelve el resultado de la consulta
+    } catch (error) {
+      console.error("Error al actualizar la contraseña del usuario:", error);
+      throw error;
+    }
+  }
+
 }
 
 export default new UserModel();
