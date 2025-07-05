@@ -51,3 +51,5 @@ export const addCitaRequest = async (taller_id, cita) => axios.post(`/cp/addcita
 export const getCitasByTallerRequest = async (taller_id) => axios.get(`/cp/getcitas/${taller_id}`);
 
 export const getOtsByTallerIdRequest = async (taller_id) => axios.get(`/cp/getots/${taller_id}`);
+
+export const deleteTaskRequest = async (taller_id, task_id) => axios.post(`/cp/deletetask/${taller_id}/${task_id}`);
