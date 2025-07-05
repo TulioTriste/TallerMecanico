@@ -190,8 +190,7 @@ export default function VehicleDetails() {
     handleSaveChanges(updatedOt);
   }
 
-  const handleWhatsAppUpdate = (e) => {
-    e.preventDefault();
+  const handleWhatsAppUpdate = () => {
     if (!ot || !ot.cliente_telefono) {
       alert("No se puede enviar el mensaje. Verifica que la orden de trabajo y el número de teléfono del cliente estén disponibles.");
       return;
@@ -204,7 +203,7 @@ export default function VehicleDetails() {
                 \n
                 Descripción del servicio: ${ot.descripcion}\n
                 \n
-                Link: ${FRONTEND_URL}/order/${ot.uniqueId}\n
+                Link: ${FRONTEND_URL}order/${ot.uniqueId}\n
                 \n
                 Gracias por confiar en nosotros.`;
 

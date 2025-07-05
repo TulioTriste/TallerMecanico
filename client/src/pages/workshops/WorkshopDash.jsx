@@ -749,7 +749,7 @@ export default function WorkshopDash() {
                               <div className="py-1">
                                 <button
                                   onClick={() => {
-                                    window.open(`/workshop/${orden.taller_id}/vehicle/${orden.ot_id}`, '_blank');
+                                    window.open(`/workshop/${id}/vehicle/${orden.ot_id}`, '_blank');
                                     setOpenMenuId(null);
                                   }}
                                   className={`w-full text-left px-4 py-2 text-sm ${darkMode ? "text-blue-400 hover:bg-gray-700" : "text-blue-700 hover:bg-gray-100"} flex items-center gap-2`}
