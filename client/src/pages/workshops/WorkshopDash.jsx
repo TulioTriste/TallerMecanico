@@ -1,17 +1,6 @@
-import React, {useState, useEffect} from "react";
+import React, {useEffect, useState} from "react";
 
-import {
-  Clock,
-  Plus,
-  Check,
-  X,
-  Calendar,
-  Phone,
-  Clipboard,
-  Users,
-  DollarSign,
-  MoreVertical,
-} from "lucide-react";
+import {Calendar, Check, Clipboard, Clock, DollarSign, MoreVertical, Phone, Plus, Users, X,} from "lucide-react";
 import {useWorkshop} from "../../context/workshopContext.jsx";
 import {useDarkMode} from "../../context/darkModeContext.jsx";
 import {useControlPanel} from "../../context/controlPanelContext.jsx";
@@ -19,19 +8,17 @@ import {useCliente} from "../../context/clienteContext.jsx";
 import {useVehiculo} from "../../context/vehiculoContext.jsx";
 import StringFormatter from "../../utilities/stringFormatter.js";
 import {Link, useParams} from "react-router-dom";
-import toast from "../../utilities/toast";
-import { sendUpdateWhatsapp } from "../../utilities/whatsapp";
+import DateUtil from "../../utilities/dateUtil.js";
 
 export default function WorkshopDash() {
   const {darkMode} = useDarkMode();
   const {id} = useParams();
   const {getClienteByRut, createCliente} = useCliente();
   const {getVehiculoByPatente, createVehiculo} = useVehiculo();
-  const {addCita} = useControlPanel();
 
   const [dateRange, setDateRange] = useState({
-    from: "",
-    to: "",
+    from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    to: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
   });
 
   // Estados para el modal de citas
@@ -56,22 +43,21 @@ export default function WorkshopDash() {
   const {getTaller} = useWorkshop();
   const {
     getOrdenesDeTrabajoCountByEstado,
-    getOtsRecientes,
     getCountOTMes,
     getIngresosDelMes,
     getCitasHoy,
+    addCita,
+    getOtsByTallerId,
   } = useControlPanel();
   const {getClienteName} = useCliente();
   const {getVehiculoName} = useVehiculo();
   const [otCount, setOtCount] = useState(0);
   const [otMesCount, setOtMesCount] = useState(0);
-  const [otRecents, setOtRecents] = useState([]);
+  const [allOts, setAllOts] = useState([]);
+  let [ots, setOts] = useState([]);
   const [citasHoy, setCitasHoy] = useState([]);
   const [ingresosMes, setIngresosMes] = useState(0);
   const [openMenuId, setOpenMenuId] = useState(null);
-  const [showEstadoModal, setShowEstadoModal] = useState(false);
-  const [estadoModalOt, setEstadoModalOt] = useState(null);
-  const { estados, updateOt } = useControlPanel();
 
   // Funciones existentes
   const loadTaller = async () => {
@@ -99,22 +85,24 @@ export default function WorkshopDash() {
     }
   };
 
-  const loadRecentOTs = async () => {
+  const loadOtsByTaller = async () => {
     try {
-      const recentOTs = await getOtsRecientes(id, 7);
-      const recentOTsWithChanges = await Promise.all(
-        recentOTs.map(async (orden) => {
+      const ordenes = await getOtsByTallerId(id);
+      const ordenesConCambios = await Promise.all(
+        ordenes.map(async (orden) => {
           const nombre = await getClienteName(orden.cliente_rut);
           const vehiculoName = await getVehiculoName(orden.vehiculo_patente);
           return {...orden, cliente: nombre, vehiculo: vehiculoName};
         }),
       );
-      setOtRecents(recentOTsWithChanges);
+      setAllOts(ordenesConCambios);
+      await filterOTsByDate();
+      setOts(ordenesConCambios);
     } catch (error) {
-      console.error("Error al cargar las órdenes recientes:", error);
-      setOtRecents([]);
+      console.error("Error al cargar las órdenes de trabajo:", error);
+      return [];
     }
-  };
+  }
 
   const loadCitasHoy = async () => {
     try {
@@ -191,10 +179,28 @@ export default function WorkshopDash() {
     }
   };
 
+  const filterOTsByDate = () => {
+    if (!dateRange.from && !dateRange.to) return allOts;
+
+    ots = allOts;
+
+    return ots.filter((orden) => {
+      const fecha = new Date(orden.fecha_entrada); // O usa fecha_salida si prefieres
+      const from = dateRange.from ? new Date(dateRange.from) : null;
+      const to = dateRange.to ? new Date(dateRange.to) : null;
+      if (from && fecha < from) return false;
+      if (to) {
+        to.setHours(23, 59, 59, 999);
+        if (fecha > to) return false;
+      }
+      return true;
+    });
+  };
+
   useEffect(() => {
     loadTaller();
     loadStats();
-    loadRecentOTs();
+    loadOtsByTaller();
     loadCitasHoy();
   }, []);
 
@@ -281,50 +287,6 @@ export default function WorkshopDash() {
         alert("El vehículo ha sido encontrado y sus datos han sido cargados automáticamente.");
       }
     }
-  };
-
-  // Función para copiar link de vista cliente
-  const handleCopyClientLink = (orden) => {
-    const url = `${window.location.origin}/order/${orden.unique_id}`;
-    navigator.clipboard.writeText(url);
-    toast.success("¡Enlace copiado al portapapeles!");
-  };
-
-  // Función para copiar link WhatsApp
-  const handleCopyWhatsappLink = (orden) => {
-    const url = `${window.location.origin}/order/${orden.unique_id}`;
-    const msg = `Hola, puedes ver el estado de tu orden aquí: ${url}`;
-    navigator.clipboard.writeText(msg);
-    toast.success("¡Mensaje de WhatsApp copiado!");
-  };
-
-  // Función para abrir chat de WhatsApp
-  const handleOpenWhatsapp = (orden) => {
-    let phone = orden.cliente_telefono || "";
-    phone = phone.replace(/\D/g, "");
-    if (phone.startsWith("56")) phone = phone;
-    else if (phone.startsWith("9")) phone = "56" + phone;
-    else phone = "56" + phone;
-    const url = `${window.location.origin}/order/${orden.unique_id}`;
-    const msg = `Hola, puedes ver el estado de tu orden aquí: ${url}`;
-    sendUpdateWhatsapp(phone, msg);
-  };
-
-  // Función para abrir modal de cambio de estado
-  const handleOpenEstadoModal = (orden) => {
-    setEstadoModalOt(orden);
-    setShowEstadoModal(true);
-    setOpenMenuId(null);
-  };
-
-  // Función para cambiar estado
-  const handleChangeEstado = async (estado_id) => {
-    if (!estadoModalOt) return;
-    await updateOt(estadoModalOt.taller_id, estadoModalOt.ot_id, { estado_id });
-    toast.success("Estado actualizado");
-    setShowEstadoModal(false);
-    setEstadoModalOt(null);
-    await loadRecentOTs();
   };
 
   if (!taller) {
@@ -672,7 +634,7 @@ export default function WorkshopDash() {
                         darkMode ? "text-white" : "text-gray-900"
                       }`}
                     >
-                      Órdenes de Trabajo Recientes
+                      Órdenes de Trabajo Ingresadas Recientes
                     </h3>
                     <Link
                       to={`/workshop/orders/${taller.taller_id}`}
@@ -687,7 +649,7 @@ export default function WorkshopDash() {
                   {/* Filtros de fecha en una fila */}
                   <div className="flex items-end gap-4">
                     {" "}
-                    {/* Cambiado a items-end */}
+                    {/* Cambiado an items-end */}
                     <div>
                       <label
                         className={`block text-xs font-medium mb-1 ${
@@ -698,7 +660,7 @@ export default function WorkshopDash() {
                       </label>
                       <input
                         type="date"
-                        value={dateRange.from}
+                        value={DateUtil.formatDateInput(dateRange.from)}
                         onChange={(e) =>
                           setDateRange((prev) => ({
                             ...prev,
@@ -722,7 +684,7 @@ export default function WorkshopDash() {
                       </label>
                       <input
                         type="date"
-                        value={dateRange.to}
+                        value={DateUtil.formatDateInput(dateRange.to)}
                         onChange={(e) =>
                           setDateRange((prev) => ({
                             ...prev,
@@ -746,24 +708,10 @@ export default function WorkshopDash() {
                             ? "bg-blue-600 hover:bg-blue-700"
                             : "bg-blue-600 hover:bg-blue-700"
                         } text-white transition-colors`}
-                        onClick={() => {
-                          console.log("Filtrar por fechas:", dateRange);
-                        }}
+                        onClick={() => filterOTsByDate()}
                       >
                         Filtrar
                       </button>
-                      {(dateRange.from || dateRange.to) && (
-                        <button
-                          onClick={() => setDateRange({from: "", to: ""})}
-                          className={`px-3 py-1.5 text-sm rounded-lg ${
-                            darkMode
-                              ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
-                              : "bg-gray-100 hover:bg-gray-200 text-gray-600"
-                          } transition-colors`}
-                        >
-                          Limpiar
-                        </button>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -771,7 +719,7 @@ export default function WorkshopDash() {
 
               <div className="p-6">
                 <div className="space-y-4">
-                  {otRecents.map((orden) => (
+                  {ots.map((orden) => (
                     <div
                       key={orden.ot_id}
                       className={`p-4 rounded-lg border ${darkMode ? "border-gray-700 bg-gray-700/30" : "border-gray-200 bg-gray-50"}`}
@@ -964,32 +912,6 @@ export default function WorkshopDash() {
           </div>
         </div>
       </div>
-
-      {/* MODAL CAMBIO DE ESTADO */}
-      {showEstadoModal && estadoModalOt && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className={`bg-white dark:bg-gray-800 rounded-lg p-8 w-full max-w-md shadow-lg relative`}>
-            <button
-              className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:hover:text-white"
-              onClick={() => setShowEstadoModal(false)}
-            >
-              ×
-            </button>
-            <h2 className="text-xl font-bold mb-4 text-center">Cambiar Estado de la Orden</h2>
-            <div className="space-y-2">
-              {estados.map((estado) => (
-                <button
-                  key={estado.estado_id}
-                  onClick={() => handleChangeEstado(estado.estado_id)}
-                  className={`w-full py-2 rounded-lg text-left px-4 ${estadoModalOt.estado_id === estado.estado_id ? (darkMode ? "bg-blue-900 text-white" : "bg-blue-100 text-blue-700") : (darkMode ? "hover:bg-gray-700 text-gray-200" : "hover:bg-gray-100 text-gray-700")}`}
-                >
-                  {estado.nombre}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

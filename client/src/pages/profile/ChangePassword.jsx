@@ -2,25 +2,50 @@ import {useState} from "react";
 import {Eye, EyeOff, Lock} from "lucide-react";
 import {useDarkMode} from "../../context/darkModeContext.jsx";
 import {useAuth} from "../../context/authContext.jsx";
+import {useNavigate} from "react-router-dom";
+import {Message} from "../../Components/ui/Message.jsx";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {resetPasswordSchema} from "../../schemas/authSchema.js";
 
 export default function ChangePassword() {
-  const {user, errors} = useAuth();
+  const {errors: authErrors, isPasswordCorrect, updatePassword} = useAuth();
+  const navigate = useNavigate();
   const {darkMode} = useDarkMode();
   const [showPassword, setShowPassword] = useState({
     current: false,
     new: false,
     confirm: false,
   });
-  const [formData, setFormData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
+  const [currentPassword, setCurrentPassword] = useState("");
+  const {
+    register,
+    handleSubmit ,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(resetPasswordSchema),
   });
 
-  const handleSubmit = async (e) => {
+  const onSubmit = async (e) => {
     try {
-      e.preventDefault();
+      const currentPassRes = await isPasswordCorrect(currentPassword);
+      if (!currentPassRes) {
+        console.error("Contraseña actual incorrecta");
+        return;
+      }
+      console.log(e);
+      if (e.newPassword !== e.confirmNewPassword) {
+        console.error("Las contraseñas nuevas no coinciden");
+        return;
+      }
 
+      const updateRes = await updatePassword(e.newPassword);
+      if (updateRes) {
+        console.log("Contraseña actualizada correctamente");
+        setCurrentPassword("");
+
+        navigate("/profile");
+      }
     } catch (error) {
       console.error("Error al cambiar la contraseña:", error);
     }
@@ -54,7 +79,11 @@ export default function ChangePassword() {
             darkMode ? "bg-gray-800" : "bg-white"
           } rounded-xl shadow-lg p-6`}
         >
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {authErrors?.length > 0 &&
+              authErrors.map((error, i) => (
+                <Message message={error} key={i} />
+              ))}
             {/* Contraseña Actual */}
             <div>
               <label
@@ -76,12 +105,8 @@ export default function ChangePassword() {
                 </div>
                 <input
                   type={showPassword.current ? "text" : "password"}
-                  value={formData.currentPassword}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      currentPassword: e.target.value,
-                    })
+                    setCurrentPassword(e.target.value)
                   }
                   className={`w-full py-3 px-4 bg-transparent focus:outline-none ${
                     darkMode ? "text-white" : "text-gray-900"
@@ -127,10 +152,8 @@ export default function ChangePassword() {
                 </div>
                 <input
                   type={showPassword.new ? "text" : "password"}
-                  value={formData.newPassword}
-                  onChange={(e) =>
-                    setFormData({...formData, newPassword: e.target.value})
-                  }
+                  required
+                  {...register("newPassword", { required: true})}
                   className={`w-full py-3 px-4 bg-transparent focus:outline-none ${
                     darkMode ? "text-white" : "text-gray-900"
                   }`}
@@ -152,6 +175,7 @@ export default function ChangePassword() {
                   )}
                 </button>
               </div>
+              <p>{errors.newPassword?.message}</p>
             </div>
 
             {/* Confirmar Nueva Contraseña */}
@@ -175,13 +199,8 @@ export default function ChangePassword() {
                 </div>
                 <input
                   type={showPassword.confirm ? "text" : "password"}
-                  value={formData.confirmPassword}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      confirmPassword: e.target.value,
-                    })
-                  }
+                  required
+                  {...register("confirmNewPassword")}
                   className={`w-full py-3 px-4 bg-transparent focus:outline-none ${
                     darkMode ? "text-white" : "text-gray-900"
                   }`}
@@ -203,6 +222,7 @@ export default function ChangePassword() {
                   )}
                 </button>
               </div>
+              <p>{errors.confirmNewPassword?.message}</p>
             </div>
 
             {/* Botón de Submit */}
