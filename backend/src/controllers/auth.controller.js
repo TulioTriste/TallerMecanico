@@ -247,11 +247,34 @@ export const requestResetPassword = async (req, res) => {
       from: '"Taller Mecánico" <apptallermecanico@gmail.com>',
       to: correo,
       subject: "Solicitud de Restablecimiento de Contraseña",
-      html:
-        `
-                <p>You requested a password reset.</p>
-                <p>Click <a href="${resetLink}">here</a> to reset your password. This link is valid for 1 hour.</p>
-            `,
+      html: `
+        <div style="max-width:480px;margin:0 auto;background:#f7f7f7;border-radius:10px;overflow:hidden;font-family:sans-serif;border:1px solid #e0e0e0;">
+          <div style="background:#1a237e;padding:24px 0;text-align:center;">
+            <img src=\"https://i.imgur.com/1Q9Z1Zm.png\" alt=\"Taller Mecánico\" style=\"width:60px;margin-bottom:10px;\">
+            <h2 style=\"color:#fff;margin:0;font-size:24px;\">Taller Mecánico</h2>
+          </div>
+          <div style="padding:32px 24px 24px 24px;">
+            <h3 style=\"color:#1a237e;margin-top:0;\">Solicitud de restablecimiento de contraseña</h3>
+            <p style=\"color:#333;font-size:16px;\">Hola,</p>
+            <p style=\"color:#333;font-size:16px;\">
+              Hemos recibido una solicitud para restablecer la contraseña de tu cuenta. Si no realizaste esta solicitud, puedes ignorar este correo.
+            </p>
+            <div style=\"text-align:center;margin:32px 0;\">
+              <a href="${resetLink}" style=\"background:#1976d2;color:#fff;text-decoration:none;padding:14px 32px;border-radius:6px;font-size:16px;display:inline-block;font-weight:bold;\">
+                Restablecer contraseña
+              </a>
+            </div>
+            <p style=\"color:#555;font-size:14px;\">
+              Este enlace es válido por 1 hora. Si tienes problemas, copia y pega el siguiente enlace en tu navegador:
+            </p>
+            <p style=\"word-break:break-all;color:#1976d2;font-size:13px;\">${resetLink}</p>
+            <hr style=\"border:none;border-top:1px solid #e0e0e0;margin:32px 0 16px 0;\">
+            <p style=\"color:#999;font-size:12px;text-align:center;\">
+              © 2025 Taller Mecánico. Todos los derechos reservados.
+            </p>
+          </div>
+        </div>
+      `,
     });
 
     res.status(200).json({
