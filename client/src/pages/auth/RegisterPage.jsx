@@ -6,6 +6,7 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {registerSchema} from '../../schemas/authSchema.js';
 import {useDarkMode} from '../../context/darkModeContext.jsx';
+import StringFormatter from "../../utilities/stringFormatter.js";
 
 export default function RegisterForm() {
   const [loading, setLoading] = useState(false);

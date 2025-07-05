@@ -7,3 +7,5 @@ export const getTallerRequest = async (taller_id) => axios.get(`/workshop/dashbo
 export const createTallerRequest = async (data) => axios.post("/taller/add", data);
 
 export const updateTallerRequest = async (taller_id, data) => axios.put(`/taller/update/${taller_id}`, data);
+
+export const deleteTallerRequest = async (data) => axios.post("/taller/delete", data);

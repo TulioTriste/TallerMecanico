@@ -15,6 +15,7 @@ import mercadopagoRoutes from "./routes/mercadopago.routes.js";
 import * as path from "node:path";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import usuarioRoutes from "./routes/usuario.routes.js";
 
 
 const app = express();
@@ -49,5 +50,6 @@ app.use("/api/veh", vehiculoRoutes);
 app.use("/api/empleados", empleadoRoutes);
 app.use("/api/taller", tallerRoutes);
 app.use("/api/mercadopago", mercadopagoRoutes);
+app.use("/api/user", usuarioRoutes);
 
 export default app;

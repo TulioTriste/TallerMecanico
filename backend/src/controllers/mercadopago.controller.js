@@ -1,5 +1,4 @@
 import {PreApproval} from "mercadopago";
-import dotenv from "dotenv";
 import {Payment} from "mercadopago";
 import UserModel from "../models/user.model.js";
 import {client} from "../mercadopago.js";
@@ -8,24 +7,6 @@ export const createPreference = async (req, res) => {
   try {
     const { item, payer } = req.body;
 
-    // Crear la preferencia de pago
-    /*const preapprovalData = {
-      reason: item.title,
-      payer_email: payer.email,
-      auto_recurring: {
-        frequency: item.frecuency,
-        frequency_type: item.cycle,
-        transaction_amount: Number(item.price),
-        currency_id: item.currency_id,
-      },
-      back_url: "https://www.google.com",
-      external_reference: `PLAN_${item.plan_id}_${Date.now()}`,
-      payer: {
-        name: payer.name,
-        surname: payer.surname,
-        email: payer.email
-      }
-    };*/
     const preapprovalData = {
       reason: item.title,
       payer_email: "test_user_249349413@testuser.com",
@@ -49,8 +30,6 @@ export const createPreference = async (req, res) => {
         plan_features: item.features,
       }
     };
-
-    console.log(preapprovalData);
 
     const preapproval = new PreApproval(client);
     const subscription = await preapproval.create({ body: preapprovalData });
@@ -87,15 +66,10 @@ export const receiveWebhook = async (req, res) => {
     if (type === "payment") {
       const { id } = data;
 
-      // Aquí puedes actualizar el estado del pago en tu base de datos
-      console.log(`Recibida notificación de pago con ID: ${id}`);
-
-      // También puedes obtener los detalles del pago
-      const { Payment } = await import("mercadopago");
       const paymentClient = new Payment(client);
       const paymentInfo = await paymentClient.get({ id });
 
-      await updateOrderStatus(paymentInfo);
+      await updatePlanUser(paymentInfo);
     }
 
     res.status(200).send("OK");
@@ -105,25 +79,20 @@ export const receiveWebhook = async (req, res) => {
   }
 };
 
-const updateOrderStatus = async (paymentInfo) => {
-  if (paymentInfo.status === "approved") {
-    if (await updatePlanUser(paymentInfo)) {
-      console.log("El Usuario con correo:", paymentInfo.payer.email, "ha sido actualizado al plan:", paymentInfo.order.plan_id);
-    }
-  }
-  else if (paymentInfo.status === "rejected" || paymentInfo.status === "cancelled") {
-    if (await updatePlanUser(paymentInfo)) {
-      console.log("El Usuario con correo:", paymentInfo.payer.email, "no ha podido ser actualizado al plan:", paymentInfo.order.plan_id);
-    }
-  }
-  else {
-    console.log("El pago con ID:", paymentInfo.id, "tiene un estado no manejado:", paymentInfo.status, " | Información del pago:", paymentInfo);
-  }
-};
-
 const updatePlanUser = async (paymentInfo) => {
   const correo = paymentInfo.payer.email;
-  const planId = paymentInfo.order.plan_id;
+  if (paymentInfo.status !== "approved") {
+    const planId = paymentInfo.order.plan_id;
 
-  return await UserModel.updatePlanUser(correo, planId);
+    console.log("El Usuario con correo:", paymentInfo.payer.email, "ha sido actualizado al plan:", paymentInfo.order.plan_id);
+
+    return await UserModel.updatePlanUser(correo, planId);
+  }
+  else if (paymentInfo.status === "rejected" || paymentInfo.status === "cancelled") {
+    console.log("El Usuario con correo:", paymentInfo.payer.email, "no ha podido ser actualizado al plan:", paymentInfo.order.plan_id);
+    return await UserModel.updatePlanUser(correo, null);
+  } else {
+    console.log("El pago con ID:", paymentInfo.id, "tiene un estado no manejado:", paymentInfo.status, " | Información del pago:", paymentInfo);
+    return false;
+  }
 }

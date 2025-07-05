@@ -33,6 +33,52 @@ BEGIN
 END;
 GO
 
+DROP TRIGGER IF EXISTS [trg_UpsertCliente];
+GO
+
+CREATE TRIGGER [trg_UpsertCliente]
+    ON [cliente]
+    INSTEAD OF INSERT
+    AS
+BEGIN
+    MERGE [cliente] AS target
+    USING (SELECT * FROM inserted) AS source
+    ON target.cliente_rut = source.cliente_rut
+    WHEN MATCHED THEN
+        UPDATE SET
+                   nombre = source.nombre,
+                   correo = source.correo,
+                   telefono = source.telefono
+    WHEN NOT MATCHED THEN
+        INSERT (cliente_rut, nombre, correo, telefono)
+        VALUES (source.cliente_rut, source.nombre, source.correo, source.telefono);
+END
+GO
+
+DROP TRIGGER IF EXISTS [trg_UpsertVehiculo];
+GO
+
+CREATE TRIGGER [trg_UpsertVehiculo]
+    ON [vehiculo]
+    INSTEAD OF INSERT
+    AS
+BEGIN
+    MERGE [vehiculo] AS target
+    USING (SELECT * FROM inserted) AS source
+    ON target.patente = source.patente
+    WHEN MATCHED THEN
+        UPDATE SET
+                   cliente_rut = source.cliente_rut,
+                   marca = source.marca,
+                   modelo = source.modelo,
+                   anio = source.anio,
+                   color = source.color
+    WHEN NOT MATCHED THEN
+        INSERT (patente, cliente_rut, marca, modelo, anio, color, created_at)
+        VALUES (source.patente, source.cliente_rut, source.marca, source.modelo, source.anio, source.color, source.created_at);
+END
+GO
+
 CREATE INDEX idx_empleado_correo ON empleado(correo)
 GO
 

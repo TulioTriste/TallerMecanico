@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {Building, Calendar, Camera, Lock, Mail, Phone, Save, Shield, User,} from "lucide-react";
 
@@ -6,24 +6,38 @@ import {useAuth} from "../../context/authContext.jsx";
 import {useDarkMode} from "../../context/darkModeContext.jsx";
 
 export default function ProfilePage() {
-  const {user} = useAuth();
+  const {user, updateProfileUser} = useAuth();
   const navigate = useNavigate();
   const {darkMode} = useDarkMode();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     nombre: user?.nombre || "",
-    email: user?.email || "",
+    apellido: user?.apellido || "",
+    correo: user?.correo || "",
     telefono: user?.telefono || "",
-    empresa: user?.empresa || "",
-    fechaRegistro:
-      user?.fechaRegistro || new Date().toISOString().split("T")[0],
+    created_at: user?.created_at || new Date().toISOString().split("T")[0],
   });
+  const planes = {
+    1: "Plan Básico",
+    2: "Plan Profesional",
+    3: "Plan Premium",
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    // Aquí iría la lógica para actualizar el perfil
-    console.log("Datos actualizados:", formData);
-    setIsEditing(false);
+    try {
+      e.preventDefault();
+
+      const updated = await updateProfileUser({
+        usuario_rut: user?.rut,
+        nombre: formData.nombre,
+        apellido: formData.apellido,
+        telefono: formData.telefono,
+      });
+    } catch (error) {
+      console.error("Error al actualizar el perfil:", error);
+    } finally {
+      setIsEditing(false);
+    }
   };
 
   return (
@@ -78,11 +92,11 @@ export default function ProfilePage() {
                   <Camera className="w-5 h-5"/>
                 </button>
               </div>
-              <h2 className="mt-4 text-xl font-semibold">{user?.nombre}</h2>
+              <h2 className="mt-4 text-xl font-semibold">{user?.nombre} {user?.apellido}</h2>
               <p
                 className={`mt-1 ${darkMode ? "text-gray-400" : "text-gray-600"}`}
               >
-                {user?.email}
+                {user?.correo}
               </p>
               <div
                 className={`mt-4 px-4 py-2 rounded-lg ${
@@ -109,7 +123,7 @@ export default function ProfilePage() {
                       <p
                         className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-600"}`}
                       >
-                        Premium
+                        {planes[user?.plan_id] || "Sin Plan"}
                       </p>
                     </div>
                   </div>
@@ -126,7 +140,7 @@ export default function ProfilePage() {
                       <p
                         className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-600"}`}
                       >
-                        {new Date(formData.fechaRegistro).toLocaleDateString()}
+                        {new Date(formData.created_at).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
@@ -134,7 +148,7 @@ export default function ProfilePage() {
 
                 {/* Botón Cambiar Contraseña */}
                 <button
-                  onClick={() => navigate("/change-password")}
+                  onClick={() => navigate("/profile/change-password")}
                   className={`w-full p-4 rounded-lg flex items-center justify-center ${
                     darkMode
                       ? "bg-blue-600 hover:bg-blue-700 text-white"
@@ -177,7 +191,7 @@ export default function ProfilePage() {
                       darkMode ? "text-gray-300" : "text-gray-700"
                     }`}
                   >
-                    Nombre Completo
+                    Nombre
                   </label>
                   <div
                     className={`flex rounded-lg ${
@@ -194,6 +208,39 @@ export default function ProfilePage() {
                       value={formData.nombre}
                       onChange={(e) =>
                         setFormData({...formData, nombre: e.target.value})
+                      }
+                      disabled={!isEditing}
+                      className={`w-full py-3 px-4 bg-transparent focus:outline-none ${
+                        darkMode ? "text-white" : "text-gray-900"
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                {/* Apellido */}
+                <div>
+                  <label
+                    className={`block text-sm font-medium mb-2 ${
+                      darkMode ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
+                    Apellido
+                  </label>
+                  <div
+                    className={`flex rounded-lg ${
+                      darkMode ? "bg-gray-700" : "bg-gray-50"
+                    } ${isEditing ? "ring-2 ring-blue-500" : ""}`}
+                  >
+                    <div className="flex items-center pl-4">
+                      <User
+                        className={`w-5 h-5 ${darkMode ? "text-gray-400" : "text-gray-500"}`}
+                      />
+                    </div>
+                    <input
+                      type="text"
+                      value={formData.apellido}
+                      onChange={(e) =>
+                        setFormData({...formData, apellido: e.target.value})
                       }
                       disabled={!isEditing}
                       className={`w-full py-3 px-4 bg-transparent focus:outline-none ${
@@ -224,7 +271,7 @@ export default function ProfilePage() {
                     </div>
                     <input
                       type="email"
-                      value={formData.email}
+                      value={formData.correo}
                       disabled
                       className={`w-full py-3 px-4 bg-transparent focus:outline-none ${
                         darkMode ? "text-gray-400" : "text-gray-500"
@@ -257,39 +304,6 @@ export default function ProfilePage() {
                       value={formData.telefono}
                       onChange={(e) =>
                         setFormData({...formData, telefono: e.target.value})
-                      }
-                      disabled={!isEditing}
-                      className={`w-full py-3 px-4 bg-transparent focus:outline-none ${
-                        darkMode ? "text-white" : "text-gray-900"
-                      }`}
-                    />
-                  </div>
-                </div>
-
-                {/* Empresa */}
-                <div>
-                  <label
-                    className={`block text-sm font-medium mb-2 ${
-                      darkMode ? "text-gray-300" : "text-gray-700"
-                    }`}
-                  >
-                    Empresa
-                  </label>
-                  <div
-                    className={`flex rounded-lg ${
-                      darkMode ? "bg-gray-700" : "bg-gray-50"
-                    } ${isEditing ? "ring-2 ring-blue-500" : ""}`}
-                  >
-                    <div className="flex items-center pl-4">
-                      <Building
-                        className={`w-5 h-5 ${darkMode ? "text-gray-400" : "text-gray-500"}`}
-                      />
-                    </div>
-                    <input
-                      type="text"
-                      value={formData.empresa}
-                      onChange={(e) =>
-                        setFormData({...formData, empresa: e.target.value})
                       }
                       disabled={!isEditing}
                       className={`w-full py-3 px-4 bg-transparent focus:outline-none ${

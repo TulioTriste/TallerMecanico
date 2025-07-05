@@ -65,6 +65,20 @@ class TallerModel {
     }
   }
 
+  async deleteTaller(id) {
+    try {
+      const pool = await connectToDatabase();
+      const result = await pool
+        .request()
+        .input("taller_id", sql.Int, id)
+        .query("DELETE FROM taller WHERE taller.taller_id = @taller_id");
+      return result.rowsAffected[0] > 0; // Devuelve true si se eliminó al menos un registro
+    } catch (error) {
+      console.error("Error al eliminar el taller:", error);
+      throw error;
+    }
+  }
+
   async updateTaller(taller_id, { nombre, telefono, correo, direccion, inicio_jornada, termino_jornada }) {
     try {
       const pool = await connectToDatabase();
