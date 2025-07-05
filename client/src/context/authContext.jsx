@@ -10,7 +10,7 @@ import {
 } from "../api/auth";
 import Cookies from "js-cookie";
 import {loginEmpleadoRequest} from "../api/empleado.js";
-import {updateProfileUserRequest} from "../api/usuario.js";
+import {getCurrentPasswordCorrectRequest, updatePasswordRequest, updateProfileUserRequest} from "../api/usuario.js";
 
 const AuthContext = createContext();
 
@@ -198,6 +198,52 @@ export const AuthProvider = ({children}) => {
       return false;
     }
   }
+  
+  const isPasswordCorrect = async (password) => {
+    try {
+      const data = {
+        usuario_rut: user.rut,
+        password: password
+      }
+
+      const res = await getCurrentPasswordCorrectRequest(data);
+      if (res.status === 200) {
+        if (!res.data.correct) {
+          setErrors(["La contraseña actual es incorrecta."]);
+        } else {
+          setErrors([]);
+        }
+        return res.data.correct;
+      } else {
+        setErrors([res.data.message || "Error al verificar la contraseña."]);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error al verificar la contraseña:", error);
+      setErrors(["No se pudo conectar con el servidor"]);
+      return false;
+    }
+  }
+
+  const updatePassword = async (newPassword) => {
+    try {
+      const data = {
+        usuario_rut: user.rut,
+        newPassword: newPassword
+      }
+      const res = await updatePasswordRequest(data);
+      if (res.status === 200) {
+        return true;
+      } else {
+        setErrors([res.data.message || "Error al actualizar la contraseña."]);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error al actualizar la contraseña:", error);
+      setErrors(["No se pudo conectar con el servidor"]);
+      return false;
+    }
+  }
 
   useEffect(() => {
     // Hidratar usuario desde localStorage si existe
@@ -252,6 +298,8 @@ export const AuthProvider = ({children}) => {
         sentRecoverPasswordEmail,
         resetPassword,
         updateProfileUser,
+        isPasswordCorrect,
+        updatePassword,
       }}
     >
       {children}
