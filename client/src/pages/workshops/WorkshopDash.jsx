@@ -19,6 +19,8 @@ import {useCliente} from "../../context/clienteContext.jsx";
 import {useVehiculo} from "../../context/vehiculoContext.jsx";
 import StringFormatter from "../../utilities/stringFormatter.js";
 import {Link, useParams} from "react-router-dom";
+import toast from "../../utilities/toast";
+import { sendUpdateWhatsapp } from "../../utilities/whatsapp";
 
 export default function WorkshopDash() {
   const {darkMode} = useDarkMode();
@@ -66,6 +68,10 @@ export default function WorkshopDash() {
   const [otRecents, setOtRecents] = useState([]);
   const [citasHoy, setCitasHoy] = useState([]);
   const [ingresosMes, setIngresosMes] = useState(0);
+  const [openMenuId, setOpenMenuId] = useState(null);
+  const [showEstadoModal, setShowEstadoModal] = useState(false);
+  const [estadoModalOt, setEstadoModalOt] = useState(null);
+  const { estados, updateOt } = useControlPanel();
 
   // Funciones existentes
   const loadTaller = async () => {
@@ -275,6 +281,50 @@ export default function WorkshopDash() {
         alert("El vehículo ha sido encontrado y sus datos han sido cargados automáticamente.");
       }
     }
+  };
+
+  // Función para copiar link de vista cliente
+  const handleCopyClientLink = (orden) => {
+    const url = `${window.location.origin}/order/${orden.unique_id}`;
+    navigator.clipboard.writeText(url);
+    toast.success("¡Enlace copiado al portapapeles!");
+  };
+
+  // Función para copiar link WhatsApp
+  const handleCopyWhatsappLink = (orden) => {
+    const url = `${window.location.origin}/order/${orden.unique_id}`;
+    const msg = `Hola, puedes ver el estado de tu orden aquí: ${url}`;
+    navigator.clipboard.writeText(msg);
+    toast.success("¡Mensaje de WhatsApp copiado!");
+  };
+
+  // Función para abrir chat de WhatsApp
+  const handleOpenWhatsapp = (orden) => {
+    let phone = orden.cliente_telefono || "";
+    phone = phone.replace(/\D/g, "");
+    if (phone.startsWith("56")) phone = phone;
+    else if (phone.startsWith("9")) phone = "56" + phone;
+    else phone = "56" + phone;
+    const url = `${window.location.origin}/order/${orden.unique_id}`;
+    const msg = `Hola, puedes ver el estado de tu orden aquí: ${url}`;
+    sendUpdateWhatsapp(phone, msg);
+  };
+
+  // Función para abrir modal de cambio de estado
+  const handleOpenEstadoModal = (orden) => {
+    setEstadoModalOt(orden);
+    setShowEstadoModal(true);
+    setOpenMenuId(null);
+  };
+
+  // Función para cambiar estado
+  const handleChangeEstado = async (estado_id) => {
+    if (!estadoModalOt) return;
+    await updateOt(estadoModalOt.taller_id, estadoModalOt.ot_id, { estado_id });
+    toast.success("Estado actualizado");
+    setShowEstadoModal(false);
+    setEstadoModalOt(null);
+    await loadRecentOTs();
   };
 
   if (!taller) {
@@ -739,11 +789,29 @@ export default function WorkshopDash() {
                             ORD-{orden.ot_id}
                           </span>
                         </div>
-                        <button
-                          className={`p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600`}
-                        >
-                          <MoreVertical className="w-4 h-4"/>
-                        </button>
+                        <div className="relative">
+                          <button
+                            className={`p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600`}
+                            onClick={() => setOpenMenuId(openMenuId === orden.ot_id ? null : orden.ot_id)}
+                          >
+                            <MoreVertical className="w-4 h-4"/>
+                          </button>
+                          {openMenuId === orden.ot_id && (
+                            <div className={`absolute right-0 mt-2 w-56 rounded-lg shadow-lg z-50 ${darkMode ? "bg-gray-800 border border-gray-700" : "bg-white border border-gray-200"}`}>
+                              <div className="py-1">
+                                <button
+                                  onClick={() => {
+                                    window.open(`/workshop/${orden.taller_id}/vehicle/${orden.ot_id}`, '_blank');
+                                    setOpenMenuId(null);
+                                  }}
+                                  className={`w-full text-left px-4 py-2 text-sm ${darkMode ? "text-blue-400 hover:bg-gray-700" : "text-blue-700 hover:bg-gray-100"} flex items-center gap-2`}
+                                >
+                                  Ver detalles internos (admin)
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -896,6 +964,32 @@ export default function WorkshopDash() {
           </div>
         </div>
       </div>
+
+      {/* MODAL CAMBIO DE ESTADO */}
+      {showEstadoModal && estadoModalOt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className={`bg-white dark:bg-gray-800 rounded-lg p-8 w-full max-w-md shadow-lg relative`}>
+            <button
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:hover:text-white"
+              onClick={() => setShowEstadoModal(false)}
+            >
+              ×
+            </button>
+            <h2 className="text-xl font-bold mb-4 text-center">Cambiar Estado de la Orden</h2>
+            <div className="space-y-2">
+              {estados.map((estado) => (
+                <button
+                  key={estado.estado_id}
+                  onClick={() => handleChangeEstado(estado.estado_id)}
+                  className={`w-full py-2 rounded-lg text-left px-4 ${estadoModalOt.estado_id === estado.estado_id ? (darkMode ? "bg-blue-900 text-white" : "bg-blue-100 text-blue-700") : (darkMode ? "hover:bg-gray-700 text-gray-200" : "hover:bg-gray-100 text-gray-700")}`}
+                >
+                  {estado.nombre}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

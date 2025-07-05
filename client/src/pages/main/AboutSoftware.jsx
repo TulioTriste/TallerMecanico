@@ -3,14 +3,13 @@ import { FaTools, FaUsers, FaCar, FaBell, FaChartLine } from "react-icons/fa";
 import { BsShop, BsBuilding, BsBuildingsFill } from "react-icons/bs";
 import { useDarkMode } from "../../context/darkModeContext.jsx";
 import Footer from "../../Components/Footer.jsx";
-import Navbar from "../../Components/NavbarPrincipal/PublicNavbar.jsx";
 
 const AboutSoftware = () => {
   const { darkMode } = useDarkMode();
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
+      {/* <Navbar /> eliminado, el navbar lo maneja NavbarManager globalmente */}
       <div
         className={`flex-grow ${darkMode ? "bg-gray-900" : "bg-gray-50"} transition-colors duration-300`}
       >

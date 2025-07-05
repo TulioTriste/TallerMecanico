@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Check, X, Zap, Shield, Wrench, ArrowRight } from "lucide-react";
-import Navbar from "../../Components/NavbarPrincipal/PublicNavbar.jsx";
 import { useDarkMode } from "../../context/darkModeContext.jsx";
 import { useNavigate } from "react-router-dom";
 import StringFormatter from "../../utilities/stringFormatter.js";
+import { useAuth } from "../../context/authContext.jsx";
 
 export default function PricingDashboard() {
+  const { user } = useAuth();
   const [billingCycle, setBillingCycle] = useState("monthly");
   const [selectedPlan, setSelectedPlan] = useState(null);
   const {darkMode} = useDarkMode();
@@ -82,6 +83,19 @@ export default function PricingDashboard() {
   // Animated tooltip for selected plan
   const [tooltipVisible, setTooltipVisible] = useState(false);
 
+  // Función para saber si el usuario no tiene plan
+  function isNoPlan(plan_id) {
+    return (
+      plan_id === null ||
+      plan_id === undefined ||
+      plan_id === 0 ||
+      plan_id === "0" ||
+      plan_id === "" ||
+      plan_id === false ||
+      plan_id === "null"
+    );
+  }
+
   // En PlansPage.jsx, modifica la función selectPlan:
   const selectPlan = (index) => {
     setSelectedPlan(index);
@@ -107,7 +121,6 @@ export default function PricingDashboard() {
 
   return (
     <>
-      <Navbar />
       <div
         className={`w-full min-h-screen ${darkMode ? "bg-gray-900" : "bg-gray-50"} py-16 px-4 sm:px-6 lg:px-8 transition-colors duration-300 flex flex-col`}
       >
@@ -154,6 +167,15 @@ export default function PricingDashboard() {
             </div>
           </div>
 
+          {/* Mostrar mensaje grande si el usuario no tiene plan */}
+          {user && isNoPlan(user.plan_id) && (
+            <div className="text-center mb-8">
+              <div className="inline-block bg-red-100 text-red-700 px-6 py-3 rounded-full text-2xl font-bold shadow-md">
+                Sin plan
+              </div>
+            </div>
+          )}
+
           {/* Plans grid */}
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             {plans.map((plan, index) => {
@@ -181,6 +203,10 @@ export default function PricingDashboard() {
                   : index === 1
                     ? "border-indigo-300"
                     : "border-purple-300";
+
+              // Cambia el texto del botón si es el plan actual
+              let isCurrentPlan = user && Number(user.plan_id) === plan.plan_id;
+              let buttonText = isCurrentPlan ? "Plan actual" : plan.ctaText;
 
               return (
                 <div
@@ -267,17 +293,20 @@ export default function PricingDashboard() {
                   </div>
 
                   <button
-                    onClick={() => selectPlan(index)}
+                    onClick={() => !isCurrentPlan && selectPlan(index)}
+                    disabled={isCurrentPlan}
                     className={`w-full flex items-center justify-center py-3 px-4 rounded-lg text-white font-medium transition-all ${
-                      selectedPlan === index
-                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md"
-                        : darkMode
-                          ? "bg-gray-700 hover:bg-gray-600"
-                          : "bg-gray-800 hover:bg-gray-700"
+                      isCurrentPlan
+                        ? "bg-green-500 cursor-default opacity-80"
+                        : selectedPlan === index
+                          ? "bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md"
+                          : darkMode
+                            ? "bg-gray-700 hover:bg-gray-600"
+                            : "bg-gray-800 hover:bg-gray-700"
                     }`}
                   >
-                    <span>{plan.ctaText}</span>
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    <span>{buttonText}</span>
+                    {!isCurrentPlan && <ArrowRight className="w-4 h-4 ml-2" />}
                   </button>
                 </div>
               );

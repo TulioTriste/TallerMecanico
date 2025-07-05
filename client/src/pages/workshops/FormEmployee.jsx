@@ -5,6 +5,9 @@ import {useDarkMode} from "../../context/darkModeContext.jsx";
 import {useForm} from "react-hook-form";
 import {useEmpleado} from "../../context/empleadosContext.jsx";
 import {useControlPanel} from "../../context/controlPanelContext.jsx";
+import StringFormatter from "../../utilities/stringFormatter.js";
+import toast from "../../utilities/toast";
+import { ToastContainer } from "react-toastify";
 
 export default function FormularioEmpleado() {
   const navigate = useNavigate();
@@ -18,7 +21,9 @@ export default function FormularioEmpleado() {
 
   const {
     register,
-    handleSubmit
+    handleSubmit,
+    setValue,
+    watch
   } = useForm();
 
   useEffect(() => {
@@ -35,17 +40,55 @@ export default function FormularioEmpleado() {
     setLoading(true);
     try {
       if (await addEmpleado(data)) {
-        alert("Empleado guardado exitosamente");
-        navigate(`/workshop/sucursal/${tallerId}/empleados`);
+        toast.success("Empleado guardado exitosamente", {
+          position: "top-center",
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: darkMode ? "dark" : "light",
+        });
+        setTimeout(() => {
+          navigate(`/workshop/sucursal/${tallerId}/empleados`);
+        }, 1500);
       } else {
-        alert("Error al guardar el empleado");
+        toast.error("Error al guardar el empleado", {
+          position: "top-center",
+          autoClose: 2500,
+          theme: darkMode ? "dark" : "light",
+        });
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Error al guardar el empleado");
+      toast.error("Error al guardar el empleado", {
+        position: "top-center",
+        autoClose: 2500,
+        theme: darkMode ? "dark" : "light",
+      });
     } finally {
       setLoading(false);
     }
+  };
+
+  // Formateo visual en tiempo real del RUT
+  const handleRutChange = (e) => {
+    const formatted = StringFormatter.formatRut(e.target.value);
+    setValue("empleado_rut", formatted);
+  };
+
+  // Formateo visual en tiempo real del teléfono chileno
+  const handlePhoneChange = (e) => {
+    let digits = e.target.value.replace(/\D/g, "");
+    if (digits.startsWith("56")) digits = digits.slice(2);
+    if (digits.startsWith("9")) digits = digits;
+    else if (digits.length > 0) digits = "9" + digits;
+    let formatted = "";
+    if (digits.length > 0) formatted += digits[0];
+    if (digits.length > 1) formatted += " " + digits.slice(1, 5);
+    if (digits.length > 5) formatted += " " + digits.slice(5, 9);
+    setValue("cel", formatted.trim());
   };
 
   /*const handleInputChange = (e) => {
@@ -114,10 +157,10 @@ export default function FormularioEmpleado() {
                 <input
                   type="text"
                   name="empleado_rut"
-                  //value={formData.empleado_rut}
+                  value={watch("empleado_rut")}
                   {...register("empleado_rut")}
-                  //onChange={handleInputChange}
-                  placeholder="Ej: 12345678-9"
+                  onChange={handleRutChange}
+                  placeholder="Ej: 12.345.678-9"
                   required
                   className={`block w-full pl-10 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                     darkMode
@@ -217,24 +260,23 @@ export default function FormularioEmpleado() {
                 >
                   Celular
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                    <Phone
-                      className={darkMode ? "text-gray-500" : "text-gray-400"}
-                    />
-                  </div>
+                <div className="relative flex items-center">
+                  <span className="inline-block px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-l border border-r-0 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-300 select-none">+56</span>
                   <input
                     type="tel"
                     name="cel"
-                    //value={formData.cel}
+                    value={watch("cel")}
                     {...register("cel")}
-                    //onChange={handleInputChange}
+                    onChange={handlePhoneChange}
                     required
-                    className={`block w-full pl-10 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    className={`block w-full rounded-r px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       darkMode
                         ? "bg-gray-700 border-gray-600 text-white"
                         : "border-gray-300 text-gray-900"
                     }`}
+                    placeholder="9 XXXX XXXX"
+                    maxLength={10}
+                    autoComplete="off"
                   />
                 </div>
               </div>
@@ -351,6 +393,7 @@ export default function FormularioEmpleado() {
           </div>
         </form>
       </div>
+      <ToastContainer />
     </div>
   );
 }

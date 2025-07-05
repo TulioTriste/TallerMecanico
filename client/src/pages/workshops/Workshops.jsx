@@ -6,11 +6,14 @@ import { useDarkMode } from "../../context/darkModeContext.jsx";
 import { useControlPanel } from "../../context/controlPanelContext.jsx";
 import StringFormatter from "../../utilities/stringFormatter.js";
 import { MoreVertical, Edit, Trash2 } from "lucide-react";
-import {useAuth} from "../../context/authContext.jsx";
+import { updateTallerRequest } from "../../api/workshops"; // Asegúrate de tener este endpoint
+import { useAuth } from "../../context/authContext.jsx";
 
 const Workshops = () => {
   const { darkMode } = useDarkMode();
-  const {user} = useAuth();
+  const { user } = useAuth();
+  // Evita renderizar hasta que el usuario esté cargado
+  if (!user) return null;
   const [selectedTaller, setSelectedTaller] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [tallerEditData, setTallerEditData] = useState(null);
@@ -130,8 +133,17 @@ const Workshops = () => {
   }
 
   const handleEditClick = (taller) => {
+    // Formatea el teléfono de la base de datos (56972196207) a '9 XXXX XXXX' para el input
+    let telefono = taller.telefono || '';
+    if (telefono.startsWith('56') && telefono.length === 11) {
+      telefono = telefono.slice(2); // Quita el 56
+      telefono = telefono[0] + ' ' + telefono.slice(1, 5) + ' ' + telefono.slice(5, 9);
+    } else {
+      telefono = '';
+    }
     setTallerEditData({
       ...taller,
+      telefono,
       inicio_jornada: intToTime(taller.inicio_jornada),
       termino_jornada: intToTime(taller.termino_jornada),
     });
@@ -202,7 +214,7 @@ const Workshops = () => {
       setFormError("El nombre debe tener al menos 5 letras.");
       return;
     }
-    if (!isValidPhone(tallerEditData.telefono)) {
+    if (!/^9 \d{4} \d{4}$/.test(tallerEditData.telefono)) {
       setFormError("El teléfono debe tener el formato +56 9 XXXX XXXX");
       return;
     }
@@ -221,8 +233,9 @@ const Workshops = () => {
     setFormError("");
     setSaving(true);
     try {
-      // Enviar el teléfono como número (sin +, espacios ni símbolos)
-      const telefonoNumerico = tallerEditData.telefono.replace(/\D/g, "");
+      // Extraer solo los dígitos y dejar el formato 569XXXXXXXX
+      let telefonoNumerico = tallerEditData.telefono.replace(/\D/g, "");
+      telefonoNumerico = "56" + telefonoNumerico;
       await updateTallerRequest(tallerEditData.taller_id, {
         ...tallerEditData,
         telefono: telefonoNumerico,
@@ -237,6 +250,37 @@ const Workshops = () => {
     }
     setSaving(false);
   };
+
+  function isNoPlan(plan_id) {
+    return (
+      plan_id === null ||
+      plan_id === undefined ||
+      plan_id === 0 ||
+      plan_id === "0" ||
+      plan_id === "" ||
+      plan_id === false ||
+      plan_id === "null"
+    );
+  }
+
+  if (user && user.tipo === "usuario" && isNoPlan(user.plan_id)) {
+    return (
+      <div className={`min-h-screen flex flex-col items-center justify-center ${darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
+        <div className="text-center">
+          <div className="inline-block bg-red-100 text-red-700 px-6 py-3 rounded-full text-2xl font-bold shadow-md mb-6">
+            No tienes ningún plan activo
+          </div>
+          <p className={`mb-8 text-lg ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Para gestionar tus talleres, primero debes contratar un plan.</p>
+          <button
+            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-lg shadow transition-colors"
+            onClick={() => navigate("/plans")}
+          >
+            Contrata tu plan acá
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -298,8 +342,7 @@ const Workshops = () => {
         {/* Agregar botón flotante en la esquina inferior derecha cuando hay talleres */}
         {workshops.length > 0 && (
           <button
-            className="fixed bottom-8 right-8 p-4 bg-blue-600 hover:bg-blue-700
-                       text-white rounded-full shadow-lg transition-all duration-300
+            className="fixed bottom-8 right-8 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-all duration-300
                        hover:scale-110 z-50 group"
             onClick={() => navigate("/workshop/create")}
           >
@@ -332,7 +375,25 @@ const Workshops = () => {
                 </div>
                 <div className="mb-4">
                   <label className="block mb-1">Teléfono</label>
-                  <input name="telefono" value={tallerEditData.telefono || ''} onChange={handleEditChange} className="w-full p-2 rounded border dark:bg-gray-700" />
+                  <div className="flex items-center">
+                    <span className="inline-block px-2 py-2 bg-gray-100 dark:bg-gray-700 rounded-l border border-r-0 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-300 select-none">+56</span>
+                    <input
+                      name="telefono"
+                      value={tallerEditData.telefono ? tallerEditData.telefono.replace(/^\+?56 ?/, "") : ''}
+                      onChange={e => {
+                        // Solo permitir números y espacios, y formatear como 9 XXXX XXXX
+                        let val = e.target.value.replace(/\D/g, "");
+                        if (val.startsWith("9")) {
+                          val = val[0] + (val.slice(1, 5) ? " " + val.slice(1, 5) : "") + (val.slice(5, 9) ? " " + val.slice(5, 9) : "");
+                        }
+                        setTallerEditData(prev => ({ ...prev, telefono: val }));
+                      }}
+                      className="w-full p-2 rounded-r border border-gray-300 dark:bg-gray-700 dark:border-gray-600"
+                      maxLength={11}
+                      placeholder="9 XXXX XXXX"
+                      autoComplete="off"
+                    />
+                  </div>
                 </div>
                 <div className="mb-4">
                   <label className="block mb-1">Correo</label>

@@ -36,6 +36,15 @@ export const AuthProvider = ({children}) => {
     }
   }, [errors]);
 
+  const setUserAndPersist = (userObj) => {
+    setUser(userObj);
+    if (userObj) {
+      localStorage.setItem("user", JSON.stringify(userObj));
+    } else {
+      localStorage.removeItem("user");
+    }
+  };
+
   const signup = async (user) => {
     try {
       const res = await registerRequest(user);
@@ -45,7 +54,7 @@ export const AuthProvider = ({children}) => {
         userType: user.userType,
       }
       if (res.status === 200) {
-        setUser(userData);
+        setUserAndPersist(userData);
         setIsAuthenticated(true);
       }
     } catch (error) {
@@ -68,7 +77,7 @@ export const AuthProvider = ({children}) => {
           userType: user.userType,
         }
         if (res.status === 200) {
-          setUser(userData);
+          setUserAndPersist(userData);
           setIsAuthenticated(true);
         } else {
           setErrors([res.data.message || "Error al iniciar sesión."]);
@@ -83,7 +92,7 @@ export const AuthProvider = ({children}) => {
           userType: user.userType,
         }
         if (res.status === 200) {
-          setUser(userData);
+          setUserAndPersist(userData);
           setIsAuthenticated(true);
         } else {
           setErrors([res.data.message || "Error al iniciar sesión."]);
@@ -102,7 +111,7 @@ export const AuthProvider = ({children}) => {
 
   const logout = () => {
     Cookies.remove("token");
-    setUser(null);
+    setUserAndPersist(null);
     setIsAuthenticated(false);
     setLoading(false);
   };
@@ -177,7 +186,7 @@ export const AuthProvider = ({children}) => {
           apellido: data.apellido,
           telefono: data.telefono,
         };
-        setUser(newUser);
+        setUserAndPersist(newUser);
         return true;
       } else {
         setErrors([res.data.message || "Error al actualizar el perfil."]);
@@ -189,6 +198,15 @@ export const AuthProvider = ({children}) => {
       return false;
     }
   }
+
+  useEffect(() => {
+    // Hidratar usuario desde localStorage si existe
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+      setIsAuthenticated(true);
+    }
+  }, []);
 
   useEffect(() => {
     const checkLogin = async () => {
@@ -207,11 +225,11 @@ export const AuthProvider = ({children}) => {
           return;
         }
         setIsAuthenticated(true);
-        setUser(res.data);
+        setUserAndPersist(res.data);
         // eslint-disable-next-line no-unused-vars
       } catch (error) {
         setIsAuthenticated(false);
-        setUser(null);
+        setUserAndPersist(null);
       }
 
       setLoading(false);
